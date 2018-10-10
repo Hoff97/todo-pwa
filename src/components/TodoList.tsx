@@ -1,0 +1,21 @@
+import * as React from 'react';
+import Todo from './Todo';
+import { Todo as TodoT } from '../types/index';
+
+export interface Props {
+    todos: TodoT[];
+    toggleTodo: (id: string) => void;
+}
+
+export function TodoList({ todos, toggleTodo }: Props) {
+    return (
+        <div>
+            <ul>
+                {todos.map((todo, index) => (
+                    <li key={todo.id}><Todo toggle={() => toggleTodo(todo.id)} {...todo} /></li>
+                ))}
+            </ul>
+            <div>{todos.length === 0 ? 'No todos' : ''}</div>
+        </div>
+    );
+}
