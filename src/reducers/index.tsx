@@ -1,6 +1,6 @@
 import { TodoAction } from '../actions';
 import { StoreState, Todo, TodoFilter } from '../types/index';
-import { ADD_TODO, TODO_TOGGLED, FILTER_CHANGED } from '../constants/index';
+import { ADD_TODO, TODO_TOGGLED, FILTER_CHANGED, TODO_DELETED } from '../constants/index';
 import { combineReducers, Reducer } from 'redux';
 import * as uuid from 'uuid/v4';
 
@@ -18,6 +18,8 @@ export function todos(todos: Todo[] = [], action: TodoAction): Todo[] {
         }
         return todo;
       });
+    case TODO_DELETED:
+      return todos.filter(todo => todo.id !== action.id);
   }
   return todos;
 }

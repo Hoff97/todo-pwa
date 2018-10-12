@@ -25,7 +25,8 @@ export function mapStateToProps(state: HistoryState<StoreState>) {
 
 export function mapDispatchToProps(dispatch: Dispatch<actions.TodoAction>) {
     return {
-        toggleTodo: (id: string) => dispatch(actions.toggleTodo(id))
+        toggleTodo: (id: string) => dispatch(actions.toggleTodo(id)),
+        deleteTodo: (id: string) => dispatch(actions.deleteTodo(id))
     }
 }
 

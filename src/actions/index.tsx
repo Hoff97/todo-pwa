@@ -11,12 +11,17 @@ export interface TodoToggled {
     id: string;
 }
 
+export interface TodoDeleted {
+    type: constants.TODO_DELETED;
+    id: string;
+}
+
 export interface FilterChanged {
     type: constants.FILTER_CHANGED;
     filter: TodoFilter;
 }
 
-export type TodoAction = AddTodo | TodoToggled | FilterChanged;
+export type TodoAction = AddTodo | TodoToggled | FilterChanged | TodoDeleted;
 
 export function addTodo(name: string): TodoAction {
     return {
@@ -28,6 +33,13 @@ export function addTodo(name: string): TodoAction {
 export function toggleTodo(id: string): TodoAction {
     return {
         type: constants.TODO_TOGGLED,
+        id
+    }
+}
+
+export function deleteTodo(id: string): TodoAction {
+    return {
+        type: constants.TODO_DELETED,
         id
     }
 }
