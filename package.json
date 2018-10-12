@@ -2,6 +2,7 @@
   "name": "react-testapp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://hoff97.github.io/todo-pwa",
   "dependencies": {
     "@types/react-redux": "^6.0.9",
     "@types/uuid": "^3.4.4",
