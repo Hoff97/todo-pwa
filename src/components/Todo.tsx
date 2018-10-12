@@ -10,7 +10,8 @@ export interface Props {
 function Todo({ name, done, toggle }: Props) {
   return (
     <div>
-      {name} <button onClick={toggle}>{done ? 'Undo' : 'Done'}</button>
+      {name} <button onClick={toggle} 
+        className="float-right btn btn-primary"><i className={done ? 'fas fa-undo' : 'fas fa-check'}></i></button>
     </div>
   );
 }

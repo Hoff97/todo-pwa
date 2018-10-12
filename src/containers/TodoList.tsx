@@ -13,6 +13,12 @@ export function mapStateToProps(state: HistoryState<StoreState>) {
                 case TodoFilter.DONE: return todo.done;
                 case TodoFilter.UNDONE: return !todo.done;
             }
+        }).sort((a,b) => {
+            if(a.done === b.done)
+                return a.name.localeCompare(b.name);
+            if(a.done && !b.done)
+                return 1;
+            return -1;
         })
     }
 }

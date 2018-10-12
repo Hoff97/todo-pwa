@@ -18,17 +18,20 @@ function ButtonsF({ dispatch }: { dispatch: Dispatch<TodoAction | HistoryAction>
                     input.value = ''
                 }}
             >
-                <input
-                    ref={node => {
-                        input = node as HTMLInputElement
-                    }}
-                />
-                <button type="submit">
-                    Add Todo
-                </button>
+                <div className="input-group mb-3">
+                    <input type="text" className="form-control" placeholder="Todo" 
+                        aria-label="Recipient's username" aria-describedby="button-addon2"
+                        ref={node => {
+                            input = node as HTMLInputElement
+                        }}/>
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-secondary" type="submit" 
+                            id="button-addon2">Add Todo</button>
+                    </div>
+                </div>
             </form>
-            <button onClick={e => dispatch(undo())}>Undo</button>
-            <button onClick={e => dispatch(redo())}>Redo</button>
+            <button onClick={e => dispatch(undo())} className="btn btn-primary mr-2">Undo</button>
+            <button onClick={e => dispatch(redo())} className="btn btn-primary">Redo</button>
         </div>
     )
 }

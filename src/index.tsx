@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { TodoAction } from './actions';
 import App from './components/App';
 import { initHistory, HistoryState, historyReducer } from './reducers/enhancers/history';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action)
