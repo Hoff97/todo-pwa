@@ -2,8 +2,9 @@ import { connect } from 'react-redux';
 import { addTodo, TodoAction } from '../actions';
 import { Dispatch } from 'redux';
 import * as React from 'react';
+import { redo, HistoryAction, undo } from 'src/reducers/enhancers/history';
 
-function AddTodoF({ dispatch }: { dispatch: Dispatch<TodoAction> }) {
+function ButtonsF({ dispatch }: { dispatch: Dispatch<TodoAction | HistoryAction> }) {
     let input: HTMLInputElement
     return (
         <div>
@@ -24,12 +25,14 @@ function AddTodoF({ dispatch }: { dispatch: Dispatch<TodoAction> }) {
                 />
                 <button type="submit">
                     Add Todo
-          </button>
+                </button>
             </form>
+            <button onClick={e => dispatch(undo())}>Undo</button>
+            <button onClick={e => dispatch(redo())}>Redo</button>
         </div>
     )
 }
 
-let AddTodo = connect()(AddTodoF)
+let Buttons = connect()(ButtonsF)
 
-export default AddTodo
+export default Buttons

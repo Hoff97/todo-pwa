@@ -1,10 +1,10 @@
 import * as React from 'react';
-import AddTodo from '../containers/AddTodo'
+import Buttons from '../containers/Buttons'
 import VisibleTodoList from 'src/containers/TodoList';
 ​
 const App = () => (
   <div>
-    <AddTodo />
+    <Buttons />
     <VisibleTodoList />
   </div>
 )

@@ -8,6 +8,7 @@ import { StoreState, TodoFilter } from './types/index';
 import { Provider } from 'react-redux';
 import { TodoAction } from './actions';
 import App from './components/App';
+import { initHistory, HistoryState, historyReducer } from './reducers/enhancers/history';
 
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action)
@@ -16,10 +17,10 @@ const logger: Middleware = store => next => action => {
   return result
 }
 
-const store = createStore<StoreState, TodoAction, {}, {}>(rootReducer, {
+const store = createStore<HistoryState<StoreState>, TodoAction, {}, {}>(historyReducer(rootReducer), initHistory({
   todos: [],
   shownTodos: TodoFilter.ALL
-}, applyMiddleware(logger));
+}), applyMiddleware(logger));
 
 ReactDOM.render(
   <Provider store={store}>
