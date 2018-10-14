@@ -11,6 +11,7 @@ import { initHistory, HistoryState, historyReducer } from './reducers/enhancers/
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { saveReducer, initByStorage } from './reducers/enhancers/storage';
 import { Action } from 'redux-actions';
+import * as moment from 'moment';
 
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action);
@@ -20,12 +21,19 @@ const logger: Middleware = store => next => action => {
 }
 
 function loadLocal(contents: any): Todo[] {
+  var todos: Todo[] = [];
   if(Array.isArray(contents)) {
-    return contents;
+    todos = contents;
   } else if (contents.todos) {
-    return contents.todos;
+    todos = contents.todos;
   }
-  return [];
+  todos = todos.map(todo => {
+    return {
+      ...todo,
+      date: todo.date ? moment(todo.date).toDate() : undefined
+    }
+  })
+  return todos;
 }
 
 const reducer = historyReducer(saveReducer('data', todos, loadLocal))

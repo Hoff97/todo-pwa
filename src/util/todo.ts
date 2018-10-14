@@ -1,0 +1,62 @@
+import * as uuid from 'uuid/v4';
+import { Todo } from 'src/types';
+import * as moment from 'moment';
+
+function nextWeekday(wd: number) {
+    const today = moment().isoWeekday();
+    if (today <= wd) {
+        return moment().isoWeekday(wd);
+    } else {
+        return moment().add(1, 'weeks').isoWeekday(wd);
+    }
+}
+
+export function parseTodo(str: string): Todo {
+    const prioMatch = str.match(/!([1-5])/);
+    var priority: number | undefined = undefined;
+    if (prioMatch !== null) {
+        priority = +prioMatch[1]
+    }
+
+    const categoryMatch = str.match(/#([A-Za-z]+)/)
+    var category: string | undefined = undefined;
+    if (categoryMatch !== null) {
+        category = categoryMatch[1];
+    }
+
+    const dateMatch = str.match(/@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/);
+    var date: Date | undefined = undefined;
+    if (dateMatch !== null && dateMatch[1] !== null) {
+        switch (dateMatch[1]) {
+            case 'today': date = moment().toDate(); break;
+            case 'tomorrow': date = moment().add(1, 'days').toDate(); break;
+            case 'mon': date = nextWeekday(1).toDate(); break;
+            case 'tue': date = nextWeekday(2).toDate(); break;
+            case 'wed': date = nextWeekday(3).toDate(); break;
+            case 'thu': date = nextWeekday(4).toDate(); break;
+            case 'fri': date = nextWeekday(5).toDate(); break;
+            case 'sat': date = nextWeekday(6).toDate(); break;
+            case 'sun': date = nextWeekday(0).toDate(); break;
+            default:
+                if(dateMatch.length === 4) {
+                    var dateM = moment().month(+dateMatch[3]-1).date(+dateMatch[2]);
+                    if(!dateM.isAfter(moment())) {
+                        dateM = dateM.add(1, 'years');
+                    }
+                    date = dateM.toDate();
+                }
+                break;
+        }
+    }
+
+    const todo =  {
+        id: uuid(),
+        name: 'Yay',
+        done: false,
+        priority,
+        category,
+        date
+    };
+    console.log(todo);
+    return todo;
+}
