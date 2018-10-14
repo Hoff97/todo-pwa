@@ -3,3 +3,44 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.prio {
+  font-size: 25px;
+}
+
+.prio5 {
+  color: #F00;
+  font-weight: bold;
+}
+
+.prio4 {
+  color: rgb(255, 123, 0);
+  font-weight: bold;
+}
+
+.prio3 {
+  color: rgb(192, 168, 29);
+  font-weight: bold;
+}
+
+.prio2 {
+  color: rgb(143, 204, 0);
+  font-weight: bold;
+}
+
+.prio1 {
+  color: rgb(69, 187, 0);
+  font-weight: bold;
+}
+
+.todo-name {
+  font-size: 25px;
+}
+
+.category {
+  color: #999;
+}
+
+li.list-group-item.disabled {
+  background-color:#CCC;
+}

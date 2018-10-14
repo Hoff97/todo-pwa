@@ -13,7 +13,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo }: Props) {
         <div className="mt-2">
             <ul className="list-group">
                 {todos.map((todo, index) => (
-                    <li key={todo.id} className={todo.done ? 'list-group-item' : 'list-group-item active'}>
+                    <li key={todo.id} className={todo.done ? 'list-group-item disabled' : 'list-group-item'}>
                         <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo} />
                     </li>
                 ))}
