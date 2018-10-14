@@ -15,23 +15,27 @@ export interface Props {
 function Todo({ name, done, toggle, remove, priority, category, date }: Props) {
   return (
     <div className="row">
-      <div className="col-1">
-        {priority &&
-          <span className={'prio ' + 'prio' + priority}>{priority}</span>
-        }
-      </div>
-      <div className="col-7 todo-name">
+      {!done &&
+        <div className="col-1">
+          {priority &&
+            <span className={'prio ' + 'prio' + priority}>{priority}</span>
+          }
+        </div>
+      }
+      <div className={done ? 'col-6 todo-name' : 'col-5 todo-name'}>
         {name}
         {category &&
           <span className="category">#{category}</span>
         }
       </div>
-      <div className="col-2 todo-name">
-        {date &&
-          moment(date).format('DD.MM.')
-        }
-      </div>
-      <div className="col-2">
+      {!done &&
+        <div className="col-1 todo-name">
+          {date &&
+            moment(date).format('DD.MM.')
+          }
+        </div>
+      }
+      <div className={done ? 'col-5' : 'col-4'}>
         <button onClick={toggle} className="float-right btn btn-primary">
           <i className={done ? 'fas fa-undo' : 'fas fa-check'}></i>
         </button>

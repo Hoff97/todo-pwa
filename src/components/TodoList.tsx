@@ -10,7 +10,7 @@ export interface Props {
 
 export function TodoList({ todos, toggleTodo, deleteTodo }: Props) {
     return (
-        <div className="mt-2">
+        <div className="mt-2 mb-2">
             <ul className="list-group">
                 {todos.map((todo, index) => (
                     <li key={todo.id} className={todo.done ? 'list-group-item disabled' : 'list-group-item'}>
