@@ -11,20 +11,24 @@ function nextWeekday(wd: number) {
     }
 }
 
+const pExpr = /!([1-5])/
+const cExpr = /#([A-Za-z]+)/
+const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
+
 export function parseTodo(str: string): Todo {
-    const prioMatch = str.match(/!([1-5])/);
+    const prioMatch = str.match(pExpr);
     var priority: number | undefined = undefined;
     if (prioMatch !== null) {
         priority = +prioMatch[1]
     }
 
-    const categoryMatch = str.match(/#([A-Za-z]+)/)
+    const categoryMatch = str.match(cExpr)
     var category: string | undefined = undefined;
     if (categoryMatch !== null) {
         category = categoryMatch[1];
     }
 
-    const dateMatch = str.match(/@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/);
+    const dateMatch = str.match(dExpr);
     var date: Date | undefined = undefined;
     if (dateMatch !== null && dateMatch[1] !== null) {
         switch (dateMatch[1]) {
@@ -51,7 +55,7 @@ export function parseTodo(str: string): Todo {
 
     const todo =  {
         id: uuid(),
-        name: 'Yay',
+        name: str.replace(cExpr, '').replace(dExpr, '').replace(pExpr, '').trim(),
         done: false,
         priority,
         category,
