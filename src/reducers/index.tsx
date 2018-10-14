@@ -1,8 +1,7 @@
-import { StoreState, Todo, TodoFilter } from '../types/index';
-import { combineReducers, Reducer } from 'redux';
+import { Todo } from '../types/index';
+import { Reducer } from 'redux';
 import * as uuid from 'uuid/v4';
-import { FILTER_CHANGED } from 'src/actions';
-import { Action, handleActions, handleAction } from 'redux-actions';
+import { Action, handleActions } from 'redux-actions';
 
 type A<T> = { type: string, payload: T }
 
@@ -21,13 +20,3 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 
   TODO_DELETED: (todos: Todo[], action: A<string>) => todos.filter(todo => todo.id !== action.payload)
 },[]);
-
-
-export const shownTodos: Reducer<TodoFilter, Action<any>> = handleAction(FILTER_CHANGED, 
-  (filter: TodoFilter, action: A<TodoFilter>) => action.payload, 
-  TodoFilter.ALL);
-
-export const rootReducer: Reducer<StoreState, Action<any>> = combineReducers({
-  todos,
-  shownTodos
-})

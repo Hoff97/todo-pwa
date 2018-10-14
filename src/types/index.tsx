@@ -4,11 +4,4 @@ export interface Todo {
     done: boolean;
 }
 
-export enum TodoFilter {
-    ALL, DONE, UNDONE
-}
-
-export interface StoreState {
-    todos: Todo[];
-    shownTodos: TodoFilter;
-}
+export type StoreState = Todo[];

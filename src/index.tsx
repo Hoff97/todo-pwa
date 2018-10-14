@@ -3,8 +3,8 @@ import * as ReactDOM from 'react-dom';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 import { createStore, applyMiddleware, Middleware } from 'redux';
-import { rootReducer } from './reducers/index';
-import { StoreState, TodoFilter } from './types/index';
+import { todos } from './reducers/index';
+import { StoreState, Todo } from './types/index';
 import { Provider } from 'react-redux';
 import App from './components/App';
 import { initHistory, HistoryState, historyReducer } from './reducers/enhancers/history';
@@ -19,12 +19,18 @@ const logger: Middleware = store => next => action => {
   return result
 }
 
-const reducer = historyReducer(saveReducer('data', rootReducer))
+function loadLocal(contents: any): Todo[] {
+  if(Array.isArray(contents)) {
+    return contents;
+  } else if (contents.todos) {
+    return contents.todos;
+  }
+  return [];
+}
 
-const store = createStore<HistoryState<StoreState>, Action<any>, {}, {}>(reducer, initHistory(initByStorage('data', {
-  todos: [],
-  shownTodos: TodoFilter.ALL
-})), applyMiddleware(logger));
+const reducer = historyReducer(saveReducer('data', todos, loadLocal))
+
+const store = createStore<HistoryState<StoreState>, Action<any>, {}, {}>(reducer, initHistory(initByStorage('data', [], loadLocal)), applyMiddleware(logger));
 
 ReactDOM.render(
   <Provider store={store}>
