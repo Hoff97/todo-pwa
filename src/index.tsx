@@ -6,11 +6,11 @@ import { createStore, applyMiddleware, Middleware } from 'redux';
 import { rootReducer } from './reducers/index';
 import { StoreState, TodoFilter } from './types/index';
 import { Provider } from 'react-redux';
-import { TodoAction } from './actions';
 import App from './components/App';
 import { initHistory, HistoryState, historyReducer } from './reducers/enhancers/history';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { saveReducer, initByStorage } from './reducers/enhancers/storage';
+import { Action } from 'redux-actions';
 
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action);
@@ -21,7 +21,7 @@ const logger: Middleware = store => next => action => {
 
 const reducer = historyReducer(saveReducer('data', rootReducer))
 
-const store = createStore<HistoryState<StoreState>, TodoAction, {}, {}>(reducer, initHistory(initByStorage('data', {
+const store = createStore<HistoryState<StoreState>, Action<any>, {}, {}>(reducer, initHistory(initByStorage('data', {
   todos: [],
   shownTodos: TodoFilter.ALL
 })), applyMiddleware(logger));

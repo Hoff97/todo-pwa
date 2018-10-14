@@ -1,52 +1,14 @@
-import * as constants from '../constants';
 import { TodoFilter } from 'src/types';
+import { createAction } from 'redux-actions';
 
-export interface AddTodo {
-    type: constants.ADD_TODO;
-    name: string;
-}
+export const ADD_TODO = 'ADD_TODO';
+export const addTodo = createAction(ADD_TODO, (x: string) => x);
 
-export interface TodoToggled {
-    type: constants.TODO_TOGGLED;
-    id: string;
-}
+export const TODO_TOGGLED = 'TODO_TOGGLED';
+export const toggleTodo = createAction(TODO_TOGGLED, (x: string) => x);
 
-export interface TodoDeleted {
-    type: constants.TODO_DELETED;
-    id: string;
-}
+export const TODO_DELETED = 'TODO_DELETED';
+export const deleteTodo = createAction(TODO_DELETED, (x: string) => x);
 
-export interface FilterChanged {
-    type: constants.FILTER_CHANGED;
-    filter: TodoFilter;
-}
-
-export type TodoAction = AddTodo | TodoToggled | FilterChanged | TodoDeleted;
-
-export function addTodo(name: string): TodoAction {
-    return {
-        type: constants.ADD_TODO,
-        name
-    }
-}
-
-export function toggleTodo(id: string): TodoAction {
-    return {
-        type: constants.TODO_TOGGLED,
-        id
-    }
-}
-
-export function deleteTodo(id: string): TodoAction {
-    return {
-        type: constants.TODO_DELETED,
-        id
-    }
-}
-
-export function changeFilter(filter: TodoFilter): FilterChanged {
-    return {
-        type: constants.FILTER_CHANGED,
-        filter
-    }
-}
+export const FILTER_CHANGED = 'FILTER_CHANGED';
+export const changeFilter = createAction('FILTER_CHANGED', (x: TodoFilter) => x)

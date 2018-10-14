@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TodoList } from 'src/components/TodoList';
 import { HistoryState } from 'src/reducers/enhancers/history';
+import { Action } from 'redux-actions';
 
 export function mapStateToProps(state: HistoryState<StoreState>) {
     return {
@@ -23,7 +24,7 @@ export function mapStateToProps(state: HistoryState<StoreState>) {
     }
 }
 
-export function mapDispatchToProps(dispatch: Dispatch<actions.TodoAction>) {
+export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
     return {
         toggleTodo: (id: string) => dispatch(actions.toggleTodo(id)),
         deleteTodo: (id: string) => dispatch(actions.deleteTodo(id))

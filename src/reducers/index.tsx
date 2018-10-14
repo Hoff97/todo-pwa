@@ -1,38 +1,33 @@
-import { TodoAction } from '../actions';
 import { StoreState, Todo, TodoFilter } from '../types/index';
-import { ADD_TODO, TODO_TOGGLED, FILTER_CHANGED, TODO_DELETED } from '../constants/index';
 import { combineReducers, Reducer } from 'redux';
 import * as uuid from 'uuid/v4';
+import { FILTER_CHANGED } from 'src/actions';
+import { Action, handleActions, handleAction } from 'redux-actions';
 
-export function todos(todos: Todo[] = [], action: TodoAction): Todo[] {
-  switch (action.type) {
-    case ADD_TODO:
-      return [...todos, { name: action.name, id: uuid(), done: false }];
-    case TODO_TOGGLED:
-      return todos.map(todo => {
-        if (todo.id === action.id) {
-          return {
-            ...todo,
-            done: !todo.done
-          }
-        }
-        return todo;
-      });
-    case TODO_DELETED:
-      return todos.filter(todo => todo.id !== action.id);
-  }
-  return todos;
-}
+type A<T> = { type: string, payload: T }
 
-export function shownTodos(filter: TodoFilter = TodoFilter.ALL, action: TodoAction): TodoFilter {
-  switch (action.type) {
-    case FILTER_CHANGED:
-      return action.filter;
-  }
-  return filter;
-}
+export const todos: Reducer<Todo[], Action<any>> = handleActions({
+  ADD_TODO: (todos: Todo[], action: A<string>) => [...todos, { name: action.payload, id: uuid(), done: false }],
 
-export const rootReducer: Reducer<StoreState, TodoAction> = combineReducers({
+  TODO_TOGGLED: (todos: Todo[], action: A<string>) => todos.map(todo => {
+    if (todo.id === action.payload) {
+      return {
+        ...todo,
+        done: !todo.done
+      }
+    }
+    return todo;
+  }),
+
+  TODO_DELETED: (todos: Todo[], action: A<string>) => todos.filter(todo => todo.id !== action.payload)
+},[]);
+
+
+export const shownTodos: Reducer<TodoFilter, Action<any>> = handleAction(FILTER_CHANGED, 
+  (filter: TodoFilter, action: A<TodoFilter>) => action.payload, 
+  TodoFilter.ALL);
+
+export const rootReducer: Reducer<StoreState, Action<any>> = combineReducers({
   todos,
   shownTodos
 })

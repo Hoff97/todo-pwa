@@ -1,4 +1,5 @@
 import { Action } from 'redux';
+import { createAction } from 'redux-actions';
 
 export interface HistoryState<I> {
     state: I;
@@ -7,33 +8,12 @@ export interface HistoryState<I> {
 }
 
 export const UNDO_HISTORY = 'UNDO_HISTORY';
-export type UNDO_HISTORY = typeof UNDO_HISTORY;
 
 export const REDO_HISTORY = 'REDO_HISTORY';
-export type REDO_HISTORY = typeof REDO_HISTORY;
-export interface UndoHistory extends Action {
-    type: UNDO_HISTORY;
-}
 
-export interface RedoHistory extends Action {
-    type: REDO_HISTORY;
-}
+export const undo = createAction(UNDO_HISTORY);
 
-export function undo(): UndoHistory {
-    return {
-        type: UNDO_HISTORY
-    }
-}
-
-export function redo(): RedoHistory {
-    return {
-        type: REDO_HISTORY
-    }
-}
-
-export type HistoryAction = UndoHistory | RedoHistory;
-
-export type WithHistoryAction<A> = A | HistoryAction
+export const redo = createAction(REDO_HISTORY);
 
 export function initHistory<I>(state: I): HistoryState<I> {
     return {
@@ -45,7 +25,7 @@ export function initHistory<I>(state: I): HistoryState<I> {
 
 export function historyReducer<I>(reducer: (state: I | undefined, action: Action | {}) => I) {
     const initState = initHistory(reducer(undefined, {}));
-    return function (state: HistoryState<I>, action: HistoryAction | Action) {
+    return function (state: HistoryState<I>, action: Action) {
         if (state === undefined) {
             return initState;
         }
