@@ -10,6 +10,13 @@ import App from './components/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faTrash, faCheck, faUndo } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faTrash)
+library.add(faUndo)
+library.add(faCheck)
+
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action);
   let result = next(action);
