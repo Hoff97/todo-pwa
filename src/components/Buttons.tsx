@@ -3,10 +3,11 @@ import * as Autocomplete from 'react-autocomplete';
 import { HTMLProps, CSSProperties } from 'react';
 import { longestPreSuffix } from 'src/util/string';
 import { dateDescrToDate } from 'src/util/todo';
+import { CategoryInfo } from 'src/util/category';
 
 export interface Props {
     value: string;
-    categories: string[];
+    categories: CategoryInfo[];
     addTodo: (str: string) => void;
     undo: () => void;
     redo: () => void;
@@ -59,18 +60,18 @@ function date(date: string): ACOption {
     }
 }
 
-function category(category: string): ACOption {
+function category(category: string, color: string): ACOption {
     return {
         type: 'category',
-        payload: category,
+        payload: color,
         label: '#' + category
     }
 }
 
-function itemsForValue(value: string, categories: string[]) {
+function itemsForValue(value: string, categories: CategoryInfo[]) {
     var items: ACOption[] = [];
     items = [...items, ...[5, 4, 3, 2, 1].map(prio)]
-    items = [...items, ...categories.map(category)]
+    items = [...items, ...categories.map(cat => category(cat.name, cat.color))]
     items = [...items,
     ...['today', 'tomorrow', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(date)]
     return items.filter(item => longestPreSuffix(value, item.label) > 0);
@@ -88,7 +89,7 @@ function renderItem(item: ACOption, isHighlighted: boolean) {
                 <span className={'prio ' + 'prio' + item.payload}>{item.payload}</span>
             }
             {item.type === 'category' &&
-                <span>{item.payload}</span>
+                <span style={{color: item.payload}}>{item.label}</span>
             }
             {item.type === 'date' &&
                 <span>{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>

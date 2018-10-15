@@ -27,6 +27,9 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 export const ui: Reducer<UIState, Action<any>> = handleActions({
   INPUT_CHANGED: (ui: UIState, action: A<string>) => { 
     return { ...ui, inputValue: action.payload };
+  },
+  ADD_TODO: (ui: UIState, action: A<string>) => { 
+    return { ...ui, inputValue: '' };
   }
 }, { inputValue: '' });
 

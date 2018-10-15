@@ -9,10 +9,11 @@ export interface Props {
   id: string;
   priority?: number;
   category?: string;
-  date?: Date
+  date?: Date;
+  categoryColor?: string;
 }
 
-function Todo({ name, done, toggle, remove, priority, category, date }: Props) {
+function Todo({ name, done, toggle, remove, priority, category, date, categoryColor }: Props) {
   return (
     <tr>
       <td>
@@ -22,8 +23,10 @@ function Todo({ name, done, toggle, remove, priority, category, date }: Props) {
       </td>
       <td className="todo-name">
         {name}
+      </td>
+      <td>
         {category &&
-          <span className="category">#{category}</span>
+          <span className="category" style={{color: categoryColor}}>{category}</span>
         }
       </td>
       {!done &&

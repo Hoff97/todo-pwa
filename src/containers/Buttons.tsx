@@ -5,13 +5,12 @@ import { Dispatch } from 'redux';
 import { Action } from 'redux-actions';
 import { undo, redo } from 'src/reducers/enhancers/history';
 import { Buttons } from 'src/components/Buttons';
+import { catInfoFromTodos } from 'src/util/category';
 
 export function mapStateToProps(state: StoreState) {
     return {
         value: state.ui.inputValue,
-        categories: state.todos.state
-            .map(todo => todo.category ? [todo.category] : [])
-            .reduce((acc, val) => acc.concat(val), [])
+        categories: catInfoFromTodos(state.todos.state)
     }
 }
 
