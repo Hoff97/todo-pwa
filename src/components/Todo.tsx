@@ -19,7 +19,7 @@ function Todo({ name, done, toggle, remove, priority, category, date }: Props) {
         {priority &&
           <span className={'prio ' + 'prio' + priority}>{priority}</span>
         }
-        </td>
+      </td>
       <td className="todo-name">
         {name}
         {category &&
@@ -28,9 +28,9 @@ function Todo({ name, done, toggle, remove, priority, category, date }: Props) {
       </td>
       {!done &&
         <td className="todo-name">
-            {date &&
-              moment(date).format('DD.MM.')
-            }
+          {date &&
+            moment(date).format('DD.MM.')
+          }
         </td>
       }
       <td colSpan={done ? 2 : 1}>

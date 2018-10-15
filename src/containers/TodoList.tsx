@@ -3,12 +3,11 @@ import { StoreState } from '../types/index';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TodoList } from 'src/components/TodoList';
-import { HistoryState } from 'src/reducers/enhancers/history';
 import { Action } from 'redux-actions';
 
-export function mapStateToProps(state: HistoryState<StoreState>) {
+export function mapStateToProps(state: StoreState) {
     return {
-        todos: state.state.sort((a,b) => {
+        todos: state.todos.state.sort((a,b) => {
             if(a.done === b.done) {
                 const pa = a.priority ? a.priority : 3;
                 const pb = b.priority ? b.priority : 3;

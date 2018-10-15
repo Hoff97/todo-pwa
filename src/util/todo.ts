@@ -15,6 +15,21 @@ const pExpr = /!([1-5])/
 const cExpr = /#([A-Za-z]+)/
 const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
 
+export function dateDescrToDate(str: string): moment.Moment {
+    switch(str) {
+        case 'today': return moment();
+        case 'tomorrow': return moment().add(1, 'days');
+        case 'mon': return nextWeekday(1);
+        case 'tue': return nextWeekday(2);
+        case 'wed': return nextWeekday(3);
+        case 'thu': return nextWeekday(4);
+        case 'fri': return nextWeekday(5);
+        case 'sat': return nextWeekday(6);
+        case 'sun': return nextWeekday(0);
+        default: return moment();
+    }
+}
+
 export function parseTodo(str: string): Todo {
     const prioMatch = str.match(pExpr);
     var priority: number | undefined = undefined;

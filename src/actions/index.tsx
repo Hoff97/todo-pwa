@@ -8,3 +8,6 @@ export const toggleTodo = createAction(TODO_TOGGLED, (x: string) => x);
 
 export const TODO_DELETED = 'TODO_DELETED';
 export const deleteTodo = createAction(TODO_DELETED, (x: string) => x);
+
+export const INPUT_CHANGED = 'INPUT_CHANGED';
+export const inputChanged = createAction(INPUT_CHANGED, (x: string) => x)

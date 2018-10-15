@@ -44,3 +44,7 @@ body {
 li.list-group-item.disabled {
   background-color:#CCC;
 }
+
+.autocomplete-item {
+  font-size: 20px;
+}
