@@ -1,3 +1,6 @@
 - Add a backend wich merges todos from different devices (might require changed on field in the todos)
 - Add login via email (no pw if possible)
-- Add possibility to attach metadata (when (@today, @tomorrow...), prio (!1, !2...), category(#sport), reminder (r@5m, r@2h...))
+- Add possibility to attach metadata (reminder (r@5m, r@2h...))
+- Filtering by category, sorting?
+- Notifications
+- Date selection in Autocomplete?
