@@ -84,7 +84,8 @@ function appendACOption(value: string, opt: string) {
 
 function renderItem(item: ACOption, isHighlighted: boolean) {
     return (
-        <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item">
+        <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
+                key={item.label}>
             {item.type === 'prio' &&
                 <span className={'ml-2 prio ' + 'ml-2 prio' + item.payload}>{item.payload}</span>
             }

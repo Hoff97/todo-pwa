@@ -76,6 +76,9 @@ export function parseTodo(str: string): Todo {
         category,
         date
     };
-    console.log(todo);
     return todo;
+}
+
+export function todoStr(todo: Todo) {
+    return `${todo.name} ${todo.category ? '#' + todo.category : ''} ${todo.priority ? '!' + todo.priority : ''} ${todo.date ? '@' + moment(todo.date).format('DD-MM') : ''}`.trim();
 }

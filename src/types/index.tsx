@@ -11,6 +11,8 @@ export interface Todo {
 
 export type UIState = {
     inputValue: string;
+    editingTodo?: string;
+    editValue: string;
 }
 
 export type StoreState = {

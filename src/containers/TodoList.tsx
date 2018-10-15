@@ -1,5 +1,5 @@
 import * as actions from '../actions/';
-import { StoreState } from '../types/index';
+import { StoreState, Todo } from '../types/index';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TodoList } from 'src/components/TodoList';
@@ -21,14 +21,19 @@ export function mapStateToProps(state: StoreState) {
             else {
                 return -1;
             }
-        })
+        }),
+        editingTodo: state.ui.editingTodo,
+        editValue: state.ui.editValue
     }
 }
 
 export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
     return {
         toggleTodo: (id: string) => dispatch(actions.toggleTodo(id)),
-        deleteTodo: (id: string) => dispatch(actions.deleteTodo(id))
+        deleteTodo: (id: string) => dispatch(actions.deleteTodo(id)),
+        editTodo: (todo: Todo) => dispatch(actions.editTodo(todo)),
+        finishEdit: (id: string, str: string) => dispatch(actions.finishEdit(id, str)),
+        editChange: (str: string) => dispatch(actions.editChange(str))
     }
 }
 
