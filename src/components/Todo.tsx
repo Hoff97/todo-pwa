@@ -22,7 +22,7 @@ function Todo({ name, done, toggle, remove, priority, category,
     date, categoryColor, edit, editing, doneEditing, editChange, editValue }: Props) {
   if(!editing) {
     return (
-      <tr className={done ? 'table-info' : ''} onDoubleClick={e => {e.preventDefault;edit();}}>
+      <tr className={done ? 'table-info' : ''} onDoubleClick={e => {e.preventDefault;if(!done){edit();}}}>
         <td>
           {priority &&
             <span className={'prio ' + 'prio' + priority}>{priority}</span>
