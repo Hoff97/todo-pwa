@@ -4,10 +4,6 @@ body {
   font-family: sans-serif;
 }
 
-.prio {
-  font-size: 20px;
-}
-
 .prio5 {
   color: #F00;
   font-weight: bold;
@@ -33,12 +29,57 @@ body {
   font-weight: bold;
 }
 
-.todo-name {
-  font-size: 20px;
+@media only screen and (min-width: 400px) {
+  .todo-name {
+    font-size: 20px;
+  }
+  
+  .category {
+    font-size: 20px;
+  }
+
+  .prio {
+    font-size: 20px;
+  }
 }
 
-.category {
-  font-size: 20px;
+@media only screen and (max-width: 399px) and (min-width: 310px) {
+  .todo-name {
+    font-size: 17px;
+    padding: 5px;
+  }
+  
+  .category {
+    font-size: 17px;
+  }
+
+  .prio {
+    font-size: 17px;
+    margin-right: -10px;
+  }
+
+  .table > tr > td {
+    padding: 8px;
+  }
+}
+
+@media only screen and (max-width: 309px) {
+  .todo-name {
+    font-size: 17px;
+  }
+  
+  .category {
+    font-size: 17px;
+  }
+
+  .prio {
+    font-size: 17px;
+    margin-right: -20px;
+  }
+
+  .table > tr > td {
+    padding: 5px;
+  }
 }
 
 li.list-group-item.disabled {

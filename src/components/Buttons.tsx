@@ -86,13 +86,13 @@ function renderItem(item: ACOption, isHighlighted: boolean) {
     return (
         <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item">
             {item.type === 'prio' &&
-                <span className={'prio ' + 'prio' + item.payload}>{item.payload}</span>
+                <span className={'ml-2 prio ' + 'ml-2 prio' + item.payload}>{item.payload}</span>
             }
             {item.type === 'category' &&
-                <span style={{color: item.payload}}>{item.label}</span>
+                <span style={{color: item.payload}} className="ml-2">{item.label}</span>
             }
             {item.type === 'date' &&
-                <span>{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
+                <span className="ml-2">{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
             }
         </div>
     );
