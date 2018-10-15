@@ -11,13 +11,11 @@ export interface Props {
 export function TodoList({ todos, toggleTodo, deleteTodo }: Props) {
     return (
         <div className="mt-2 mb-2">
-            <ul className="list-group">
+            <table className="table">
                 {todos.map((todo, index) => (
-                    <li key={todo.id} className={todo.done ? 'list-group-item disabled' : 'list-group-item'}>
-                        <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo} />
-                    </li>
+                    <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo} key={todo.id}/>
                 ))}
-            </ul>
+            </table>
             <div>{todos.length === 0 ? 'No todos' : ''}</div>
         </div>
     );
