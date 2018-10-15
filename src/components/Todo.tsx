@@ -15,7 +15,7 @@ export interface Props {
 
 function Todo({ name, done, toggle, remove, priority, category, date, categoryColor }: Props) {
   return (
-    <tr>
+    <tr className={done ? 'table-info' : ''}>
       <td>
         {priority &&
           <span className={'prio ' + 'prio' + priority}>{priority}</span>
