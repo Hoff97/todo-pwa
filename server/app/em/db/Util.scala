@@ -22,6 +22,10 @@ object Util extends Results {
     (a returning a.map(x => x.id) into ((event,i) => event.cpy(Some(i))) += b)
   }
 
+  def insertAndReturnS[T, U <: HasID[T, String]](a: TableQuery[U], b: U#TableElementType) = {
+    (a returning a.map(x => x.id) into ((event,i) => event.cpy(Some(i))) += b)
+  }
+
   implicit class RepUtils[A](rep: Rep[A]) {
     def dir(b: Boolean)(implicit t: TypedType[A]) = if(b) columnToOrdered(rep).asc else columnToOrdered(rep).desc
   }

@@ -37,13 +37,33 @@ class TodoController @Inject() (
   }
   
   def updateTodos = silhouette.SecuredAction.async(parse.json[List[TodoV]]) { implicit request: SecuredRequest[AuthEnv, List[TodoV]] =>
-    //val q = TodoTable.todo.filter(x => x.id === id && x.loginFk === request.identity.id.get)
-    
-    /*db.run(q.update(request.body.copy(id = Some(id), loginId = request.identity.id.get))).map {
-      case 0 => NotFound
-      case _ => Ok
-    }*/
-    // TODO: Implement
-    Future.successful(Ok(Json.toJson(request.request.body)))
+    val ids = request.body.map(_.id)
+    val deleteQuery = TodoTable.todo.filter(x => !x.id.inSet(ids)).delete
+    val getAll = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
+
+    db.run(deleteQuery >> getAll.result).flatMap { case dbTodos =>
+      val dbIds = dbTodos.map(_.id)
+      val (toUpdate, toCreate) = request.body.partition(todo => dbIds.contains(todo.id))
+      val dbById = dbTodos.map(x => (x.id, x)).toMap
+
+      val create = Future.sequence(toCreate.map(todov => db.run(TodoTable.todo.insertOrUpdate(todov.toTodo(request.identity.id.get)))))
+
+      val update = Future.sequence(toUpdate
+        .map(todoV => (todoV, dbById.get(todoV.id).get))
+          .map { case (todoV, todoDb) =>
+            if(todoV.timestamp.before(todoDb.timestamp))
+              Future.successful(todoDb)
+            else {
+              val update = TodoTable.todo.filter(x => x.id === todoV.id)
+                .update(todoV.toTodo(request.identity.id.get))
+              db.run(update)
+            }
+          })
+
+      create.zip(update)
+    }.flatMap { case (t1, t2) =>
+      db.run(TodoTable.todo.filter(x => x.loginFk === request.identity.id.get).result)
+        .map(todos => Ok(Json.toJson(todos.map(_.toTodoV))))
+    }
   }
 }

@@ -7,7 +7,7 @@ import java.sql.Timestamp
 
 
 class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with HasID[Todo, String] {
-  def id = column[String]("id",O.PrimaryKey,O.AutoInc)
+  def id = column[String]("id",O.PrimaryKey)
 
   def name = column[String]("name")
   
