@@ -74,7 +74,8 @@ export function parseTodo(str: string): Todo {
         done: false,
         priority,
         category,
-        date
+        date,
+        timestamp: new Date()
     };
     return todo;
 }

@@ -7,6 +7,7 @@ export interface Todo {
     priority?: number;
     date?: Date;
     category?: string;
+    timestamp: Date;
 }
 
 export type UIState = {

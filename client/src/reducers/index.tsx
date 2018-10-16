@@ -61,7 +61,8 @@ function loadLocal(contents: any): Todo[] {
   todos = todos.map(todo => {
     return {
       ...todo,
-      date: todo.date ? moment(todo.date).toDate() : undefined
+      date: todo.date ? moment(todo.date).toDate() : undefined,
+      timestamp: todo.timestamp ? todo.timestamp : new Date()
     }
   })
   return todos;
