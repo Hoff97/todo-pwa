@@ -28,7 +28,7 @@ class TodoController @Inject() (
   extends AbstractController(cc)
   with HasDatabaseConfigProvider[JdbcProfile] {
 
-  def getTodos() = silhouette.SecuredAction.async { implicit request =>
+  def getTodos = silhouette.SecuredAction.async { implicit request =>
     val q = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
 
     db.run(q.result).map {

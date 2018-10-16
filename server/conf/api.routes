@@ -3,83 +3,30 @@
 ###
 #  summary: Query all todos
 #  description: >
-#      Returns a list of all tables
-#  parameters:
-#  - in: header
-#    name: x-auth-token
-#    schema:
-#      type: string
-#  - in: header
-#    name: X-Page
-#    schema:
-#      type: integer
-#    default: 0
-#  - in: header
-#    name: X-Page-Size
-#    schema:
-#      type: integer
-#    default: 20
+#      Returns a list of all todos
 #  responses:
 #    200:
 #      description: success
 #      schema:
 #        type: array
 #        items:
-#          $ref: '#/definitions/em.model.Todo'
+#          $ref: '#/definitions/em.model.TodoV'
 ###
-GET    /todo                     controllers.TodoController.getTodos(search: Option[String], done: Option[Boolean])
-
-###
-#  summary: Create a todo
-#  description: >
-#      Returns the created todo
-#  parameters:
-#  - in: header
-#    name: x-auth-token
-#    schema:
-#      type: string
-#  - name: body
-#    schema:
-#      $ref: '#/definitions/em.model.Todo'
-#    description: Due Date should be in the format 'yyyy-MM-dd HH:mm:ss' (example "2017-05-23 23:05:22")
-#  responses:
-#    200:
-#      description: success
-#      schema:
-#        $ref: '#/definitions/em.model.Todo'
-###
-POST    /todo                     controllers.TodoController.createTodo
+GET    /todo                     controllers.TodoController.getTodos
 
 ###
 #  summary: Update a todo
 #  description: >
 #      Returns the created todo
 #  parameters:
-#  - in: header
-#    name: x-auth-token
-#    schema:
-#      type: string
 #  - name: body
 #    schema:
-#      $ref: '#/definitions/em.model.Todo'
-#    description: Due Date should be in the format 'yyyy-MM-dd HH:mm:ss' (example "2017-05-23 23:05:22")
+#      type: array
+#      items:
+#        $ref: '#/definitions/em.model.TodoV'
+#    description: Date and Timestamp should be in the format 'yyyy-MM-dd HH:mm:ss' (example "2017-05-23 23:05:22")
 #  responses:
 #    200:
 #      description: success
 ###
-PUT    /todo/:id                     controllers.TodoController.updateTodo(id: Int)
-
-###
-#  summary: Delete a todo
-#  description: >
-#      Returns the created todo
-#  parameters:
-#  - in: header
-#    name: x-auth-token
-#    schema:
-#      type: string
-#  responses:
-#    200:
-#      description: success
-###
-DELETE    /todo/:id                     controllers.TodoController.deleteTodo(id: Int)
+PUT    /todo                     controllers.TodoController.updateTodos
