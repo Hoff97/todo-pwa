@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
-import { putTodos, ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED } from 'src/actions';
+import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED } from 'src/actions';
 import { axios } from 'src/rest/config';
 import { withNewState } from './enhancers/asyncDispatchOn';
 
@@ -25,7 +25,7 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
     return todo;
   }),
 
-  TODO_DELETED: (todos: Todo[], action: A<string>) => todos.filter(todo => todo.id !== action.payload),
+  DELETE_TODO_FULFILLED: (todos: Todo[], action: A<any>) => todos.filter(todo => todo.id !== action.payload.data),
 
   FINISH_EDIT: (todos: Todo[], action: A<string>) => todos.map(todo => {
     if (todo.id === action.payload[0]) {
@@ -50,7 +50,7 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 },[]);
 
 const todosDispatched = withNewState<AsyncDispatchAction<any>, Todo[]>((_, action, newState) => {
-  if ([ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT].filter(x => x === action.type).length > 0) {
+  if ([ADD_TODO, TODO_TOGGLED, FINISH_EDIT].filter(x => x === action.type).length > 0) {
     action.asyncDispatch(putTodos(newState));
   } else if (action.type === LOGIN_FULFILLED || action.type === SIGN_UP_FULFILLED) {
     action.asyncDispatch(putTodos(newState, action.payload));

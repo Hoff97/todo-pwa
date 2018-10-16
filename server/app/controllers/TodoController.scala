@@ -65,4 +65,9 @@ class TodoController @Inject() (
         .map(todos => Ok(Json.toJson(todos.map(_.toTodoV))))
     }
   }
+
+  def deleteTodo(id: String) = silhouette.SecuredAction.async(parse.empty) { implicit request: SecuredRequest[AuthEnv, Unit] =>
+    db.run(TodoTable.todo.filter(x => x.loginFk === request.identity.id.get && x.id === id).delete)
+      .map(x => Ok(id))
+  }
 }

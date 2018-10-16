@@ -18,3 +18,7 @@ export function todoPut(todos: Todo[], token?: string) {
         return response.data;
     })
 }
+
+export function deleteTodoRequest(id: string) {
+    return axios.delete(url + '/' + id);
+}
