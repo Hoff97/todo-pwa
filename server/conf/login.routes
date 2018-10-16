@@ -1,0 +1,55 @@
+###
+#  summary: Create a new account
+#  description: >
+#      A new account gets created. The access token to this account is returned.
+#      All secured endpoints require the access token in the header parameter called 'x-auth-token'.
+#      In production an confirmation mail gets send to the provided email. For development accounts are
+#      automatically unlocked for convenience.
+#  parameters:
+#    - name: body
+#      schema:
+#        $ref: '#/definitions/em.model.forms.SignUpForm.Data'
+#      description: The user data. The password must not be hashed.
+#  responses:
+#    200:
+#      description: Success. A login/confirmation is required after this.
+#    400:
+#      description: User already exists
+###
+POST   /signUp                   controllers.LoginController.signUp
+
+###
+#  summary: Sign out of account
+#  description: >
+#      Since we are using JWT wich are stateless this action has no result.
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+###
+GET    /signOut                  controllers.LoginController.signOut
+
+###
+#  summary: Sign into an existing account
+#  description: >
+#      The access token to this account is returned.
+#      All secured endpoints require the access token in the header parameter called 'x-auth-token'.
+#  parameters:
+#    - name: body
+#      schema:
+#        $ref: '#/definitions/em.model.forms.SignInForm'
+#      description: >
+#        The user data. If rememberMe is true, the authentication token will be valid for several days.
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        $ref: '#/definitions/em.model.AccessToken'
+#    401:
+#      description: Access forbidden
+###
+POST   /signIn                   controllers.LoginController.login
