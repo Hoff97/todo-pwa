@@ -1,6 +1,7 @@
 import { createAction } from 'redux-actions';
 import { Todo } from 'src/types';
 import { loginRequest, signUpRequest } from 'src/rest/auth';
+import { todoPut } from 'src/rest/todo';
 
 export const ADD_TODO = 'ADD_TODO';
 export const addTodo = createAction(ADD_TODO, (x: string) => x);
@@ -41,6 +42,14 @@ export function signUp(mail: string, pw: string) {
     return {
         type: SIGN_UP,
         payload: signUpRequest(mail, pw)
+    }
+}
+
+export const PUT_TODOS = 'PUT_TODOS';
+export function putTodos(todos: Todo[]) {
+    return {
+        type: PUT_TODOS,
+        payload: todoPut(todos)
     }
 }
 

@@ -5,11 +5,18 @@ import { parseTodo, todoStr } from 'src/util/todo';
 import * as moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
+import { AsyncDispatchAction } from './middleware/async-dispatch';
+import { putTodos } from 'src/actions';
+import { axios } from 'src/rest/config';
 
 type A<T> = { type: string, payload: T }
 
 export const todos: Reducer<Todo[], Action<any>> = handleActions({
-  ADD_TODO: (todos: Todo[], action: A<string>) => [...todos, parseTodo(action.payload)],
+  ADD_TODO: (todos: Todo[], action: AsyncDispatchAction<string>) => {
+    const newState = [...todos, parseTodo(action.payload as string)]
+    action.asyncDispatch(putTodos(newState));
+    return newState;
+  },
 
   TODO_TOGGLED: (todos: Todo[], action: A<string>) => todos.map(todo => {
     if (todo.id === action.payload) {
@@ -35,6 +42,14 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 
 const accessTokenLS = 'at';
 
+function getAccessToken() {
+  const token = localStorage.getItem(accessTokenLS) as string;
+  axios.defaults.headers = {
+    'x-auth-token': token
+  }
+  return token;
+}
+
 export const ui: Reducer<UIState, Action<any>> = handleActions({
   INPUT_CHANGED: (ui: UIState, action: A<any>) => { 
     return { ...ui, inputValue: action.payload };
@@ -56,13 +71,16 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   },
   LOGIN_FULFILLED: (ui: UIState, action: A<any>) => {
     localStorage.setItem(accessTokenLS, action.payload);
+    axios.defaults.headers = {
+      'x-auth-token': action.payload
+    }
     return { ...ui, accessToken: action.payload };
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
     localStorage.setItem(accessTokenLS, action.payload);
     return { ...ui, accessToken: action.payload };
   }
-}, { inputValue: '', editValue: '', loggingIn: false, accessToken: localStorage.getItem(accessTokenLS) as string });
+}, { inputValue: '', editValue: '', loggingIn: false, accessToken: getAccessToken() });
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];
