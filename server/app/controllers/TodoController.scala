@@ -38,10 +38,9 @@ class TodoController @Inject() (
   
   def updateTodos = silhouette.SecuredAction.async(parse.json[List[TodoV]]) { implicit request: SecuredRequest[AuthEnv, List[TodoV]] =>
     val ids = request.body.map(_.id)
-    val deleteQuery = TodoTable.todo.filter(x => !x.id.inSet(ids)).delete
     val getAll = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
 
-    db.run(deleteQuery >> getAll.result).flatMap { case dbTodos =>
+    db.run(getAll.result).flatMap { case dbTodos =>
       val dbIds = dbTodos.map(_.id)
       val (toUpdate, toCreate) = request.body.partition(todo => dbIds.contains(todo.id))
       val dbById = dbTodos.map(x => (x.id, x)).toMap

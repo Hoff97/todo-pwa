@@ -6,17 +6,14 @@ import * as moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
-import { putTodos } from 'src/actions';
+import { putTodos, ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED } from 'src/actions';
 import { axios } from 'src/rest/config';
+import { withNewState } from './enhancers/asyncDispatchOn';
 
 type A<T> = { type: string, payload: T }
 
 export const todos: Reducer<Todo[], Action<any>> = handleActions({
-  ADD_TODO: (todos: Todo[], action: AsyncDispatchAction<string>) => {
-    const newState = [...todos, parseTodo(action.payload as string)]
-    action.asyncDispatch(putTodos(newState));
-    return newState;
-  },
+  ADD_TODO: (todos: Todo[], action: AsyncDispatchAction<string>) => [...todos, parseTodo(action.payload as string)],
 
   TODO_TOGGLED: (todos: Todo[], action: A<string>) => todos.map(todo => {
     if (todo.id === action.payload) {
@@ -37,8 +34,26 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
       return newTodo;
     }
     return todo;
+  }),
+
+  LOGIN_FULFILLED: (todos: Todo[], action: A<string>) => todos,
+
+  SIGN_UP_FULFILLED: (todos: Todo[], action: A<string>) => todos,
+
+  PUT_TODOS_FULFILLED: (todos: Todo[], action: A<any>) => action.payload.map((todo: any) => {
+    return {
+      ...todo,
+      timestamp: moment(todo.timestamp).toDate(),
+      date: todo.date ? moment(todo.date).toDate() : undefined
+    }
   })
 },[]);
+
+const todosDispatched = withNewState<AsyncDispatchAction<any>, Todo[]>((_, action, newState) => {
+  if ([ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED].filter(x => x === action.type).length > 0) {
+    action.asyncDispatch(putTodos(newState));
+  }
+})(todos)
 
 const accessTokenLS = 'at';
 
@@ -74,11 +89,11 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     axios.defaults.headers = {
       'x-auth-token': action.payload
     }
-    return { ...ui, accessToken: action.payload };
+    return { ...ui, accessToken: action.payload, loggingIn: false };
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
     localStorage.setItem(accessTokenLS, action.payload);
-    return { ...ui, accessToken: action.payload };
+    return { ...ui, accessToken: action.payload, loggingIn: false };
   }
 }, { inputValue: '', editValue: '', loggingIn: false, accessToken: getAccessToken() });
 
@@ -100,6 +115,6 @@ function loadLocal(contents: any): Todo[] {
 }
 
 export const rootReducer = combineReducers({
-  todos: historyReducer(saveReducer('data', todos, loadLocal)),
+  todos: historyReducer(saveReducer('data', todosDispatched, loadLocal)),
   ui: ui
 });

@@ -1,7 +1,8 @@
 package em.db
 
-import scala.concurrent.ExecutionContext
+import java.sql.Timestamp
 
+import scala.concurrent.ExecutionContext
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
@@ -17,6 +18,10 @@ object Util extends Results {
 
   def upper(a: Rep[String]) =
     SimpleFunction[String]("upper").apply(Seq(a))
+
+  def currentTimestamp = SimpleLiteral[java.sql.Timestamp]("current_timestamp")
+
+  def diff(a: Rep[Timestamp], b: Rep[Timestamp]) = SimpleBinaryOperator[Timestamp]("-")
 
   def insertAndReturn[T, U <: HasID[T, Int]](a: TableQuery[U], b: U#TableElementType) = {
     (a returning a.map(x => x.id) into ((event,i) => event.cpy(Some(i))) += b)
