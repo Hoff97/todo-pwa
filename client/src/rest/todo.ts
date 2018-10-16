@@ -6,7 +6,7 @@ const url = '/api/v1/todo'
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
-export function todoPut(todos: Todo[]) {
+export function todoPut(todos: Todo[], token?: string) {
     const mappedTodos = todos.map(todo => {
         return {
             ...todo,
@@ -14,7 +14,7 @@ export function todoPut(todos: Todo[]) {
             date: todo.date ? moment(todo.timestamp).format(dateFormat) : undefined
         }
     });
-    return axios.put(url, mappedTodos).then(response => {
+    return axios.put(url, mappedTodos, token ? { headers: { 'x-auth-token': token }} : {}).then(response => {
         return response.data;
     })
 }

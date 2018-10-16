@@ -50,8 +50,10 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 },[]);
 
 const todosDispatched = withNewState<AsyncDispatchAction<any>, Todo[]>((_, action, newState) => {
-  if ([ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED].filter(x => x === action.type).length > 0) {
+  if ([ADD_TODO, TODO_TOGGLED, TODO_DELETED, FINISH_EDIT].filter(x => x === action.type).length > 0) {
     action.asyncDispatch(putTodos(newState));
+  } else if (action.type === LOGIN_FULFILLED || action.type === SIGN_UP_FULFILLED) {
+    action.asyncDispatch(putTodos(newState, action.payload));
   }
 })(todos)
 

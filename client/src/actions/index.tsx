@@ -46,10 +46,10 @@ export function signUp(mail: string, pw: string) {
 }
 
 export const PUT_TODOS = 'PUT_TODOS';
-export function putTodos(todos: Todo[]) {
+export function putTodos(todos: Todo[], token?: string) {
     return {
         type: PUT_TODOS,
-        payload: todoPut(todos)
+        payload:todoPut(todos, token)
     }
 }
 
