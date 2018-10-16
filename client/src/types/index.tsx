@@ -14,6 +14,8 @@ export type UIState = {
     inputValue: string;
     editingTodo?: string;
     editValue: string;
+    loggingIn: boolean;
+    accessToken?: string;
 }
 
 export type StoreState = {

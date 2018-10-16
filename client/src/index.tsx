@@ -11,11 +11,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTrash, faCheck, faUndo } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faTrash)
 library.add(faUndo)
 library.add(faCheck)
+library.add(faPlus)
+library.add(faUndo)
+library.add(faRedo)
+library.add(faUser)
+library.add(faSignInAlt)
+library.add(faUserPlus)
 
 const logger: Middleware = store => next => action => {
   console.log('dispatching', action);

@@ -21,3 +21,9 @@ export const finishEdit = createAction(FINISH_EDIT, (id: string, str: string) =>
 
 export const EDIT_CHANGE = 'EDIT_CHANGE';
 export const editChange = createAction(EDIT_CHANGE, (str: string) => str)
+
+export const LOGIN_SHOW = 'LOGIN_SHOW';
+export const loginShow = createAction(LOGIN_SHOW, () => {})
+
+export const LOGIN = 'LOGIN';
+export const login = createAction(LOGIN_SHOW, (mail: String, pw: String) => [mail, pw])

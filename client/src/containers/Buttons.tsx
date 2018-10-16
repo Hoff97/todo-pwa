@@ -10,7 +10,8 @@ import { catInfoFromTodos } from 'src/util/category';
 export function mapStateToProps(state: StoreState) {
     return {
         value: state.ui.inputValue,
-        categories: catInfoFromTodos(state.todos.state)
+        categories: catInfoFromTodos(state.todos.state),
+        loggedIn: state.ui.accessToken !== undefined
     }
 }
 
@@ -19,7 +20,8 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         addTodo: (str: string) => dispatch(actions.addTodo(str)),
         undo: () => dispatch(undo()),
         redo: () => dispatch(redo()),
-        inputChanged: (str: string) => dispatch(actions.inputChanged(str))
+        inputChanged: (str: string) => dispatch(actions.inputChanged(str)),
+        login: () => dispatch(actions.loginShow())
     }
 }
 

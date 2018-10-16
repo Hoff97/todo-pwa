@@ -4,6 +4,7 @@ import { HTMLProps, CSSProperties } from 'react';
 import { longestPreSuffix } from 'src/util/string';
 import { dateDescrToDate } from 'src/util/todo';
 import { CategoryInfo } from 'src/util/category';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export interface Props {
     value: string;
@@ -11,17 +12,24 @@ export interface Props {
     addTodo: (str: string) => void;
     undo: () => void;
     redo: () => void;
+    login: () => void;
+    loggedIn: boolean;
     inputChanged: (str: string) => void;
 }
 
-function renderInput(props: HTMLProps<HTMLInputElement>) {
+function renderInput(props: HTMLProps<HTMLInputElement>, undo: () => void, redo: () => void, loggedIn: boolean, login: () => void) {
     return (
-        <div className="input-group mb-3">
+        <div className="input-group">
             <input {...props} type="text" className="form-control" placeholder="Todo"
                 aria-label="Recipient's username" aria-describedby="button-addon2" />
             <div className="input-group-append">
                 <button className="btn btn-outline-secondary" type="submit"
-                    id="button-addon2">Add Todo</button>
+                    id="button-addon2"><FontAwesomeIcon icon="plus" /></button>
+                <button onClick={e => undo()} className="btn btn-primary"><FontAwesomeIcon icon="undo" /></button>
+                <button onClick={e => redo()} className="btn btn-primary"><FontAwesomeIcon icon="redo" /></button>
+                {!loggedIn &&
+                    <button onClick={e => login()} className="btn btn-primary"><FontAwesomeIcon icon="user" /></button>
+                }
             </div>
         </div>
     )
@@ -85,12 +93,12 @@ function appendACOption(value: string, opt: string) {
 function renderItem(item: ACOption, isHighlighted: boolean) {
     return (
         <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
-                key={item.label}>
+            key={item.label}>
             {item.type === 'prio' &&
                 <span className={'ml-2 prio ' + 'ml-2 prio' + item.payload}>{item.payload}</span>
             }
             {item.type === 'category' &&
-                <span style={{color: item.payload}} className="ml-2">{item.label}</span>
+                <span style={{ color: item.payload }} className="ml-2">{item.label}</span>
             }
             {item.type === 'date' &&
                 <span className="ml-2">{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
@@ -99,10 +107,10 @@ function renderItem(item: ACOption, isHighlighted: boolean) {
     );
 }
 
-export function Buttons({ value, addTodo, undo, redo, inputChanged, categories }: Props) {
+export function Buttons({ value, addTodo, undo, redo, inputChanged, categories, loggedIn, login }: Props) {
     const acItems = itemsForValue(value, categories)
     return (
-        <div>
+        <div className="mb-2">
             <form onSubmit={e => { e.preventDefault(); addTodo(value) }}>
                 <Autocomplete
                     getItemValue={(item) => item.label}
@@ -110,15 +118,13 @@ export function Buttons({ value, addTodo, undo, redo, inputChanged, categories }
                     open={acItems.length > 0}
                     renderItem={renderItem}
                     wrapperStyle={{ width: '100%' }}
-                    renderInput={props => renderInput(props)}
+                    renderInput={props => renderInput(props, undo, redo, loggedIn, login)}
                     value={value}
                     onChange={(e) => inputChanged(e.target.value)}
                     onSelect={(val) => inputChanged(appendACOption(value, val))}
                     menuStyle={menuStyle}
                 />
             </form>
-            <button onClick={e => undo()} className="btn btn-primary mr-2">Undo</button>
-            <button onClick={e => redo()} className="btn btn-primary">Redo</button>
         </div>
     );
 }

@@ -89,3 +89,7 @@ li.list-group-item.disabled {
 .autocomplete-item {
   font-size: 20px;
 }
+
+.inline {
+  display: inline;
+}

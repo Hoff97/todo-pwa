@@ -48,8 +48,11 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   },
   EDIT_CHANGE: (ui: UIState, action: A<any>) => { 
     return { ...ui, editValue: action.payload };
+  },
+  LOGIN_SHOW: (ui: UIState, action: A<any>) => { 
+    return { ...ui, loggingIn: true };
   }
-}, { inputValue: '', editValue: '' });
+}, { inputValue: '', editValue: '', loggingIn: false });
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];
