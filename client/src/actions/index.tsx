@@ -1,5 +1,6 @@
 import { createAction } from 'redux-actions';
 import { Todo } from 'src/types';
+import { loginRequest, signUpRequest } from 'src/rest/auth';
 
 export const ADD_TODO = 'ADD_TODO';
 export const addTodo = createAction(ADD_TODO, (x: string) => x);
@@ -26,4 +27,22 @@ export const LOGIN_SHOW = 'LOGIN_SHOW';
 export const loginShow = createAction(LOGIN_SHOW, () => {})
 
 export const LOGIN = 'LOGIN';
-export const login = createAction(LOGIN_SHOW, (mail: String, pw: String) => [mail, pw])
+export const LOGIN_FULFILLED = 'LOGIN_FULFILLED';
+export function login(mail: string, pw: string) {
+    return {
+        type: LOGIN,
+        payload: loginRequest(mail, pw)
+    }
+}
+
+export const SIGN_UP = 'SIGN_UP';
+export const SIGN_UP_FULFILLED = 'SIGN_UP_FULFILLED';
+export function signUp(mail: string, pw: string) {
+    return {
+        type: SIGN_UP,
+        payload: signUpRequest(mail, pw)
+    }
+}
+
+export const RECEIVE_TOKEN = 'RECEIVE_TOKEN';
+export const receiveToken = createAction(RECEIVE_TOKEN, (token: string) => token)

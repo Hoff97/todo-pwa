@@ -33,6 +33,8 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
   })
 },[]);
 
+const accessTokenLS = 'at';
+
 export const ui: Reducer<UIState, Action<any>> = handleActions({
   INPUT_CHANGED: (ui: UIState, action: A<any>) => { 
     return { ...ui, inputValue: action.payload };
@@ -51,8 +53,16 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   },
   LOGIN_SHOW: (ui: UIState, action: A<any>) => { 
     return { ...ui, loggingIn: true };
+  },
+  LOGIN_FULFILLED: (ui: UIState, action: A<any>) => {
+    localStorage.setItem(accessTokenLS, action.payload);
+    return { ...ui, accessToken: action.payload };
+  },
+  SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
+    localStorage.setItem(accessTokenLS, action.payload);
+    return { ...ui, accessToken: action.payload };
   }
-}, { inputValue: '', editValue: '', loggingIn: false });
+}, { inputValue: '', editValue: '', loggingIn: false, accessToken: localStorage.getItem(accessTokenLS) as string });
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];

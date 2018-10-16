@@ -25,10 +25,10 @@ function renderInput(props: HTMLProps<HTMLInputElement>, undo: () => void, redo:
             <div className="input-group-append">
                 <button className="btn btn-outline-secondary" type="submit"
                     id="button-addon2"><FontAwesomeIcon icon="plus" /></button>
-                <button onClick={e => undo()} className="btn btn-primary"><FontAwesomeIcon icon="undo" /></button>
-                <button onClick={e => redo()} className="btn btn-primary"><FontAwesomeIcon icon="redo" /></button>
+                <button onClick={e => undo()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="undo" /></button>
+                <button onClick={e => redo()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="redo" /></button>
                 {!loggedIn &&
-                    <button onClick={e => login()} className="btn btn-primary"><FontAwesomeIcon icon="user" /></button>
+                    <button onClick={e => login()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="user" /></button>
                 }
             </div>
         </div>

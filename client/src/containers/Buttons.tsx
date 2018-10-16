@@ -11,7 +11,7 @@ export function mapStateToProps(state: StoreState) {
     return {
         value: state.ui.inputValue,
         categories: catInfoFromTodos(state.todos.state),
-        loggedIn: state.ui.accessToken !== undefined
+        loggedIn: state.ui.accessToken !== undefined && state.ui.accessToken !== null
     }
 }
 

@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import App from './components/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
+import promiseMiddleware from 'redux-promise-middleware'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons'
@@ -30,7 +31,7 @@ const logger: Middleware = store => next => action => {
   return result
 }
 
-const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger));
+const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware()));
 
 ReactDOM.render(
   <Provider store={store}>
