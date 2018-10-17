@@ -36,3 +36,7 @@ ReactDOM.render(
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
+
+Notification.requestPermission().then(function(result) {
+  console.log(result);
+});

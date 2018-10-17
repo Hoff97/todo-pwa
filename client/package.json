@@ -2,7 +2,6 @@
   "name": "react-testapp",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://hoff97.github.io/todo-pwa",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.6",
     "@fortawesome/free-solid-svg-icons": "^5.4.1",

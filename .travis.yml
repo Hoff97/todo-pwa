@@ -1,0 +1,24 @@
+language: scala
+jdk: oraclejdk8
+scala:
+- 2.12.2
+node_js: '6'
+addons:
+  postgresql: "9.5"
+services:
+- postgresql
+before_install:
+- sudo apt-get -qq update
+- sudo apt-get install -y sshpass
+before_script:
+- psql -c 'create database "ZeitScrape";' -U postgres
+script: "./build.sh"
+sudo: false
+cache:
+  directories:
+  - "$HOME/.ivy2/cache"
+  - "$HOME/.sbt"
+  - "./webapp/node_modules/"
+before_cache:
+- find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+- find $HOME/.sbt        -name "*.lock"               -print -delete
