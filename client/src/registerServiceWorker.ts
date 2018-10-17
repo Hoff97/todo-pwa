@@ -45,7 +45,7 @@ export default function register() {
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
-        navigator.serviceWorker.ready.then(() => {
+        navigator.serviceWorker.ready.then(registration => {
           console.log(
             'This web app is being served cache-first by a service ' +
             'worker. To learn more, visit https://goo.gl/SC7cgQ'
@@ -90,8 +90,6 @@ function registerValidSW(swUrl: string) {
           };
         }
       };
-
-      configurePush(registration);
     })
     .catch(error => {
       console.error('Error during service worker registration:', error);
@@ -122,14 +120,14 @@ export function registerPush() {
   });
 }
 
-function configurePush(registration: ServiceWorkerRegistration) {
+/*function configurePush(registration: ServiceWorkerContainer) {
   console.log('Adding push event listener');
   registration.addEventListener('push', function (event: any) {
     console.log('Got pushed');
-    const payload = event.data ? event.data.text() : 'no payload';
-    event.waitUntil(registration.showNotification('Yay!', { body: payload }));
+    //const payload = event.data ? event.data.text() : 'no payload';
+    //event.waitUntil(registration.showNotification('Yay!', { body: payload }));
   });
-}
+}*/
 
 function checkValidServiceWorker(swUrl: string) {
   // Check if the service worker can be found. If it can't reload the page.
