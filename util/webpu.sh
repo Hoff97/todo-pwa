@@ -1,0 +1,1 @@
+curl -i "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABbx51HnB4tXz7aX5EAjl1hQjPTT6rhGJRlTroUdmnt7LuGcXZDr6gsNL_DKFKadBOGUNP524ui8MzFF-43p1OxG528QldX8Z0C7iOnOdFekc51-0U3pKAoaudegZNRvQsjfhxOqn-IkYzwGdurFn8IlERGHaHtf6ywl7DbAT-6rR9aTnU" --request POST --header "TTL: 60" --header "Content-Length: 0" --header "Authorization: key=8_NzPepHQ_VnepO2vsWfvA"
