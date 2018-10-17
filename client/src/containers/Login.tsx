@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Action, Dispatch } from 'redux';
-import { login } from 'src/actions';
+import { login, signUp } from 'src/actions';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { StoreState } from 'src/types';
@@ -29,7 +29,10 @@ function LoginF({ dispatch, loggingIn }: { dispatch: Dispatch<Action<any>>; logg
                             <FontAwesomeIcon icon="sign-in-alt" />
                         </button>
                         <button className="btn btn-outline-secondary"
-                            id="button-addon2"><FontAwesomeIcon icon="user-plus" /></button>
+                            id="button-addon2"
+                            onClick={e => dispatch(signUp(mail.value, pw.value))}>
+                            <FontAwesomeIcon icon="user-plus"/>
+                        </button>
                     </div>
                 </div>
             </div>

@@ -95,6 +95,9 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
     localStorage.setItem(accessTokenLS, action.payload);
+    axios.defaults.headers = {
+      'x-auth-token': action.payload
+    }
     return { ...ui, accessToken: action.payload, loggingIn: false };
   }
 }, { inputValue: '', editValue: '', loggingIn: false, accessToken: getAccessToken() });
