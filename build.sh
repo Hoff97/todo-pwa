@@ -1,5 +1,7 @@
 cd client
 npm install
+REACT_APP_VERSION=`git rev-parse HEAD`
+REACT_APP_TIME=`date`
 npm run build
 mkdir ../server/public/
 \cp -r ./build/* ../server/public/
