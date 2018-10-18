@@ -15,8 +15,6 @@ webPush.setVapidDetails(
     process.env.VAPID_PRIVATE_KEY
 );
 
-const payloads = {};
-
 var app = express();
 app.use(bodyParser.json());
 
