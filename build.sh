@@ -9,10 +9,11 @@ cd ../server/
 sbt dist
 if [[ $TRAVIS_BRANCH = "master"  &&  $TRAVIS_PULL_REQUEST = false ]]
 then
-    zip -r push-service.zip ./push-service/
+    export SSHPASS=$SERVER_PW
+
+    zip -r push-service.zip . -i ./push-service/
     sshpass -e scp -o stricthostkeychecking=no ./push-service.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
 
-    export SSHPASS=$SERVER_PW
     sshpass -e scp -o stricthostkeychecking=no ./target/universal/em-server-1.0-SNAPSHOT.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
     sshpass -e ssh -o stricthostkeychecking=no $DEPLOY_USER@$DEPLOY_HOST $DEPLOY_PATH/server.sh
 fi
