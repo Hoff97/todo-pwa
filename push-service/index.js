@@ -1,5 +1,6 @@
 const webPush = require('web-push');
 var express = require('express');
+var bodyParser = require('body-parser');
 
 if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
     console.log("You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY " +
@@ -17,9 +18,11 @@ webPush.setVapidDetails(
 const payloads = {};
 
 var app = express();
-route = '/test/';
+app.use(bodyParser.json());
 
-app.post(route + 'sendNotification', function (req, res) {
+app.post('/sendNotification', function (req, res) {
+    console.log('Got request to send notification');
+
     const subscription = req.body.subscription;
     const payload = req.body.payload;
     const options = {
