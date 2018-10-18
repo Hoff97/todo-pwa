@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.1.1",
   ehcache,
   "com.iheart" %% "ficus" % "1.4.3",
-  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0"
+  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
+  ws
 )
 
 import com.typesafe.sbt.packager.MappingsHelper._

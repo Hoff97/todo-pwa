@@ -7,8 +7,8 @@ import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED } from 'src/actions';
-import { axios } from 'src/rest/config';
 import { withNewState } from './enhancers/asyncDispatchOn';
+import { setAccessToken, setupAccessToken } from 'src/util/auth';
 
 type A<T> = { type: string, payload: T }
 
@@ -57,16 +57,6 @@ const todosDispatched = withNewState<AsyncDispatchAction<any>, Todo[]>((_, actio
   }
 })(todos)
 
-const accessTokenLS = 'at';
-
-function getAccessToken() {
-  const token = localStorage.getItem(accessTokenLS) as string;
-  axios.defaults.headers = {
-    'x-auth-token': token
-  }
-  return token;
-}
-
 export const ui: Reducer<UIState, Action<any>> = handleActions({
   INPUT_CHANGED: (ui: UIState, action: A<any>) => { 
     return { ...ui, inputValue: action.payload };
@@ -87,20 +77,14 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     return { ...ui, loggingIn: true };
   },
   LOGIN_FULFILLED: (ui: UIState, action: A<any>) => {
-    localStorage.setItem(accessTokenLS, action.payload);
-    axios.defaults.headers = {
-      'x-auth-token': action.payload
-    }
+    setAccessToken(action.payload);
     return { ...ui, accessToken: action.payload, loggingIn: false };
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
-    localStorage.setItem(accessTokenLS, action.payload);
-    axios.defaults.headers = {
-      'x-auth-token': action.payload
-    }
+    setAccessToken(action.payload);
     return { ...ui, accessToken: action.payload, loggingIn: false };
   }
-}, { inputValue: '', editValue: '', loggingIn: false, accessToken: getAccessToken() });
+}, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken() });
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];

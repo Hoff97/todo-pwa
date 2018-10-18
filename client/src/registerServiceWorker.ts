@@ -1,3 +1,6 @@
+import { getVapidKey, registerSubscription } from './rest/push';
+import { urlBase64ToUint8Array } from './util/string';
+
 // tslint:disable:no-console
 // In production, we register a service worker to serve assets from local cache.
 
@@ -11,12 +14,12 @@
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
-    // [::1] is the IPv6 localhost address.
-    window.location.hostname === '[::1]' ||
-    // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
+  // [::1] is the IPv6 localhost address.
+  window.location.hostname === '[::1]' ||
+  // 127.0.0.1/8 is considered localhost for IPv4.
+  window.location.hostname.match(
+    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+  )
 );
 
 export default function register() {
@@ -42,10 +45,10 @@ export default function register() {
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
-        navigator.serviceWorker.ready.then(() => {
+        navigator.serviceWorker.ready.then(registration => {
           console.log(
             'This web app is being served cache-first by a service ' +
-              'worker. To learn more, visit https://goo.gl/SC7cgQ'
+            'worker. To learn more, visit https://goo.gl/SC7cgQ'
           );
         });
       } else {
@@ -56,10 +59,16 @@ export default function register() {
   }
 }
 
+var swRegistration = new Promise<ServiceWorkerRegistration>((resolve: ((arg: ServiceWorkerRegistration) => void)) => {
+  resolveSw = resolve;
+});
+var resolveSw: ((arg: ServiceWorkerRegistration) => void);
+
 function registerValidSW(swUrl: string) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
+      resolveSw(registration);
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker) {
@@ -86,6 +95,39 @@ function registerValidSW(swUrl: string) {
       console.error('Error during service worker registration:', error);
     });
 }
+
+export function registerPush() {
+  console.log('Registering push');
+  swRegistration.then(registration => {
+    registration.pushManager.getSubscription().then(async function (subscription) {
+      if (subscription) {
+        return subscription;
+      }
+
+      const vapidPublicKey = await getVapidKey();
+      const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+      console.log(convertedVapidKey);
+
+      return registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      });
+    }).then(function (subscription) {
+      console.log('Got subscription');
+      console.log(subscription);
+      registerSubscription(subscription);
+    });
+  });
+}
+
+/*function configurePush(registration: ServiceWorkerContainer) {
+  console.log('Adding push event listener');
+  registration.addEventListener('push', function (event: any) {
+    console.log('Got pushed');
+    //const payload = event.data ? event.data.text() : 'no payload';
+    //event.waitUntil(registration.showNotification('Yay!', { body: payload }));
+  });
+}*/
 
 function checkValidServiceWorker(swUrl: string) {
   // Check if the service worker can be found. If it can't reload the page.

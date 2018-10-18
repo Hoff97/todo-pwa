@@ -28,6 +28,8 @@ class TodoController @Inject() (
   extends AbstractController(cc)
   with HasDatabaseConfigProvider[JdbcProfile] {
 
+  val log = Logger("api.todo")
+
   def getTodos = silhouette.SecuredAction.async { implicit request =>
     val q = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
 

@@ -53,3 +53,28 @@ DELETE    /todo/:id                     controllers.TodoController.deleteTodo(id
 #      description: success
 ###
 PUT    /todo                     controllers.TodoController.updateTodos
+
+###
+#  summary: Get the public VAPID key of this server
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+GET /push/vapid                     controllers.PushController.getVapidKey
+
+###
+#  summary: Register a push subscription for a user
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+POST /push/register                 controllers.PushController.registerSubscription
