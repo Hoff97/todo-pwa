@@ -12,7 +12,7 @@ then
     export SSHPASS=$SERVER_PW
 
     cd ..
-    zip -r push-service.zip . -i ./push-service/
+    zip -r push-service.zip . -i ./push-service/*
     sshpass -e scp -o stricthostkeychecking=no ./push-service.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
     cd server
 
