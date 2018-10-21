@@ -19,7 +19,8 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
     if (todo.id === action.payload) {
       return {
         ...todo,
-        done: !todo.done
+        done: !todo.done,
+        timestamp: new Date()
       }
     }
     return todo;
@@ -31,6 +32,7 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
     if (todo.id === action.payload[0]) {
       let newTodo = parseTodo(action.payload[1]);
       newTodo.id = todo.id;
+      newTodo.timestamp = new Date();
       return newTodo;
     }
     return todo;

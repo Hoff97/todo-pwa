@@ -28,7 +28,7 @@ app.post('/sendNotification', function (req, res) {
     };
 
     setTimeout(function () {
-        webPush.sendNotification(subscription, payload, options)
+        webPush.sendNotification(subscription, JSON.stringify(payload), options)
             .then(function () {
                 res.sendStatus(201);
             })
@@ -39,6 +39,6 @@ app.post('/sendNotification', function (req, res) {
     }, req.body.delay * 1000);
 });
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+app.listen(4000, function () {
+    console.log('Push service listening on port 4000!');
 });
