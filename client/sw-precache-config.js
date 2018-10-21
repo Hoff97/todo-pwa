@@ -1,10 +1,9 @@
 module.exports = {
     staticFileGlobs: [
-        'build/static/css/**.css',
-        'build/static/js/**.js'
+        'build/**/*.{js,html,css,png,jpg,gif,svg,eot,ttf,woff,ico,json}'
     ],
     swFilePath: './build/service-worker.js',
     stripPrefix: 'build/',
     importScripts: (['./service-worker-custom.js']),
-    handleFetch: false
+    handleFetch: true
 }
