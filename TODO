@@ -1,7 +1,0 @@
-- Add login via email (no pw if possible)
-- Add possibility to attach metadata (reminder (r@5m, r@2h...))
-- Filtering by category, sorting?
-- Notifications (TODO: Build service running every hour checking if notifications should be sent)
-- Notification settings (every day at...)
-- Date selection in Autocomplete?
-- Add handling for failed requests (eg accessToken expired...)

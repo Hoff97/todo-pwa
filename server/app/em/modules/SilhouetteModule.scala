@@ -40,6 +40,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[AuthInfoRepository].to[AuthInfoService]
     bind[LoginService].to[LoginServiceImpl]
+    bind[PushService].to[PushServiceImpl]
+    bind[TodoService].to[TodoServiceImpl]
   }
 
   @Provides

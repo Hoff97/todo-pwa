@@ -1,5 +1,6 @@
 package controllers
 
+import akka.actor.ActorSystem
 import javax.inject._
 import play.api._
 import play.api.mvc._
@@ -13,22 +14,26 @@ import play.api.libs.json._
 
 import scala.concurrent._
 import em.db.Util._
-import em.model.{PushMessage, Todo, TodoV}
+import em.model.{PushMessage, PushPayload, Todo, TodoV}
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import em.model.forms.SubscriptionForm
+import em.service.PushService
 import play.api.libs.ws.WSClient
+import scala.concurrent.duration._
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
   */
 @Singleton
-class PushController @Inject() (
+class PushController @Inject()(
                                  cc:                             ControllerComponents,
                                  val silhouette:                 Silhouette[AuthEnv],
                                  protected val dbConfigProvider: DatabaseConfigProvider,
                                  config: Configuration,
-                                 ws: WSClient)(implicit context: ExecutionContext)
+                                 ws: WSClient,
+                                 pushService: PushService,
+                                 actorSystem: ActorSystem)(implicit context: ExecutionContext)
   extends AbstractController(cc)
     with HasDatabaseConfigProvider[JdbcProfile] {
 
@@ -40,8 +45,6 @@ class PushController @Inject() (
 
   def registerSubscription= silhouette.SecuredAction.async(parse.json[SubscriptionForm]) { implicit request =>
     log.debug("Registering Push Subscription")
-    System.out.println(Json.toJson(PushMessage(request.body.subscription, "Testmessage", 30000)))
-    ws.url("http://localhost:3000/sendNotification").post(Json.toJson(PushMessage(request.body.subscription, "Testmessage", 30000)))
 
     db.run(SubscriptionTable.subscriptions.filter(_.endpoint === request.body.subscription.endpoint).result).flatMap { case subs =>
       if (subs.length > 0) {
