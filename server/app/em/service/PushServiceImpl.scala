@@ -67,7 +67,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         time.set(Calendar.HOUR, 0)
         time.add(Calendar.DAY_OF_MONTH, 1)
         db.run(TodoTable.todo.filter(x => x.loginFk === login.id.get && !x.done).result).foreach{ todoDb =>
-          val todosToday = todoDb.filter(todo => todo.date.isEmpty || isAtDay(todo.date.get, time))
+          val todosToday = todoDb.filter(todo => todo.date.isEmpty || isBeforeOrAtDay(todo.date.get, time))
           if(todosToday.length > 0)
             sendToUser(dailyNotification(login, todosToday), login.id.get)
         }
@@ -79,7 +79,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     }
   }
 
-  private def isAtDay(date: Timestamp, day: Calendar): Boolean =
+  private def isBeforeOrAtDay(date: Timestamp, day: Calendar): Boolean =
     Instant.ofEpochMilli(date.getTime).isBefore(day.toInstant)
 
   private def dailyNotification(login: Login, todos: Seq[Todo]): PushPayload = {
