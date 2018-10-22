@@ -1,7 +1,9 @@
 package em.util
 
-import java.sql.Timestamp
+import java.sql.{Time, Timestamp}
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 
 import play.api.libs.json._
 import play.api.mvc._
@@ -30,6 +32,18 @@ object DateTime {
     }
     override def unbind(key: String, ts: Timestamp): String = {
       stringBinder.unbind(key, format.format(ts))
+    }
+  }
+
+  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+  implicit object timeFormat extends Format[Time] {
+    override def writes(o: Time): JsValue = JsString(timeFormatter.format(o.toInstant))
+
+    override def reads(json: JsValue): JsResult[Time] = {
+      val str = json.as[String]
+      val parsed = timeFormatter.parse(str)
+      JsSuccess(new Time(parsed.get(ChronoField.HOUR_OF_DAY),parsed.get(ChronoField.MINUTE_OF_HOUR), 0))
     }
   }
 }

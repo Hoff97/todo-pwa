@@ -1,8 +1,9 @@
 package controllers
 
-import java.sql.Time
+import java.sql.{Time, Timestamp}
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -45,7 +46,8 @@ class LoginController@Inject() (
   cache: AsyncCacheApi,
   passwordHasher: PasswordHasher,
   protected val dbConfigProvider: DatabaseConfigProvider,
-  avatarService: AvatarService)
+  avatarService: AvatarService,
+  pushService: PushService)
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
 
   val log = Logger("api.user")
@@ -65,7 +67,8 @@ class LoginController@Inject() (
             Future.successful(BadRequest(Json.obj("message" -> "user.exists")))
           case None =>
             val authInfo = passwordHasher.hash(data.password)
-            val login = Login(None, data.email, None, None, None, loginInfo.providerID, loginInfo.providerKey)
+            val login = Login(None, data.email, None, None, None, loginInfo.providerID, loginInfo.providerKey,
+              new Timestamp(new Date().getTime), Some(new Time(10,0,0)))
             for {
               login <- loginService.save(login)
               authInfo <- authInfoRepository.add(loginInfo, authInfo)
@@ -130,7 +133,9 @@ class LoginController@Inject() (
       if(request.body.equals("")) None
       else Some(LocalTime.parse(request.body, DateTimeFormatter.ofPattern("HH:mm")))
 
-    val update = request.identity.copy(dailyReminder = time.map(x => new Time(x.getHour, x.getMinute, 0)))
+    val update = request.identity.copy(dailyReminder = time.map(x => new Time(x.getHour, x.getMinute, 0)),
+      timestamp = new Timestamp(new Date().getTime))
+    pushService.notifyUser(update)
     db.run(LoginTable.login.insertOrUpdate(update)).map(x => Ok)
   }
 }

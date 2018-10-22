@@ -4,6 +4,7 @@ import java.sql.{Time, Timestamp}
 
 import play.api.libs.json._
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import em.util.DateTime._
 
 case class Login(id: Option[Int], email: String, pwHash: Option[String],
                  pwSalt: Option[String], pwHasher: Option[String],
