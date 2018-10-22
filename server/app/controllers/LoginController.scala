@@ -1,14 +1,17 @@
 package controllers
 
+import java.sql.Time
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
 import scala.concurrent.Future
 import scala.concurrent.duration._
-
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasher, Credentials}
+import com.mohiva.play.silhouette.api.util.{Clock, Credentials, PasswordHasher}
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.state._
 import com.mohiva.play.silhouette.impl.exceptions._
@@ -120,5 +123,14 @@ class LoginController@Inject() (
   def signOut = silhouette.SecuredAction.async { implicit request =>
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, Ok)
+  }
+
+  def updateDailyReminder = silhouette.SecuredAction.async(parse.text) { implicit request =>
+    val time =
+      if(request.body.equals("")) None
+      else Some(LocalTime.parse(request.body, DateTimeFormatter.ofPattern("HH:mm")))
+
+    val update = request.identity.copy(dailyReminder = time.map(x => new Time(x.getHour, x.getMinute, 0)))
+    db.run(LoginTable.login.insertOrUpdate(update)).map(x => Ok)
   }
 }
