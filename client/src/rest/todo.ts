@@ -11,7 +11,8 @@ export function todoPut(todos: Todo[], token?: string) {
         return {
             ...todo,
             timestamp: moment(todo.timestamp).format(dateFormat),
-            date: todo.date ? moment(todo.date).format(dateFormat) : undefined
+            date: todo.date ? moment(todo.date).format(dateFormat) : undefined,
+            reminder: todo.reminder ? moment(todo.reminder).format(dateFormat) : undefined
         }
     });
     return axios.put(url, mappedTodos, token ? { headers: { 'x-auth-token': token }} : {}).then(response => {

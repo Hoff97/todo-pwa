@@ -92,9 +92,8 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     todo.reminder match {
       case Some(d) => {
         var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
-
-        if(diffMin._1 > 0) {
-          actorSystem.scheduler.scheduleOnce(diffMin + serverTimeOffset.minutes) {
+        if(diffMin._1 >= 0) {
+          actorSystem.scheduler.scheduleOnce(diffMin + (serverTimeOffset.minutes)) {
             checkAndNotifyTodo(todo)
           }
         }

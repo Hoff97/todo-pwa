@@ -14,6 +14,7 @@ function nextWeekday(wd: number) {
 const pExpr = /!([1-5])/
 const cExpr = /#([A-Za-z]+)/
 const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
+const rExpr = /r:(morning|noon|afternoon|evening|(\d{1,2}):(\d{2,2}))/
 
 export function dateDescrToDate(str: string): moment.Moment {
     switch(str) {
@@ -68,13 +69,30 @@ export function parseTodo(str: string): Todo {
         }
     }
 
+    const reminderMatch = str.match(rExpr);
+    var reminder: Date | undefined = undefined;
+    if(date !== undefined && reminderMatch !== null && reminderMatch[1] !== null) {
+        switch(reminderMatch[1]) {
+            case 'morning': reminder = moment(date).hours(9).minutes(0).seconds(0).toDate(); break;
+            case 'noon': reminder = moment(date).hours(12).minutes(0).seconds(0).toDate(); break;
+            case 'afternoon': reminder = moment(date).hours(15).minutes(0).seconds(0).toDate(); break;
+            case 'evening': reminder = moment(date).hours(19).minutes(0).seconds(0).toDate(); break;
+            default:
+                if(reminderMatch.length === 4) {
+                    reminder = moment(date).hours(+reminderMatch[2]).minutes(+reminderMatch[3]).seconds(0).toDate(); break;
+                }
+                break;
+        }
+    }
+
     const todo =  {
         id: uuid(),
-        name: str.replace(cExpr, '').replace(dExpr, '').replace(pExpr, '').trim(),
+        name: str.replace(cExpr, '').replace(dExpr, '').replace(pExpr, '').replace(rExpr, '').trim(),
         done: false,
         priority,
         category,
         date,
+        reminder,
         timestamp: new Date()
     };
     return todo;
