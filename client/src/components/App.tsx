@@ -3,7 +3,7 @@ import ButtonsV from '../containers/Buttons'
 import VisibleTodoList from 'src/containers/TodoList';
 import Login from 'src/containers/Login';
 
-const App = () => (
+const MainPage = () => (
   <div className="container mt-2">
     <ButtonsV />
     <Login />
@@ -19,4 +19,4 @@ const App = () => (
   </div>
 )
 
-export default App
+export default MainPage

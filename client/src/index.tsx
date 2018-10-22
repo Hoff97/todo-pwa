@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { rootReducer } from './reducers/index';
 import { StoreState } from './types/index';
 import { Provider } from 'react-redux';
-import App from './components/App';
+import MainPage from './components/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
 import promiseMiddleware from 'redux-promise-middleware'
@@ -16,6 +16,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
+
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import NotFound from './containers/NotFound';
 
 library.add(faTrash)
 library.add(faUndo)
@@ -33,12 +36,19 @@ const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMid
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <div>
+        <Switch>
+          <Route exact path="/" component={MainPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
+    </Router>
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
 
-Notification.requestPermission().then(function(result) {
+Notification.requestPermission().then(function (result) {
   console.log(result);
 });

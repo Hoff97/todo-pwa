@@ -13,7 +13,7 @@ function nextWeekday(wd: number) {
 
 const pExpr = /!([1-5])/
 const cExpr = /#([A-Za-z]+)/
-export const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
+export const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2})|(\d{1,2})-(\d{1,2})-(\d{4}))/
 const rExpr = /r:(morning|noon|afternoon|evening|(\d{1,2}):(\d{2,2}))/
 
 export function dateDescrToDate(str: string): moment.Moment {
@@ -64,6 +64,9 @@ export function parseTodo(str: string): Todo {
                         dateM = dateM.add(1, 'years');
                     }
                     date = dateM.toDate();
+                } else if(dateMatch.length === 5) {
+                    var dateM = moment().year(+dateMatch[4]).month(+dateMatch[3]-1).date(+dateMatch[2]);
+                    date = dateM.toDate();
                 }
                 break;
         }
@@ -99,5 +102,23 @@ export function parseTodo(str: string): Todo {
 }
 
 export function todoStr(todo: Todo) {
-    return `${todo.name} ${todo.category ? '#' + todo.category : ''} ${todo.priority ? '!' + todo.priority : ''} ${todo.date ? '@' + moment(todo.date).format('DD-MM') : ''}`.trim();
+    var ret = todo.name;
+    if(todo.category) {
+        ret += ' #' + todo.category;
+    }
+    if(todo.priority) {
+        ret += ' !' + todo.priority;
+    }
+    if(todo.date) {
+        ret += ' @';
+        if(moment(todo.date).isBefore(moment.utc().startOf('day'))) {
+            ret += moment(todo.date).format('DD-MM-YYYY');
+        } else {
+            ret += moment(todo.date).format('DD-MM');
+        }
+    }
+    if(todo.reminder) {
+        ret += ' r:' + moment(todo.reminder).format('HH:mm');
+    }
+    return ret;
 }
