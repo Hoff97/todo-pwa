@@ -8,6 +8,7 @@ export interface Todo {
     date?: Date;
     category?: string;
     timestamp: Date;
+    reminder?: Date;
 }
 
 export type UIState = {

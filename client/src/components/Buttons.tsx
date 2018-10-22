@@ -47,7 +47,7 @@ const menuStyle: CSSProperties = {
 }
 
 interface ACOption {
-    type: 'prio' | 'category' | 'date';
+    type: 'prio' | 'category' | 'date' | 'reminder';
     payload: any;
     label: string;
 }
@@ -76,12 +76,21 @@ function category(category: string, color: string): ACOption {
     }
 }
 
+function reminder(time: string): ACOption {
+    return {
+        type: 'reminder',
+        payload: time,
+        label: 'r:' + time
+    }
+}
+
 function itemsForValue(value: string, categories: CategoryInfo[]) {
     var items: ACOption[] = [];
     items = [...items, ...[5, 4, 3, 2, 1].map(prio)]
     items = [...items, ...categories.map(cat => category(cat.name, cat.color))]
     items = [...items,
     ...['today', 'tomorrow', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(date)]
+    items = [...items, ...['morning', 'noon', 'afternoon', 'evening'].map(rem => reminder(rem))]
     return items.filter(item => longestPreSuffix(value, item.label) > 0);
 }
 
@@ -102,6 +111,9 @@ function renderItem(item: ACOption, isHighlighted: boolean) {
             }
             {item.type === 'date' &&
                 <span className="ml-2">{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
+            }
+            {item.type === 'reminder' &&
+                <span className="ml-2"><FontAwesomeIcon icon="bell"></FontAwesomeIcon> {item.payload}</span>
             }
         </div>
     );

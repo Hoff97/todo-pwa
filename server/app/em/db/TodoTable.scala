@@ -21,7 +21,9 @@ class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with HasID[Todo, Stri
 
   def timestamp = column[Timestamp]("timestamp")
 
-  def * = (id, name, loginFk, date, priority, done, category, timestamp) <> (Todo.tupled, Todo.unapply)
+  def reminder = column[Option[Timestamp]]("reminder")
+
+  def * = (id, name, loginFk, date, priority, done, category, timestamp, reminder) <> (Todo.tupled, Todo.unapply)
 }
 
 object TodoTable {

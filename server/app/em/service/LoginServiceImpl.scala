@@ -1,7 +1,9 @@
 package em.service
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.sql.{Time, Timestamp}
+import java.util.Date
 
+import scala.concurrent.{ExecutionContext, Future}
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import javax.inject._
@@ -46,7 +48,6 @@ class LoginServiceImpl @Inject()(
   /**
    * Saves a user.
    *
-   * @param user The user to save.
    * @return The saved user.
    */
   def save(l: Login) = db.run(insertAndReturn[Login,LoginTable](LoginTable.login,l))
@@ -67,7 +68,7 @@ class LoginServiceImpl @Inject()(
 
     val l = profile.email.getOrElse("")
     val loginInsert = Login(None,profile.email.getOrElse(""),None,None,None,
-                 profile.loginInfo.providerID,profile.loginInfo.providerKey)
+                 profile.loginInfo.providerID,profile.loginInfo.providerKey, new Timestamp(new Date().getTime), Some(new Time(10,0,0)))
 
     db.run(qa.update(l)).flatMap {
       case 0 => db.run(login += loginInsert)

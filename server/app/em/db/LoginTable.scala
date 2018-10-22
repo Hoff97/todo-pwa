@@ -1,5 +1,7 @@
 package em.db
 
+import java.sql.{Time, Timestamp}
+
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape.proveShapeOf
 import em.model._
@@ -16,8 +18,12 @@ class LoginTable(tag: Tag) extends Table[Login](tag, "login") with HasID[Login, 
 
   def email = column[String]("email")
 
+  def timestamp = column[Timestamp]("timestamp")
+
+  def dailyReminder = column[Option[Time]]("daily_reminder")
+
   def * = (id.?,email,pwHash.?, pwSalt.?, pwHasher.? ,providerId,
-           providerKey) <> (Login.tupled, Login.unapply)
+           providerKey, timestamp, dailyReminder) <> (Login.tupled, Login.unapply)
 }
 
 object LoginTable {

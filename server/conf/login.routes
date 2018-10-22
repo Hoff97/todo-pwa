@@ -53,3 +53,26 @@ GET    /signOut                  controllers.LoginController.signOut
 #      description: Access forbidden
 ###
 POST   /signIn                   controllers.LoginController.login
+
+###
+#  summary: Sign into an existing account
+#  description: >
+#      The access token to this account is returned.
+#      All secured endpoints require the access token in the header parameter called 'x-auth-token'.
+#  parameters:
+#  - name: body
+#    schema:
+#      type: string
+#    description: >
+#      The wished reminder time in the format HH:mm, or empty if no reminder should be sent
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#    401:
+#      description: Access forbidden
+###
+PUT   /dailyReminder                   controllers.LoginController.updateDailyReminder

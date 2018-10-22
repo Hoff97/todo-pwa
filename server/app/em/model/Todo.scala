@@ -7,17 +7,19 @@ import em.util.DateTime._
 case class Todo(id: String, name: String, loginFk: Int,
                 date: Option[Timestamp], priority: Option[Int],
                 done: Boolean, category: Option[String],
-                timestamp: Timestamp) extends HasCopy[Todo, String] {
+                timestamp: Timestamp,
+                reminder: Option[Timestamp]) extends HasCopy[Todo, String] {
   def cpy(i: Option[String]) = this.copy(id = i.getOrElse(this.id))
 
-  def toTodoV = TodoV(id, name, date, priority, done, category, timestamp: Timestamp)
+  def toTodoV = TodoV(id, name, date, priority, done, category, timestamp, reminder)
 }
 
 case class TodoV(id: String, name: String,
                  date: Option[Timestamp], priority: Option[Int],
                  done: Boolean, category: Option[String],
-                 timestamp: Timestamp) {
-  def toTodo(loginFk: Int) = Todo(id, name, loginFk, date, priority, done, category, timestamp: Timestamp)
+                 timestamp: Timestamp,
+                 reminder: Option[Timestamp]) {
+  def toTodo(loginFk: Int) = Todo(id, name, loginFk, date, priority, done, category, timestamp, reminder)
 }
 
 object Todo {

@@ -61,7 +61,8 @@ class TodoServiceImpl @Inject()(
   }
 
   private def createTodo(todo: Todo): Future[_] = {
-    pushService.notifyTodo(todo)
-    db.run(TodoTable.todo.insertOrUpdate(todo))
+    db.run(TodoTable.todo.insertOrUpdate(todo)).map { num =>
+      pushService.notifyTodo(todo)
+    }
   }
 }
