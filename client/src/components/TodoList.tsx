@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Todo from './Todo';
 import { Todo as TodoT } from '../types/index';
-import { catInfoFromTodos } from 'src/util/category';
+import { CategoryInfo } from 'src/util/category';
 
 export interface Props {
     todos: TodoT[];
@@ -12,12 +12,13 @@ export interface Props {
     editTodo: (todo: TodoT) => void;
     finishEdit: (id: string, str: string) => void;
     editChange: (str: string) => void;
+    filterCategory: (category: string) => void;
+    categoryInfo: CategoryInfo[]
 }
 
-export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, editChange, editValue }: Props) {
-    const catInfo = catInfoFromTodos(todos);
+export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, editChange, editValue, filterCategory, categoryInfo }: Props) {
     function categoryColor(name: string) {
-        return catInfo.filter(x => x.name === name)[0].color;
+        return categoryInfo.filter(x => x.name === name)[0].color;
     }
     return (
         <div className="mt-2 mb-2">
@@ -30,7 +31,8 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             doneEditing={(str: string) => finishEdit(todo.id, str)}
                             editing={editingTodo === todo.id}
                             editValue={editValue}
-                            editChange={editChange}/>
+                            editChange={editChange}
+                            filterCategory={filterCategory}/>
                     ))}
                 </tbody>
             </table>

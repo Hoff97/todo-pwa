@@ -85,7 +85,13 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
     setAccessToken(action.payload);
     return { ...ui, accessToken: action.payload, loggingIn: false };
-  }
+  },
+  FILTER_CATEGORY: (ui: UIState, action: A<any>) => {
+    return { ...ui, filterCategory: action.payload };
+  },
+  CLEAR_FILTER: (ui: UIState, action: A<any>) => {
+    return { ...ui, filterCategory: undefined };
+  },
 }, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken() });
 
 function loadLocal(contents: any): Todo[] {

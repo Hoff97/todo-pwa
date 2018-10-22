@@ -13,7 +13,7 @@ import promiseMiddleware from 'redux-promise-middleware'
 import ReduxThunk from 'redux-thunk';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
@@ -27,6 +27,7 @@ library.add(faUser)
 library.add(faSignInAlt)
 library.add(faUserPlus)
 library.add(faBell)
+library.add(faTimes)
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware(), ReduxThunk, asyncDispatchMiddleware));
 

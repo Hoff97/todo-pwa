@@ -17,6 +17,7 @@ export type UIState = {
     editValue: string;
     loggingIn: boolean;
     accessToken?: string;
+    filterCategory?: string;
 }
 
 export type StoreState = {
