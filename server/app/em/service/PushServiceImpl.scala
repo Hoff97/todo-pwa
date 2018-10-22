@@ -5,7 +5,7 @@ import java.time.temporal.{ChronoUnit, TemporalUnit}
 import java.util.Date
 
 import akka.actor.ActorSystem
-import em.model.{PushMessage, PushPayload, Todo}
+import em.model.{Login, PushMessage, PushPayload, Todo}
 import em.model.forms.Subscription
 import javax.inject.Inject
 import play.api.Configuration
@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import java.util.Calendar
 
-import em.db.{SubscriptionTable, TodoTable}
+import em.db.{LoginTable, SubscriptionTable, TodoTable}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 
@@ -30,9 +30,14 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
 
   private val serverTimeOffset = config.get[Int]("server.timeOffsetMinutes")
 
+  initialize
+
   override def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000) =
       ws.url(config.get[String]("application.push.serviceUrl"))
         .post(Json.toJson(PushMessage(subscription, payload, ttl)))
+
+  override def notifyUser(login: Login): Unit = {
+  }
 
   override def notifyTodo(todo: Todo): Unit = {
     todo.date match {
@@ -46,7 +51,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
 
         if(diffMin._1 > 0) {
           actorSystem.scheduler.scheduleOnce(diffMin + serverTimeOffset.minutes) {
-            checkAndNotify(todo)
+            checkAndNotifyTodo(todo)
           }
         }
       }
@@ -54,7 +59,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     }
   }
 
-  private def checkAndNotify(todo: Todo): Unit = {
+  private def checkAndNotifyTodo(todo: Todo): Unit = {
     db.run(TodoTable.todo.filter(_.id === todo.id).result).foreach{ todoDb =>
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
         sendToUser(todoNotification(todo), todo.loginFk)
@@ -69,4 +74,14 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   private def todoNotification(todo: Todo): PushPayload = PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List())
+
+  override def initialize: Unit = {
+    db.run(TodoTable.todo.result).foreach { todos =>
+      todos.foreach(todo => notifyTodo(todo))
+    }
+
+    db.run(LoginTable.login.result).foreach { logins =>
+      logins.foreach(login => notifyUser(login))
+    }
+  }
 }
