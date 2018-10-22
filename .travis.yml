@@ -11,7 +11,7 @@ before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -y sshpass
 before_script:
-- psql -c 'create database "ZeitScrape";' -U postgres
+- psql -c 'create database "Todo";' -U postgres
 script: "./build.sh"
 sudo: false
 cache:

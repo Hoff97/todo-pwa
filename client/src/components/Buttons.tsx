@@ -2,9 +2,12 @@ import * as React from 'react';
 import * as Autocomplete from 'react-autocomplete';
 import { HTMLProps, CSSProperties } from 'react';
 import { longestPreSuffix } from 'src/util/string';
-import { dateDescrToDate } from 'src/util/todo';
+import { dateDescrToDate, dExpr } from 'src/util/todo';
 import { CategoryInfo } from 'src/util/category';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DayPicker from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
+import * as moment from 'moment';
 
 export interface Props {
     value: string;
@@ -32,7 +35,7 @@ function renderInput(props: HTMLProps<HTMLInputElement>, undo: () => void, redo:
                 }
             </div>
         </div>
-    )
+    );
 }
 
 const menuStyle: CSSProperties = {
@@ -44,10 +47,10 @@ const menuStyle: CSSProperties = {
     position: 'fixed',
     overflow: 'auto',
     maxHeight: '50%',
-}
+};
 
 interface ACOption {
-    type: 'prio' | 'category' | 'date' | 'reminder';
+    type: 'prio' | 'category' | 'date' | 'reminder' | 'date-sel';
     payload: any;
     label: string;
 }
@@ -57,7 +60,7 @@ function prio(prio: number): ACOption {
         type: 'prio',
         payload: prio,
         label: '!' + prio
-    }
+    };
 }
 
 function date(date: string): ACOption {
@@ -65,7 +68,7 @@ function date(date: string): ACOption {
         type: 'date',
         payload: date,
         label: '@' + date
-    }
+    };
 }
 
 function category(category: string, color: string): ACOption {
@@ -73,7 +76,7 @@ function category(category: string, color: string): ACOption {
         type: 'category',
         payload: color,
         label: '#' + category
-    }
+    };
 }
 
 function reminder(time: string): ACOption {
@@ -81,60 +84,91 @@ function reminder(time: string): ACOption {
         type: 'reminder',
         payload: time,
         label: 'r:' + time
-    }
+    };
 }
 
 function itemsForValue(value: string, categories: CategoryInfo[]) {
     var items: ACOption[] = [];
-    items = [...items, ...[5, 4, 3, 2, 1].map(prio)]
-    items = [...items, ...categories.map(cat => category(cat.name, cat.color))]
+    items = [...items, {
+        type: 'date-sel',
+        payload: '',
+        label: '@'
+    }];
+    items = [...items, ...[5, 4, 3, 2, 1].map(prio)];
+    items = [...items, ...categories.map(cat => category(cat.name, cat.color))];
     items = [...items,
-    ...['today', 'tomorrow', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(date)]
-    items = [...items, ...['morning', 'noon', 'afternoon', 'evening'].map(rem => reminder(rem))]
-    return items.filter(item => longestPreSuffix(value, item.label) > 0);
+    ...['today', 'tomorrow', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(date)];
+    items = [...items, ...['morning', 'noon', 'afternoon', 'evening'].map(rem => reminder(rem))];
+
+    let containsDate = value.match(dExpr) !== null;
+    items = items.filter(item => filterItem(value, item, containsDate));
+    return items;
 }
+
+function filterItem(value: string, item: ACOption, containsDate: boolean) {
+    var ret = longestPreSuffix(value, item.label) > 0;
+    if(item.type === 'reminder') {
+        ret = ret && containsDate;
+    }
+    return ret;
+} 
 
 function appendACOption(value: string, opt: string) {
     const match = longestPreSuffix(value, opt);
     return value.substring(0, value.length - match) + opt + ' ';
 }
 
-function renderItem(item: ACOption, isHighlighted: boolean) {
-    return (
-        <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
-            key={item.label}>
-            {item.type === 'prio' &&
-                <span className={'ml-2 prio ' + 'ml-2 prio' + item.payload}>{item.payload}</span>
-            }
-            {item.type === 'category' &&
-                <span style={{ color: item.payload }} className="ml-2">{item.label}</span>
-            }
-            {item.type === 'date' &&
-                <span className="ml-2">{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
-            }
-            {item.type === 'reminder' &&
-                <span className="ml-2"><FontAwesomeIcon icon="bell"></FontAwesomeIcon> {item.payload}</span>
-            }
-        </div>
-    );
-}
+const renderItem = (value: string, inputChanged: (str: string) => void) => (item: ACOption, isHighlighted: boolean) => {
+    if(item.type !== 'date-sel') {
+        return (
+            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
+                key={item.label}>
+                {item.type === 'prio' &&
+                    <span className={'ml-2 prio ' + 'ml-2 prio' + item.payload}>{item.payload}</span>
+                }
+                {item.type === 'category' &&
+                    <span style={{ color: item.payload }} className="ml-2">{item.label}</span>
+                }
+                {item.type === 'date' &&
+                    <span className="ml-2">{item.payload} ({dateDescrToDate(item.payload).format('DD.MM.')})</span>
+                }
+                {item.type === 'reminder' &&
+                    <span className="ml-2"><FontAwesomeIcon icon="bell"></FontAwesomeIcon> {item.payload}</span>
+                }
+            </div>
+        );
+    } else {
+        return (
+            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
+                    key={item.label}>
+                <DayPicker
+                    onDayClick={handleCompleteDay(value, inputChanged)}/>
+            </div>
+        );
+    }
+};
+
+const handleCompleteDay = (value: string, inputChanged: (str: string) => void) => (day: Date) => {
+    inputChanged(value + moment(day).format('DD-MM'));
+};
 
 export function Buttons({ value, addTodo, undo, redo, inputChanged, categories, loggedIn, login }: Props) {
-    const acItems = itemsForValue(value, categories)
+    const acItems = itemsForValue(value, categories);
     return (
         <div className="mb-2">
-            <form onSubmit={e => { e.preventDefault(); addTodo(value) }}>
+            <form onSubmit={e => { e.preventDefault(); addTodo(value); }}>
                 <Autocomplete
                     getItemValue={(item) => item.label}
                     items={acItems}
                     open={acItems.length > 0}
-                    renderItem={renderItem}
+                    renderItem={renderItem(value, inputChanged)}
                     wrapperStyle={{ width: '100%' }}
                     renderInput={props => renderInput(props, undo, redo, loggedIn, login)}
                     value={value}
                     onChange={(e) => inputChanged(e.target.value)}
                     onSelect={(val) => inputChanged(appendACOption(value, val))}
                     menuStyle={menuStyle}
+                    isItemSelectable={item => item.type !== 'date-sel'}
                 />
             </form>
         </div>

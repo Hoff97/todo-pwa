@@ -60,3 +60,9 @@ export function putTodos(todos: Todo[], token?: string) {
 
 export const RECEIVE_TOKEN = 'RECEIVE_TOKEN';
 export const receiveToken = createAction(RECEIVE_TOKEN, (token: string) => token)
+
+export const FILTER_CATEGORY = 'FILTER_CATEGORY';
+export const filterCategory = createAction(FILTER_CATEGORY, (category: string) => category)
+
+export const CLEAR_FILTER = 'CLEAR_FILTER';
+export const clearFilter = createAction(CLEAR_FILTER, () => {})

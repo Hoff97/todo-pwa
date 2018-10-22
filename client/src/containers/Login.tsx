@@ -1,11 +1,22 @@
 import * as React from 'react';
 import { Action, Dispatch } from 'redux';
-import { login, signUp } from 'src/actions';
+import { login, signUp, clearFilter } from 'src/actions';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { StoreState } from 'src/types';
+import { catInfoFromTodos, CategoryInfo } from 'src/util/category';
 
-function LoginF({ dispatch, loggingIn }: { dispatch: Dispatch<Action<any>>; loggingIn: boolean }) {
+interface Props {
+    dispatch: Dispatch<Action<any>>;
+    loggingIn: boolean;
+    filterCategory?: string;
+    categoryInfo: CategoryInfo[];
+}
+
+function LoginF({ dispatch, loggingIn, filterCategory, categoryInfo }: Props) {
+    function categoryColor(name: string) {
+        return categoryInfo.filter(x => x.name === name)[0].color;
+    }
     let mail: HTMLInputElement
     let pw: HTMLInputElement
     if (loggingIn) {
@@ -38,13 +49,24 @@ function LoginF({ dispatch, loggingIn }: { dispatch: Dispatch<Action<any>>; logg
             </div>
         );
     } else {
-        return (<div></div>)
+        return (
+            <div>
+                {filterCategory &&
+                    <div style={{'backgroundColor': categoryColor(filterCategory)}} className="categoryLabel">
+                        #{filterCategory}
+                        <a onClick={e => dispatch(clearFilter())}> <FontAwesomeIcon icon="times"/></a>
+                    </div>
+                }
+            </div>
+            );
     }
 }
 
 let Login = connect((state: StoreState) => {
     return {
-        loggingIn: state.ui.loggingIn
+        loggingIn: state.ui.loggingIn,
+        filterCategory: state.ui.filterCategory,
+        categoryInfo: catInfoFromTodos(state.todos.state)
     }
 }, (dispatch: Dispatch<Action<any>>) => {
     return {

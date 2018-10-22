@@ -17,10 +17,11 @@ export interface Props {
   categoryColor?: string
   editChange: (str: string) => void
   editValue: string
+  filterCategory: (category: string) => void;
 }
 
 function Todo({ name, done, toggle, remove, priority, category, 
-    date, categoryColor, edit, editing, doneEditing, editChange, editValue }: Props) {
+    date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory }: Props) {
   if(!editing) {
     return (
       <tr className={done ? 'table-info' : ''} onDoubleClick={e => {e.preventDefault();if(!done){edit()}}}>
@@ -34,7 +35,8 @@ function Todo({ name, done, toggle, remove, priority, category,
         </td>
         <td>
           {category &&
-            <span className="category" style={{color: categoryColor}}>{category}</span>
+            <span className="category" style={{color: categoryColor}} 
+              onClick={e => filterCategory(category)}>{category}</span>
           }
         </td>
         {!done &&

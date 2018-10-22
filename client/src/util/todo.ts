@@ -13,7 +13,7 @@ function nextWeekday(wd: number) {
 
 const pExpr = /!([1-5])/
 const cExpr = /#([A-Za-z]+)/
-const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
+export const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2}))/
 const rExpr = /r:(morning|noon|afternoon|evening|(\d{1,2}):(\d{2,2}))/
 
 export function dateDescrToDate(str: string): moment.Moment {
