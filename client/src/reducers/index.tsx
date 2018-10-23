@@ -105,7 +105,8 @@ function loadLocal(contents: any): Todo[] {
     return {
       ...todo,
       date: todo.date ? moment(todo.date).toDate() : undefined,
-      timestamp: todo.timestamp ? todo.timestamp : new Date()
+      timestamp: todo.timestamp ? todo.timestamp : new Date(),
+      serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined
     }
   })
   return todos;
