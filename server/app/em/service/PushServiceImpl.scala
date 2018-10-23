@@ -29,13 +29,13 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
                                 protected val dbConfigProvider: DatabaseConfigProvider)(implicit context: ExecutionContext)
   extends PushService with HasDatabaseConfigProvider[JdbcProfile] {
 
+  val log = Logger("service.push")
+
   private val serverTimeOffset = config.get[Int]("server.timeOffsetMinutes")
 
   private val maxSecondsSchedule = 21474835
 
   initialize
-
-  val log = Logger("service.push")
 
   override def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000) =
       ws.url(config.get[String]("application.push.serviceUrl"))
@@ -53,6 +53,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
           nextRemTime.add(Calendar.DAY_OF_MONTH, 1)
         }
         var diffMin = Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes
+        log.debug(s"Scheduling reminder for user ${login.email} in ${diffMin._1} minutes")
         actorSystem.scheduler.scheduleOnce(diffMin + serverTimeOffset.minutes) {
           checkAndNotifyUser(login, nextRemTime)
         }
@@ -96,6 +97,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
         diffMin += serverTimeOffset.minutes
         if(diffMin._1 >= 0 && diffMin._1 <= maxSecondsSchedule) {
+          log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
           actorSystem.scheduler.scheduleOnce(diffMin) {
             checkAndNotifyTodo(todo)
           }
@@ -108,6 +110,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def checkAndNotifyTodo(todo: Todo): Unit = {
     db.run(TodoTable.todo.filter(_.id === todo.id).result).foreach{ todoDb =>
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
+        log.debug(s"Sending notification for todo ${todo.id}")
         sendToUser(todoNotification(todo), todo.loginFk)
       }
     }
@@ -122,6 +125,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def todoNotification(todo: Todo): PushPayload = PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List())
 
   override def initialize: Unit = {
+    log.debug("Initializing push service")
     db.run(TodoTable.todo.result).foreach { todos =>
       todos.foreach(todo => notifyTodo(todo))
     }

@@ -12,7 +12,11 @@ import scala.concurrent._
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents)(implicit context: ExecutionContext) 
  extends AbstractController(cc) {
+
+  val log = Logger("home")
+
   def index() = Action { implicit request: Request[AnyContent] =>
+    log.debug("Request for main page")
     Ok.sendFile(new java.io.File("./public/index.html"))
   }
 }

@@ -27,6 +27,8 @@ class TodoServiceImpl @Inject()(
                                  pushService: PushService)(implicit context: ExecutionContext)
   extends TodoService with HasDatabaseConfigProvider[JdbcProfile] {
 
+  val log = Logger("service.todo")
+
   override def updateAndCreateTodos(todos: Seq[Todo], userId: Int): Future[Seq[Todo]] = {
     val ids = todos.map(_.id)
     val getAll = TodoTable.todo.filter(x => x.loginFk === userId)
@@ -37,6 +39,7 @@ class TodoServiceImpl @Inject()(
       val dbById = dbTodos.map(x => (x.id, x)).toMap
 
       val toCreate = toCreateP.filter(x => x.serverTimestamp.isEmpty)
+      log.debug(s"Creating ${toCreate.length} todos, updating ${toUpdate.length} todos")
 
       val create = Future.sequence(toCreate.map(todo => createTodo(todo)))
 
@@ -57,8 +60,8 @@ class TodoServiceImpl @Inject()(
   }
 
   private def updateTodo(todo: Todo): Future[_] = {
-    System.out.println("Updating:" + todo.toString)
     val todoU = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
+    log.debug( s"Updating todo: ${todoU.toString}")
     pushService.notifyTodo(todoU)
 
     val update = TodoTable.todo.filter(x => x.id === todoU.id)
@@ -67,9 +70,10 @@ class TodoServiceImpl @Inject()(
   }
 
   private def createTodo(todo: Todo): Future[_] = {
-    System.out.println("Creating:" + todo.toString)
-
     val todoC = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
+
+    log.debug( s"Updating todo: ${todoC.toString}")
+
     db.run(TodoTable.todo.insertOrUpdate(todoC)).map { num =>
       pushService.notifyTodo(todoC)
     }

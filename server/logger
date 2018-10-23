@@ -1,0 +1,1 @@
+run -Dlogback.debug=true -Dlogger.file=conf/logback.xml
