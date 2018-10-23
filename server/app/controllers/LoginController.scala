@@ -50,7 +50,7 @@ class LoginController@Inject() (
   pushService: PushService)
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
 
-  val log = Logger("api.user")
+  val log = Logger("api.login")
 
   /**
    * Handles the submitted signup json.
@@ -61,6 +61,7 @@ class LoginController@Inject() (
         Future.successful(BadRequest(Json.toJson(form.errors)))
       },
       data => {
+        log.debug(s"Request to sign up with mail ${data.email}")
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
         loginService.retrieveAll(loginInfo).flatMap {
           case Some(login) =>
@@ -91,6 +92,7 @@ class LoginController@Inject() (
     */
   def login = Action.async(parse.json) { implicit request =>
     request.body.validate[SignInForm].map { data =>
+      log.debug(s"Request to login with ${data.email}")
       credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
         loginService.retrieve(loginInfo).flatMap {
           case Some(login) => silhouette.env.authenticatorService.create(loginInfo).map {
@@ -129,6 +131,7 @@ class LoginController@Inject() (
   }
 
   def updateDailyReminder = silhouette.SecuredAction.async(parse.text) { implicit request =>
+    log.debug(s"Request to update daily reminder")
     val time =
       if(request.body.equals("")) None
       else Some(LocalTime.parse(request.body, DateTimeFormatter.ofPattern("HH:mm")))

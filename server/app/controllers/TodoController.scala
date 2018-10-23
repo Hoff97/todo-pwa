@@ -16,6 +16,7 @@ import em.db.Util._
 import em.model.{Todo, TodoV}
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import em.service.{PushService, TodoService}
+import play.api.Logger
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -34,6 +35,7 @@ class TodoController @Inject()(
   val log = Logger("api.todo")
 
   def getTodos = silhouette.SecuredAction.async { implicit request =>
+    log.debug("Got request to get todos")
     val q = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
 
     db.run(q.result).map {
@@ -42,12 +44,14 @@ class TodoController @Inject()(
   }
   
   def updateTodos = silhouette.SecuredAction.async(parse.json[List[TodoV]]) { implicit request: SecuredRequest[AuthEnv, List[TodoV]] =>
+    log.debug("Got request to update todos")
     val userId = request.identity.id.get
     todoService.updateAndCreateTodos(request.body.map(x => x.toTodo(userId)), userId)
       .map(res => Ok(Json.toJson(res.map(_.toTodoV))))
   }
 
   def deleteTodo(id: String) = silhouette.SecuredAction.async(parse.empty) { implicit request: SecuredRequest[AuthEnv, Unit] =>
+    log.debug(s"Request to delete todo with id ${id}")
     db.run(TodoTable.todo.filter(x => x.loginFk === request.identity.id.get && x.id === id).delete)
       .map(x => Ok(id))
   }
