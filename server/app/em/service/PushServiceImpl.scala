@@ -49,7 +49,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         nextRemTime.set(Calendar.MINUTE, r.toLocalTime.getMinute)
         nextRemTime.set(Calendar.SECOND, 0)
         nextRemTime.set(Calendar.MILLISECOND, 0)
-        if(Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes < 0.seconds) {
+        if((Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes + serverTimeOffset.minutes) < 0.seconds) {
           nextRemTime.add(Calendar.DAY_OF_MONTH, 1)
         }
         var diffMin = Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes
