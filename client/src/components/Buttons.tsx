@@ -149,7 +149,12 @@ const renderItem = (value: string, inputChanged: (str: string) => void) => (item
 };
 
 const handleCompleteDay = (value: string, inputChanged: (str: string) => void) => (day: Date) => {
-    inputChanged(value + moment(day).format('DD-MM'));
+    let dayM = moment(day);
+    if(dayM.isAfter(moment()) && dayM.isBefore(moment().add(1, 'years'))) {
+        inputChanged(value + moment(day).format('DD-MM'));
+    } else {
+        inputChanged(value + moment(day).format('DD-MM-YYYY'));
+    }
 };
 
 export function Buttons({ value, addTodo, undo, redo, inputChanged, categories, loggedIn, login }: Props) {

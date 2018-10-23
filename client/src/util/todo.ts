@@ -13,7 +13,7 @@ function nextWeekday(wd: number) {
 
 const pExpr = /!([1-5])/
 const cExpr = /#([A-Za-z]+)/
-export const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2})|(\d{1,2})-(\d{1,2})-(\d{4}))/
+export const dExpr = /@(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|(\d{1,2})-(\d{1,2})-(\d{4})|(\d{1,2})-(\d{1,2}))/
 const rExpr = /r:(morning|noon|afternoon|evening|(\d{1,2}):(\d{2,2}))/
 
 export function dateDescrToDate(str: string): moment.Moment {
@@ -58,13 +58,14 @@ export function parseTodo(str: string): Todo {
             case 'sat': date = nextWeekday(6).toDate(); break;
             case 'sun': date = nextWeekday(0).toDate(); break;
             default:
-                if(dateMatch.length === 4) {
-                    var dateM = moment().month(+dateMatch[3]-1).date(+dateMatch[2]);
+                console.log(dateMatch);
+                if(dateMatch.length === 7 && dateMatch[5] !== undefined && dateMatch[6] !== undefined) {
+                    var dateM = moment().month(+dateMatch[6]-1).date(+dateMatch[5]);
                     if(!dateM.isAfter(moment())) {
                         dateM = dateM.add(1, 'years');
                     }
                     date = dateM.toDate();
-                } else if(dateMatch.length === 5) {
+                } else if(dateMatch.length === 7 && dateMatch[2] !== undefined && dateMatch[3] !== undefined && dateMatch[4] !== undefined) {
                     var dateM = moment().year(+dateMatch[4]).month(+dateMatch[3]-1).date(+dateMatch[2]);
                     date = dateM.toDate();
                 }
