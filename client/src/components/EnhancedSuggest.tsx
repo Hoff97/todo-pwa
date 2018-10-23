@@ -119,7 +119,7 @@ const handleCompleteDay = (value: string, inputChanged: (str: string) => void) =
 function renderInput(props: React.HTMLProps<HTMLInputElement>, wrapInput?: (input: JSX.Element) => JSX.Element) {
     let input = (
         <input {...props} type="text" className="form-control" placeholder="Todo"
-            aria-label="Recipient's username" aria-describedby="button-addon2" />
+            aria-label="Recipient's username" aria-describedby="button-addon2"/>
     );
     if(wrapInput) {
         return wrapInput(input);
