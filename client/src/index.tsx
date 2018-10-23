@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { rootReducer } from './reducers/index';
 import { StoreState } from './types/index';
 import { Provider } from 'react-redux';
-import MainPage from './components/App';
+import MainPage from './components/MainPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
 import promiseMiddleware from 'redux-promise-middleware'
@@ -19,6 +19,7 @@ import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NotFound from './containers/NotFound';
+import { putTodos } from './actions';
 
 library.add(faTrash)
 library.add(faUndo)
@@ -34,11 +35,14 @@ library.add(faTimes)
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware(), ReduxThunk, asyncDispatchMiddleware));
 
+store.dispatch(putTodos(store.getState().todos.state));
+
 ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
         <Switch>
+          <Route exact path="" component={MainPage} />
           <Route exact path="/" component={MainPage} />
           <Route component={NotFound} />
         </Switch>
@@ -50,5 +54,4 @@ ReactDOM.render(
 registerServiceWorker();
 
 Notification.requestPermission().then(function (result) {
-  console.log(result);
 });

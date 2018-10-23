@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EnhancedSuggest } from './EnhancedSuggest';
+import { CategoryInfo } from 'src/util/category';
 
 export interface Props {
   name: string
@@ -19,6 +20,7 @@ export interface Props {
   editChange: (str: string) => void
   editValue: string
   filterCategory: (category: string) => void;
+  categories: CategoryInfo[];
 }
 
 function wrapInput(input: JSX.Element) {
@@ -34,7 +36,7 @@ function wrapInput(input: JSX.Element) {
 }
 
 function Todo({ name, done, toggle, remove, priority, category,
-  date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory }: Props) {
+  date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
   if (!editing) {
     return (
       <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
@@ -76,7 +78,7 @@ function Todo({ name, done, toggle, remove, priority, category,
       <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); doneEditing(editValue) }}>
         <td colSpan={5}>
           <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
-            <EnhancedSuggest value={editValue} change={editChange} categories={[]} // TODO Get actual categories
+            <EnhancedSuggest value={editValue} change={editChange} categories={categories}
               wrapInput={wrapInput} />
           </form>
         </td>
