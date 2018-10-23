@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { EnhancedSuggest } from './EnhancedSuggest';
+import { CategoryInfo } from 'src/util/category';
 
 export interface Props {
   name: string
@@ -18,13 +20,26 @@ export interface Props {
   editChange: (str: string) => void
   editValue: string
   filterCategory: (category: string) => void;
+  categories: CategoryInfo[];
 }
 
-function Todo({ name, done, toggle, remove, priority, category, 
-    date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory }: Props) {
-  if(!editing) {
+function wrapInput(input: JSX.Element) {
+  return (
+    <div className="input-group" style={{ 'margin': '-4px' }}>
+      {input}
+      <div className="input-group-append">
+        <button className="btn btn-outline-secondary" type="submit"
+          id="button-addon2">Done</button>
+      </div>
+    </div>
+  );
+}
+
+function Todo({ name, done, toggle, remove, priority, category,
+  date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
+  if (!editing) {
     return (
-      <tr className={done ? 'table-info' : ''} onDoubleClick={e => {e.preventDefault();if(!done){edit()}}}>
+      <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
         <td>
           {priority &&
             <span className={'prio ' + 'prio' + priority}>{priority}</span>
@@ -35,7 +50,7 @@ function Todo({ name, done, toggle, remove, priority, category,
         </td>
         <td>
           {category &&
-            <span className="category" style={{color: categoryColor}} 
+            <span className="category" style={{ color: categoryColor }}
               onClick={e => filterCategory(category)}>{category}</span>
           }
         </td>
@@ -48,11 +63,11 @@ function Todo({ name, done, toggle, remove, priority, category,
         }
         <td colSpan={done ? 2 : 1}>
           <button onClick={toggle} className="float-right btn btn-primary btn-sm">
-            <FontAwesomeIcon icon={done ? 'undo' : 'check'}/>
+            <FontAwesomeIcon icon={done ? 'undo' : 'check'} />
           </button>
           {done &&
             <button onClick={remove} className="mr-2 float-right btn btn-danger btn-sm">
-              <FontAwesomeIcon icon="trash"/>
+              <FontAwesomeIcon icon="trash" />
             </button>
           }
         </td>
@@ -60,17 +75,11 @@ function Todo({ name, done, toggle, remove, priority, category,
     );
   } else {
     return (
-      <tr className={done ? 'table-info' : ''} onDoubleClick={e => {e.preventDefault();doneEditing(editValue)}}>
+      <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); doneEditing(editValue) }}>
         <td colSpan={5}>
-          <form onSubmit={e => { e.preventDefault();doneEditing(editValue) }}>
-              <div className="input-group" style={{'margin': '-4px'}}>
-                <input type="text" className="form-control"
-                  aria-label="Todo" aria-describedby="button-addon2" value={editValue} onChange={val => editChange(val.target.value)}/>
-                <div className="input-group-append">
-                    <button className="btn btn-outline-secondary" type="submit"
-                        id="button-addon2">Done</button>
-                </div>
-              </div>
+          <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
+            <EnhancedSuggest value={editValue} change={editChange} categories={categories}
+              wrapInput={wrapInput} />
           </form>
         </td>
       </tr>

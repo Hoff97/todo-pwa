@@ -1,5 +1,8 @@
 package em.service
 
+import java.sql.Timestamp
+import java.util.Date
+
 import em.db.TodoTable
 import em.model.Todo
 import javax.inject.Inject
@@ -8,7 +11,6 @@ import play.api.libs.json.Json
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
-
 import javax.inject._
 import play.api._
 import play.api.mvc._
@@ -31,8 +33,10 @@ class TodoServiceImpl @Inject()(
 
     db.run(getAll.result).flatMap { case dbTodos =>
       val dbIds = dbTodos.map(_.id)
-      val (toUpdate, toCreate) = todos.partition(todo => dbIds.contains(todo.id))
+      val (toUpdate, toCreateP) = todos.partition(todo => dbIds.contains(todo.id))
       val dbById = dbTodos.map(x => (x.id, x)).toMap
+
+      val toCreate = toCreateP.filter(x => x.serverTimestamp.isEmpty)
 
       val create = Future.sequence(toCreate.map(todo => createTodo(todo)))
 
@@ -53,16 +57,21 @@ class TodoServiceImpl @Inject()(
   }
 
   private def updateTodo(todo: Todo): Future[_] = {
-    pushService.notifyTodo(todo)
+    System.out.println("Updating:" + todo.toString)
+    val todoU = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
+    pushService.notifyTodo(todoU)
 
-    val update = TodoTable.todo.filter(x => x.id === todo.id)
-      .update(todo)
+    val update = TodoTable.todo.filter(x => x.id === todoU.id)
+      .update(todoU)
     db.run(update)
   }
 
   private def createTodo(todo: Todo): Future[_] = {
-    db.run(TodoTable.todo.insertOrUpdate(todo)).map { num =>
-      pushService.notifyTodo(todo)
+    System.out.println("Creating:" + todo.toString)
+
+    val todoC = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
+    db.run(TodoTable.todo.insertOrUpdate(todoC)).map { num =>
+      pushService.notifyTodo(todoC)
     }
   }
 }

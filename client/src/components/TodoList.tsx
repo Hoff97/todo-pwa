@@ -16,7 +16,8 @@ export interface Props {
     categoryInfo: CategoryInfo[]
 }
 
-export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, editChange, editValue, filterCategory, categoryInfo }: Props) {
+export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, 
+        editChange, editValue, filterCategory, categoryInfo }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
@@ -32,7 +33,8 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             editing={editingTodo === todo.id}
                             editValue={editValue}
                             editChange={editChange}
-                            filterCategory={filterCategory}/>
+                            filterCategory={filterCategory}
+                            categories={categoryInfo}/>
                     ))}
                 </tbody>
             </table>
