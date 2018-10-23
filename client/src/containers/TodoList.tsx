@@ -6,6 +6,8 @@ import { TodoList } from 'src/components/TodoList';
 import { Action } from 'redux-actions';
 import { catInfoFromTodos } from 'src/util/category';
 
+const defaultPrio = 0;
+
 export function mapStateToProps(state: StoreState) {
     return {
         todos: state.todos.state
@@ -18,8 +20,8 @@ export function mapStateToProps(state: StoreState) {
             })
             .sort((a, b) => {
                 if (a.done === b.done) {
-                    const pa = a.priority ? a.priority : 3;
-                    const pb = b.priority ? b.priority : 3;
+                    const pa = a.priority ? a.priority : defaultPrio;
+                    const pb = b.priority ? b.priority : defaultPrio;
                     if (pa === pb)
                         return a.name.localeCompare(b.name);
                     else

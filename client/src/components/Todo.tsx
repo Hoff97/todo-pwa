@@ -35,6 +35,16 @@ function wrapInput(input: JSX.Element) {
   );
 }
 
+const letterWidth = 25;
+function cutOffName(name: string) {
+  let slice = name.slice(0, (window.innerWidth-letterWidth*3)/letterWidth);
+  if(slice.length < name.length) {
+    return slice + '...';
+  } else {
+    return slice;
+  }
+}
+
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
   if (!editing) {
@@ -46,7 +56,7 @@ function Todo({ name, done, toggle, remove, priority, category,
           }
         </td>
         <td className="todo-name">
-          {name} {editing ? 'Editing!' : ''}
+          {cutOffName(name)}
         </td>
         <td>
           {category &&

@@ -9,10 +9,12 @@ case class Todo(id: String, name: String, loginFk: Int,
                 done: Boolean, category: Option[String],
                 timestamp: Timestamp,
                 reminder: Option[Timestamp],
-                serverTimestamp: Option[Timestamp]) extends HasCopy[Todo, String] {
+                serverTimestamp: Option[Timestamp],
+                parentFk: Option[String]) extends HasCopy[Todo, String] {
   def cpy(i: Option[String]) = this.copy(id = i.getOrElse(this.id))
 
-  def toTodoV = TodoV(id, name, date, priority, done, category, timestamp, reminder, serverTimestamp)
+  def toTodoV = TodoV(id, name, date, priority, done, category, timestamp,
+    reminder, serverTimestamp, parentFk)
 }
 
 case class TodoV(id: String, name: String,
@@ -20,8 +22,11 @@ case class TodoV(id: String, name: String,
                  done: Boolean, category: Option[String],
                  timestamp: Timestamp,
                  reminder: Option[Timestamp],
-                 serverTimestamp: Option[Timestamp]) {
-  def toTodo(loginFk: Int) = Todo(id, name, loginFk, date, priority, done, category, timestamp, reminder, serverTimestamp)
+                 serverTimestamp: Option[Timestamp],
+                 parentFk: Option[String]) {
+
+  def toTodo(loginFk: Int) = Todo(id, name, loginFk, date, priority, done, category, timestamp,
+    reminder, serverTimestamp, parentFk)
 }
 
 object Todo {
