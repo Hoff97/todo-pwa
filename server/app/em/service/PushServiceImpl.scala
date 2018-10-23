@@ -33,7 +33,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
 
   private val serverTimeOffset = config.get[Int]("server.timeOffsetMinutes")
 
-  private val maxSecondsSchedule = 21474835
+  private val maxMinutesSchedule = 357913
 
   initialize
 
@@ -96,7 +96,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
       case Some(d) => {
         var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
         diffMin += serverTimeOffset.minutes
-        if(diffMin._1 >= 0 && diffMin._1 <= maxSecondsSchedule) {
+        if(diffMin._1 >= 0 && diffMin._1 <= maxMinutesSchedule) {
           log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
           actorSystem.scheduler.scheduleOnce(diffMin) {
             checkAndNotifyTodo(todo)
