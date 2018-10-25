@@ -23,6 +23,7 @@
   <logger name="api.push" level="DEBUG" />
   <logger name="service.todo" level="DEBUG" />
   <logger name="service.push" level="DEBUG" />
+  <logger name="play.filters.hosts.AllowedHostsFilter" level="ERROR" />
 
   <root level="ERROR">
     <appender-ref ref="STDOUT" />
