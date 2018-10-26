@@ -21,6 +21,12 @@ app.use(bodyParser.json());
 app.post('/sendNotification', function (req, res) {
     console.log('Got request to send notification');
 
+    if(req.header("auth-pw") !== process.env.SERVICE_PW) {
+        console.log('Unauthorized request');
+        res.sendStatus(401);
+        return;
+    }
+
     const subscription = req.body.subscription;
     const payload = req.body.payload;
     const options = {
