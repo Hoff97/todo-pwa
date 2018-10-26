@@ -32,6 +32,7 @@
   },
   "scripts": {
     "start": "REACT_APP_VERSION=dev REACT_APP_TIME=now react-scripts-ts start",
+    "devbuild": "REACT_APP_VERSION=dev REACT_APP_TIME=now react-scripts-ts build && sw-precache --config=sw-precache-config.js && cp -r ./build/* ../server/public/",
     "build": "REACT_APP_VERSION=`git rev-parse HEAD` REACT_APP_TIME=`date` react-scripts-ts build && sw-precache --config=sw-precache-config.js",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"

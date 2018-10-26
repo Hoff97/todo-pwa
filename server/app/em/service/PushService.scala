@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import play.api.libs.ws.WSResponse
 
 trait PushService {
-  def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000): Future[WSResponse]
+  def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000)
 
   def notifyTodo(todo: Todo)
 

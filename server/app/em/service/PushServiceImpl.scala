@@ -40,7 +40,13 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   override def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000) =
       ws.url(config.get[String]("application.push.serviceUrl"))
         .withHttpHeaders("auth-pw" -> config.get[String]("application.push.pw"))
-        .post(Json.toJson(PushMessage(subscription, payload, ttl)))
+        .post(Json.toJson(PushMessage(subscription, payload, ttl))).foreach { response =>
+        if(response.status == 500) {
+          log.debug("Deleting subscription")
+          db.run(SubscriptionTable.subscriptions.filter(sub => sub.endpoint === subscription.endpoint
+            && sub.keyAuth === subscription.keys.auth && sub.keyp256dh === subscription.keys.p256dh).delete)
+        }
+      }
 
   override def notifyUser(login: Login): Unit = {
     login.dailyReminder match {
