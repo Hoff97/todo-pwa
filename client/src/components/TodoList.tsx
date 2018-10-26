@@ -25,7 +25,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
         <div className="mt-2 mb-2">
             <table className="table table-hover table-striped">
                 <tbody>
-                    {todos.map((todo, index) => (
+                    {todos.map((todo) => (
                         <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo} 
                             key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
                             edit={() => editTodo(todo)}

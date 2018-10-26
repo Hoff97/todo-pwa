@@ -8,7 +8,7 @@ import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
-import { setAccessToken, setupAccessToken } from 'src/util/auth';
+import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 
 type A<T> = { type: string, payload: T }
 
@@ -92,6 +92,20 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   CLEAR_FILTER: (ui: UIState, action: A<any>) => {
     return { ...ui, filterCategory: undefined };
   },
+  PUT_TODOS_REJECTED: (ui: UIState, action: A<any>) => {
+    if(action.payload.response.status === 401) {
+      removeAccessToken();
+      return { ...ui, accessToken: undefined };
+    }
+    return ui;
+  },
+  DELETE_TODO_REJECTED: (ui: UIState, action: A<any>) => {
+    if(action.payload.response.status === 401) {
+      removeAccessToken();
+      return { ...ui, accessToken: undefined };
+    }
+    return ui;
+  }
 }, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken() });
 
 function loadLocal(contents: any): Todo[] {
