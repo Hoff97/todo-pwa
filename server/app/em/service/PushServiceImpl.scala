@@ -1,8 +1,8 @@
 package em.service
 
 import java.sql.Timestamp
-import java.time.Instant
-import java.time.temporal.{ChronoUnit, TemporalUnit}
+import java.time.{Instant, LocalDateTime, ZoneOffset}
+import java.time.temporal._
 import java.util.Date
 
 import akka.actor.ActorSystem
@@ -40,7 +40,13 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   override def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000) =
       ws.url(config.get[String]("application.push.serviceUrl"))
         .withHttpHeaders("auth-pw" -> config.get[String]("application.push.pw"))
-        .post(Json.toJson(PushMessage(subscription, payload, ttl)))
+        .post(Json.toJson(PushMessage(subscription, payload, ttl))).foreach { response =>
+        if(response.status == 500) {
+          log.debug("Deleting subscription")
+          db.run(SubscriptionTable.subscriptions.filter(sub => sub.endpoint === subscription.endpoint
+            && sub.keyAuth === subscription.keys.auth && sub.keyp256dh === subscription.keys.p256dh).delete)
+        }
+      }
 
   override def notifyUser(login: Login): Unit = {
     login.dailyReminder match {
@@ -93,18 +99,30 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   override def notifyTodo(todo: Todo): Unit = {
-    todo.reminder match {
-      case Some(d) => {
-        var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
-        diffMin += serverTimeOffset.minutes
-        if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
-          log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
-          actorSystem.scheduler.scheduleOnce(diffMin) {
-            checkAndNotifyTodo(todo)
+    if(!todo.done) {
+      todo.reminder match {
+        case Some(d) => {
+          var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
+          if(todo.date.isEmpty || todo.date.get.toLocalDateTime.isBefore(LocalDateTime.now().withHour(0).withMinute(0))) {
+            log.debug("Scheduling daily reminder for todo")
+            val l = LocalDateTime.now()
+            var r = d.toLocalDateTime.withDayOfYear(l.getDayOfYear).withYear(l.getYear)
+            diffMin = Instant.now().until(r.toInstant(ZoneOffset.ofHours(2)), ChronoUnit.MINUTES).minutes
+            if(diffMin + serverTimeOffset.minutes < 0.minutes) {
+              r = r.plus(1, ChronoUnit.DAYS);
+              diffMin = Instant.now().until(r.toInstant(ZoneOffset.UTC), ChronoUnit.MINUTES).minutes
+            }
+          }
+          diffMin += serverTimeOffset.minutes
+          if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
+            log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
+            actorSystem.scheduler.scheduleOnce(diffMin) {
+              checkAndNotifyTodo(todo)
+            }
           }
         }
+        case None =>
       }
-      case None =>
     }
   }
 
@@ -113,6 +131,10 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
         log.debug(s"Sending notification for todo ${todo.id}")
         sendToUser(todoNotification(todo), todo.loginFk)
+
+        actorSystem.scheduler.scheduleOnce(10.minutes) {
+          notifyTodo(todoDb(0))
+        }
       }
     }
   }

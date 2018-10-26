@@ -1,5 +1,5 @@
 import { CategoryInfo } from 'src/util/category';
-import { dExpr, dateDescrToDate } from 'src/util/todo';
+import { dateDescrToDate } from 'src/util/todo';
 import * as React from 'react';
 import { longestPreSuffix } from 'src/util/string';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -59,17 +59,12 @@ function itemsForValue(value: string, categories: CategoryInfo[]) {
     ...['today', 'tomorrow', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(date)];
     items = [...items, ...['morning', 'noon', 'afternoon', 'evening'].map(rem => reminder(rem))];
 
-    let containsDate = value.match(dExpr) !== null;
-    items = items.filter(item => filterItem(value, item, containsDate));
+    items = items.filter(item => filterItem(value, item));
     return items;
 }
 
-function filterItem(value: string, item: ACOption, containsDate: boolean) {
-    var ret = longestPreSuffix(value, item.label) > 0;
-    if(item.type === 'reminder') {
-        ret = ret && containsDate;
-    }
-    return ret;
+function filterItem(value: string, item: ACOption) {
+    return longestPreSuffix(value, item.label) > 0;
 } 
 
 function appendACOption(value: string, opt: string) {

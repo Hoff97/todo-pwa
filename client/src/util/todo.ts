@@ -1,6 +1,7 @@
 import * as uuid from 'uuid/v4';
 import { Todo } from 'src/types';
 import * as moment from 'moment';
+import { comparing, dual } from './util';
 
 function nextWeekday(wd: number) {
     const today = moment().isoWeekday();
@@ -75,15 +76,16 @@ export function parseTodo(str: string): Todo {
 
     const reminderMatch = str.match(rExpr);
     var reminder: Date | undefined = undefined;
-    if(date !== undefined && reminderMatch !== null && reminderMatch[1] !== null) {
+    if(reminderMatch !== null && reminderMatch[1] !== null) {
+        var dateR = date ? moment(date) : moment();
         switch(reminderMatch[1]) {
-            case 'morning': reminder = moment(date).hours(9).minutes(0).seconds(0).toDate(); break;
-            case 'noon': reminder = moment(date).hours(12).minutes(0).seconds(0).toDate(); break;
-            case 'afternoon': reminder = moment(date).hours(15).minutes(0).seconds(0).toDate(); break;
-            case 'evening': reminder = moment(date).hours(19).minutes(0).seconds(0).toDate(); break;
+            case 'morning': reminder = dateR.hours(9).minutes(0).seconds(0).toDate(); break;
+            case 'noon': reminder = dateR.hours(12).minutes(0).seconds(0).toDate(); break;
+            case 'afternoon': reminder = dateR.hours(15).minutes(0).seconds(0).toDate(); break;
+            case 'evening': reminder = dateR.hours(19).minutes(0).seconds(0).toDate(); break;
             default:
                 if(reminderMatch.length === 4) {
-                    reminder = moment(date).hours(+reminderMatch[2]).minutes(+reminderMatch[3]).seconds(0).toDate(); break;
+                    reminder = dateR.hours(+reminderMatch[2]).minutes(+reminderMatch[3]).seconds(0).toDate(); break;
                 }
                 break;
         }
@@ -123,3 +125,19 @@ export function todoStr(todo: Todo) {
     }
     return ret;
 }
+
+export function isOverdue(date?: Date) {
+    return date ? moment().startOf('day').isAfter(date) : false;
+}
+
+export function isToday(date?: Date) {
+    return !isOverdue(date) && (date ? moment().isAfter(date) : false);
+}
+
+export const compare = comparing<Todo>(
+    a => a.done ? 1 : 0,
+    a => isOverdue(a.date) ? 0 : 1,
+    a => a.priority ? -a.priority : 0,
+    a => a.date ? -moment(a.date).startOf('day').toDate().getTime() : -200000000,
+    dual((a,b) => a.name.localeCompare(b.name))
+);

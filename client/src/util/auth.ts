@@ -26,3 +26,8 @@ export function setupAccessToken() {
     }
     return token;
 }
+
+export function removeAccessToken() {
+    axios.defaults.headers = {};
+    localStorage.removeItem(accessTokenLS);
+}

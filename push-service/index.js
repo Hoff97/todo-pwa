@@ -39,7 +39,7 @@ app.post('/sendNotification', function (req, res) {
                 res.sendStatus(201);
             })
             .catch(function (error) {
-                console.log(error);
+                console.log('Error when sending notification');
                 res.sendStatus(500);
             });
     }, req.body.delay * 1000);
