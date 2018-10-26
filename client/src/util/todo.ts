@@ -1,6 +1,7 @@
 import * as uuid from 'uuid/v4';
 import { Todo } from 'src/types';
 import * as moment from 'moment';
+import { comparing, dual } from './util';
 
 function nextWeekday(wd: number) {
     const today = moment().isoWeekday();
@@ -123,3 +124,19 @@ export function todoStr(todo: Todo) {
     }
     return ret;
 }
+
+export function isOverdue(date?: Date) {
+    return date ? moment().startOf('day').isAfter(date) : false;
+}
+
+export function isToday(date?: Date) {
+    return !isOverdue(date) && (date ? moment().isAfter(date) : false);
+}
+
+export const compare = comparing<Todo>(
+    a => a.done ? 1 : 0,
+    a => isOverdue(a.date) ? 0 : 1,
+    a => a.priority ? -a.priority : 0,
+    a => a.date ? -moment(a.date).startOf('day').toDate().getTime() : -200000000,
+    dual((a,b) => a.name.localeCompare(b.name))
+);

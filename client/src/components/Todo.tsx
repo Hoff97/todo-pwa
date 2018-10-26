@@ -3,6 +3,7 @@ import * as moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EnhancedSuggest } from './EnhancedSuggest';
 import { CategoryInfo } from 'src/util/category';
+import { isOverdue, isToday } from 'src/util/todo';
 
 export interface Props {
   name: string
@@ -47,8 +48,8 @@ function cutOffName(name: string) {
 
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
-  let overdue = date ? moment().startOf('day').isAfter(date) : false;
-  let today = !overdue && (date ? moment().isAfter(date) : false);
+  let overdue = isOverdue(date);
+  let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
   if (!editing) {
     return (

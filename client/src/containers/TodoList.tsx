@@ -5,8 +5,7 @@ import { Dispatch } from 'redux';
 import { TodoList } from 'src/components/TodoList';
 import { Action } from 'redux-actions';
 import { catInfoFromTodos } from 'src/util/category';
-
-const defaultPrio = 0;
+import { compare } from 'src/util/todo';
 
 export function mapStateToProps(state: StoreState) {
     return {
@@ -18,21 +17,7 @@ export function mapStateToProps(state: StoreState) {
                     return true;
                 }
             })
-            .sort((a, b) => {
-                if (a.done === b.done) {
-                    const pa = a.priority ? a.priority : defaultPrio;
-                    const pb = b.priority ? b.priority : defaultPrio;
-                    if (pa === pb)
-                        return a.name.localeCompare(b.name);
-                    else
-                        return pb - pa;
-                } else if (a.done && !b.done) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }),
+            .sort((a, b) => compare(a,b)),
         editingTodo: state.ui.editingTodo,
         editValue: state.ui.editValue,
         categoryInfo: catInfoFromTodos(state.todos.state)
