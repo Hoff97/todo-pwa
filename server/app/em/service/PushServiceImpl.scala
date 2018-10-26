@@ -82,7 +82,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
             sendToUser(dailyNotification(login, todosToday), login.id.get)
         }
 
-        actorSystem.scheduler.scheduleOnce(10.minutes) {
+        actorSystem.scheduler.scheduleOnce(2.minutes) {
           notifyUser(loginDb)
         }
       }
@@ -103,7 +103,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
       todo.reminder match {
         case Some(d) => {
           var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
-          if(todo.date.isEmpty || todo.date.get.toLocalDateTime.isBefore(LocalDateTime.now().withHour(0).withMinute(0))) {
+          if(todo.date.isEmpty || d.toLocalDateTime.isBefore(LocalDateTime.now())) {
             log.debug("Scheduling daily reminder for todo")
             val l = LocalDateTime.now()
             var r = d.toLocalDateTime.withDayOfYear(l.getDayOfYear).withYear(l.getYear)
@@ -132,7 +132,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         log.debug(s"Sending notification for todo ${todo.id}")
         sendToUser(todoNotification(todo), todo.loginFk)
 
-        actorSystem.scheduler.scheduleOnce(10.minutes) {
+        actorSystem.scheduler.scheduleOnce(2.minutes) {
           notifyTodo(todoDb(0))
         }
       }
