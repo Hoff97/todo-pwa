@@ -39,6 +39,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
 
   override def sendMessage(subscription: Subscription, payload: PushPayload, ttl: Int = 30000) =
       ws.url(config.get[String]("application.push.serviceUrl"))
+        .withHttpHeaders("auth-pw" -> config.get[String]("application.push.pw"))
         .post(Json.toJson(PushMessage(subscription, payload, ttl)))
 
   override def notifyUser(login: Login): Unit = {
@@ -75,7 +76,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
             sendToUser(dailyNotification(login, todosToday), login.id.get)
         }
 
-        actorSystem.scheduler.scheduleOnce(10.seconds) {
+        actorSystem.scheduler.scheduleOnce(10.minutes) {
           notifyUser(loginDb)
         }
       }
