@@ -35,7 +35,7 @@ function wrapInput(input: JSX.Element) {
   );
 }
 
-const letterWidth = 25;
+const letterWidth = 30;
 function cutOffName(name: string) {
   let slice = name.slice(0, (window.innerWidth-letterWidth*3)/letterWidth);
   if(slice.length < name.length) {
@@ -47,9 +47,12 @@ function cutOffName(name: string) {
 
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
+  let overdue = date ? moment().startOf('day').isAfter(date) : false;
+  let today = !overdue && (date ? moment().isAfter(date) : false);
+  let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
   if (!editing) {
     return (
-      <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
+      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
         <td>
           {priority &&
             <span className={'prio ' + 'prio' + priority}>{priority}</span>
