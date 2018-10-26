@@ -99,18 +99,20 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   override def notifyTodo(todo: Todo): Unit = {
-    todo.reminder match {
-      case Some(d) => {
-        var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
-        diffMin += serverTimeOffset.minutes
-        if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
-          log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
-          actorSystem.scheduler.scheduleOnce(diffMin) {
-            checkAndNotifyTodo(todo)
+    if(!todo.done) {
+      todo.reminder match {
+        case Some(d) => {
+          var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
+          diffMin += serverTimeOffset.minutes
+          if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
+            log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
+            actorSystem.scheduler.scheduleOnce(diffMin) {
+              checkAndNotifyTodo(todo)
+            }
           }
         }
+        case None =>
       }
-      case None =>
     }
   }
 
