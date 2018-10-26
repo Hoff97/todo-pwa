@@ -1,8 +1,8 @@
 package em.service
 
 import java.sql.Timestamp
-import java.time.Instant
-import java.time.temporal.{ChronoUnit, TemporalUnit}
+import java.time.{Instant, LocalDateTime, ZoneOffset}
+import java.time.temporal._
 import java.util.Date
 
 import akka.actor.ActorSystem
@@ -103,6 +103,16 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
       todo.reminder match {
         case Some(d) => {
           var diffMin = Instant.now().until(Instant.ofEpochMilli(d.getTime), ChronoUnit.MINUTES).minutes
+          if(todo.date.isEmpty || todo.date.get.toLocalDateTime.isBefore(LocalDateTime.now().withHour(0).withMinute(0))) {
+            log.debug("Scheduling daily reminder for todo")
+            val l = LocalDateTime.now()
+            var r = d.toLocalDateTime.withDayOfYear(l.getDayOfYear).withYear(l.getYear)
+            diffMin = Instant.now().until(r.toInstant(ZoneOffset.ofHours(2)), ChronoUnit.MINUTES).minutes
+            if(diffMin + serverTimeOffset.minutes < 0.minutes) {
+              r = r.plus(1, ChronoUnit.DAYS);
+              diffMin = Instant.now().until(r.toInstant(ZoneOffset.UTC), ChronoUnit.MINUTES).minutes
+            }
+          }
           diffMin += serverTimeOffset.minutes
           if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
             log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
@@ -121,6 +131,10 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
         log.debug(s"Sending notification for todo ${todo.id}")
         sendToUser(todoNotification(todo), todo.loginFk)
+
+        actorSystem.scheduler.scheduleOnce(10.minutes) {
+          notifyTodo(todoDb(0))
+        }
       }
     }
   }
