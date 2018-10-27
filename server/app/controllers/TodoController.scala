@@ -38,8 +38,8 @@ class TodoController @Inject()(
     log.debug("Got request to get todos")
     val q = TodoTable.todo.filter(x => x.loginFk === request.identity.id.get)
 
-    db.run(q.result).map {
-      case todos => Ok(Json.toJson(todos.map(_.toTodoV)))
+    db.run(q.detailed).map {
+      case todos => Ok(Json.toJson(todos))
     }
   }
   
@@ -47,7 +47,8 @@ class TodoController @Inject()(
     log.debug("Got request to update todos")
     val userId = request.identity.id.get
     todoService.updateAndCreateTodos(request.body.map(x => x.toTodo(userId)), userId)
-      .map(res => Ok(Json.toJson(res.map(_.toTodoV))))
+      .flatMap(x => todoService.getTodosForUser(request.identity.id.get))
+      .map(todos => Ok(Json.toJson(todos)))
   }
 
   def deleteTodo(id: String) = silhouette.SecuredAction.async(parse.empty) { implicit request: SecuredRequest[AuthEnv, Unit] =>

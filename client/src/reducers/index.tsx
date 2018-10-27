@@ -120,7 +120,8 @@ function loadLocal(contents: any): Todo[] {
       ...todo,
       date: todo.date ? moment(todo.date).toDate() : undefined,
       timestamp: todo.timestamp ? todo.timestamp : new Date(),
-      serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined
+      serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined,
+      files: todo.files ? todo.files : []
     }
   })
   return todos;

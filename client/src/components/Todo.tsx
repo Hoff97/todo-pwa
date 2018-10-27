@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EnhancedSuggest } from './EnhancedSuggest';
 import { CategoryInfo } from 'src/util/category';
 import { isOverdue, isToday } from 'src/util/todo';
+import { TFile } from 'src/types';
 
 export interface Props {
   name: string
@@ -22,6 +23,8 @@ export interface Props {
   editValue: string
   filterCategory: (category: string) => void;
   categories: CategoryInfo[];
+  comment?: string;
+  files: TFile[]
 }
 
 function wrapInput(input: JSX.Element) {
@@ -47,7 +50,8 @@ function cutOffName(name: string) {
 }
 
 function Todo({ name, done, toggle, remove, priority, category,
-  date, categoryColor, edit, editing, doneEditing, editChange, editValue, filterCategory, categories }: Props) {
+  date, categoryColor, edit, editing, doneEditing, editChange, 
+  editValue, filterCategory, categories, comment, files }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
@@ -93,7 +97,22 @@ function Todo({ name, done, toggle, remove, priority, category,
         <td colSpan={5}>
           <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
             <EnhancedSuggest value={editValue} change={editChange} categories={categories}
-              wrapInput={wrapInput} />
+              wrapInput={wrapInput} /><br/>
+            <div className="form-group">
+              <label htmlFor="exampleFormControlTextarea1">Kommentar</label>
+              <textarea className="form-control" id="exampleFormControlTextarea1" rows={3}
+                value={comment}></textarea>
+            </div>
+            <ul className="list-group">
+              {files.map(file => (
+                <li className="list-group-item">
+                  {file.name}
+                  <button onClick={() => console.log('Remove file')} className="mr-2 float-right btn btn-danger btn-sm">
+                    <FontAwesomeIcon icon="trash" />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </form>
         </td>
       </tr>

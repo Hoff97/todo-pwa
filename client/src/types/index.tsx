@@ -10,6 +10,15 @@ export interface Todo {
     timestamp: Date;
     reminder?: Date;
     serverTimestamp?: Date;
+    files: TFile[];
+    comment?: string;
+}
+
+export interface TFile {
+    id: string;
+    name: string;
+    content: string;
+    todoFk: string;
 }
 
 export type UIState = {

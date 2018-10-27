@@ -1,0 +1,32 @@
+[{
+    "id": "1235433e-388f-4d77-bcf9-4720d4f0cd19",
+    "name": "test",
+    "done": false,
+    "timestamp": "2018-10-26T23:43:56.000Z",
+    "reminder": "2018-10-27 09:00:00",
+    "serverTimestamp": "2018-10-27 01:43:56",
+    "files": [{
+        "id": "1235434e-388f-4d77-bcf9-4720d4f0cd19",
+        "name": "file1",
+        "content": "bla",
+        "todoFk": "1235433e-388f-4d77-bcf9-4720d4f0cd19"
+    }]
+}, {
+    "id": "dd12b84c-3fc5-4461-9e11-0b461514fe0a",
+    "name": "test",
+    "date": "2018-10-28T20:57:13.000Z",
+    "done": false,
+    "timestamp": "2018-10-27T19:57:13.000Z",
+    "reminder": "2018-10-28 09:00:00",
+    "serverTimestamp": "2018-10-27 21:57:14",
+    "files": []
+}, {
+    "id": "022c82ca-3ac5-4ca1-b10c-b58bb35ffe9e",
+    "name": "test",
+    "date": "2018-10-26T20:07:52.000Z",
+    "done": false,
+    "timestamp": "2018-10-27T20:07:52.000Z",
+    "reminder": "2018-10-26 09:00:00",
+    "serverTimestamp": "2018-10-27 22:07:53",
+    "files": []
+}]

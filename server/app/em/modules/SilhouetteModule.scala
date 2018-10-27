@@ -42,6 +42,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[LoginService].to[LoginServiceImpl]
     bind[PushService].to[PushServiceImpl].in(Scopes.SINGLETON)
     bind[TodoService].to[TodoServiceImpl]
+    bind[SyncService].to[SyncServiceImpl]
   }
 
   @Provides

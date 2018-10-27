@@ -4,8 +4,7 @@ import java.sql.Timestamp
 import java.util.Date
 
 import em.db.TodoTable
-import em.model.Todo
-import javax.inject.Inject
+import em.model._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.json.Json
 import slick.jdbc.JdbcProfile
@@ -20,62 +19,26 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import em.db.TodoTable
-import em.model.Todo
+import slick.ast.{BaseTypedType, TypedType}
 
 class TodoServiceImpl @Inject()(
                                  protected val dbConfigProvider: DatabaseConfigProvider,
-                                 pushService: PushService)(implicit context: ExecutionContext)
+                                 pushService: PushService,
+                                 syncService: SyncService)(implicit context: ExecutionContext)
   extends TodoService with HasDatabaseConfigProvider[JdbcProfile] {
 
   val log = Logger("service.todo")
 
-  override def updateAndCreateTodos(todos: Seq[Todo], userId: Int): Future[Seq[Todo]] = {
-    val ids = todos.map(_.id)
-    val getAll = TodoTable.todo.filter(x => x.loginFk === userId)
+  override def updateAndCreateTodos(todos: Seq[Todo], userId: Int) =
+    syncService.updateCreateEntity[String, Todo, TodoTable](todos, TodoTable.todo,
+      TodoTable.todo.filter(x => x.loginFk === userId),
+      todo => Future.successful(pushService.notifyTodo(todo)),
+      todo => Future.successful(pushService.notifyTodo(todo)))
 
-    db.run(getAll.result).flatMap { case dbTodos =>
-      val dbIds = dbTodos.map(_.id)
-      val (toUpdate, toCreateP) = todos.partition(todo => dbIds.contains(todo.id))
-      val dbById = dbTodos.map(x => (x.id, x)).toMap
 
-      val toCreate = toCreateP.filter(x => x.serverTimestamp.isEmpty)
-      log.debug(s"Creating ${toCreate.length} todos, updating ${toUpdate.length} todos")
+  override def getTodosForUser(userId: Int): Future[Seq[TodoV]] = {
+    val q = TodoTable.todo.filter(x => x.loginFk === userId)
 
-      val create = Future.sequence(toCreate.map(todo => createTodo(todo)))
-
-      val update = Future.sequence(toUpdate
-        .map(todo => (todo, dbById.get(todo.id).get))
-        .map { case (todo, todoDb) =>
-          if(todo.timestamp.after(todoDb.timestamp))
-            updateTodo(todo)
-          else {
-            Future.successful(todoDb)
-          }
-        })
-
-      create.zip(update)
-    }.flatMap { case (t1, t2) =>
-      db.run(TodoTable.todo.filter(x => x.loginFk === userId).result)
-    }
-  }
-
-  private def updateTodo(todo: Todo): Future[_] = {
-    val todoU = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
-    log.debug( s"Updating todo: ${todoU.toString}")
-    pushService.notifyTodo(todoU)
-
-    val update = TodoTable.todo.filter(x => x.id === todoU.id)
-      .update(todoU)
-    db.run(update)
-  }
-
-  private def createTodo(todo: Todo): Future[_] = {
-    val todoC = todo.copy(serverTimestamp = Some(new Timestamp(new Date().getTime)))
-
-    log.debug( s"Updating todo: ${todoC.toString}")
-
-    db.run(TodoTable.todo.insertOrUpdate(todoC)).map { num =>
-      pushService.notifyTodo(todoC)
-    }
+    db.run(q.detailed)
   }
 }

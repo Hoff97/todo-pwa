@@ -9,6 +9,8 @@ case class SubscriptionUser(id: Option[Int], endpoint: String, keyAuth: String, 
   def cpy(i: Option[Int]) = this.copy(id = i)
 
   def toSubscription: Subscription = Subscription(endpoint, Keys(keyAuth, keyp256dh))
+
+  def getId = id.get
 }
 
 object SubscriptionUser {

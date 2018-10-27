@@ -4,9 +4,10 @@ import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape.proveShapeOf
 import em.model._
 import java.sql.Timestamp
+import em.db.FileTable._
 
 
-class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with HasID[Todo, String] {
+class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with TimeId[Todo, String] {
   def id = column[String]("id",O.PrimaryKey)
 
   def name = column[String]("name")
@@ -27,8 +28,12 @@ class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with HasID[Todo, Stri
 
   def parentFk = column[Option[String]]("parent_fk")
 
+  def comment = column[Option[String]]("comment")
+
   def * = (id, name, loginFk, date, priority, done,
-    category, timestamp, reminder, serverTimestamp, parentFk) <> (Todo.tupled, Todo.unapply)
+    category, timestamp, reminder, serverTimestamp, parentFk, comment) <> (Todo.tupled, Todo.unapply)
+
+  def files = file.filter(f => f.todoFk === id)
 }
 
 object TodoTable {

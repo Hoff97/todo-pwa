@@ -13,6 +13,8 @@ case class Login(id: Option[Int], email: String, pwHash: Option[String],
   def cpy(i: Option[Int]) = this.copy(id = i)
   
   val loginInfo = LoginInfo(providerID,providerKey)
+
+  def getId = id.get
 }
 
 object Login {

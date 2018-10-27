@@ -66,3 +66,6 @@ export const filterCategory = createAction(FILTER_CATEGORY, (category: string) =
 
 export const CLEAR_FILTER = 'CLEAR_FILTER';
 export const clearFilter = createAction(CLEAR_FILTER, () => {})
+
+export const EXPAND_TODO = 'EXPAND_TODO';
+export const expandTodo = createAction(EXPAND_TODO, (id: string) => id)

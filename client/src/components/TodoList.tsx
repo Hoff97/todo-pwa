@@ -13,7 +13,7 @@ export interface Props {
     finishEdit: (id: string, str: string) => void;
     editChange: (str: string) => void;
     filterCategory: (category: string) => void;
-    categoryInfo: CategoryInfo[]
+    categoryInfo: CategoryInfo[];
 }
 
 export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, 
@@ -34,7 +34,9 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             editValue={editValue}
                             editChange={editChange}
                             filterCategory={filterCategory}
-                            categories={categoryInfo}/>
+                            categories={categoryInfo}
+                            comment={todo.comment}
+                            files={todo.files}/>
                     ))}
                 </tbody>
             </table>
