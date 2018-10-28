@@ -52,6 +52,22 @@ function cutOffName(name: string) {
   }
 }
 
+function prec(n: number, prec: number) {
+  return Math.round(n*(10**prec))/(10**prec);
+}
+
+function fileSize(file: TFile) {
+  let len = file.data.length;
+  if(len < 1000) {
+    return len + 'B';
+  } else if(len < 1000*1000) {
+    return (prec(len/1000,1)) + 'kB';
+  } else if(len < 1000*1000*1000) {
+    return (prec(len/1000/1000,1)) + 'MB';
+  }
+  return len + 'B';
+}
+
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
   editValue, filterCategory, categories, comment, files, addFile, 
@@ -110,7 +126,7 @@ function Todo({ name, done, toggle, remove, priority, category,
             <ul className="list-group">
               {files.map(file => (
                 <li className="list-group-item" key={file.id}>
-                  <a href={file.data}>{file.name}</a>
+                  <a href={file.data}>{file.name}</a> <span className="text-muted">({fileSize(file)})</span>
                   <button onClick={e => {e.preventDefault();deleteFile(file.id)}} className="mr-2 float-right btn btn-danger btn-sm">
                     <FontAwesomeIcon icon="trash" />
                   </button>
