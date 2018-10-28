@@ -11,6 +11,7 @@ import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import * as uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
+import { promptInstall } from 'src';
 
 type A<T> = { type: string, payload: T }
 
@@ -170,8 +171,23 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
       return { ...ui, accessToken: undefined };
     }
     return ui;
+  },
+
+  TOGGLE_SHOW_INSTALL: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      showInstall: !ui.showInstall
+    };
+  },
+
+  INSTALL: (ui: UIState, action: A<any>) => {
+    promptInstall();
+    return {
+      ...ui,
+      showInstall: false
+    };
   }
-}, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken() });
+}, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken(), showInstall: false });
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];

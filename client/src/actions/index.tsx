@@ -88,3 +88,9 @@ export function deleteFile(id: string, todoId: string) {
 
 export const COMMENT_CHANGED = 'COMMENT_CHANGED';
 export const commentChanged = createAction(COMMENT_CHANGED, (todoId: string, comment: string) => [todoId, comment])
+
+export const TOGGLE_SHOW_INSTALL = 'TOGGLE_SHOW_INSTALL';
+export const toggleShowInstall = createAction(TOGGLE_SHOW_INSTALL, () => {})
+
+export const INSTALL = 'INSTALL';
+export const install = createAction(INSTALL, () => {})
