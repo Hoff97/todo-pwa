@@ -10,10 +10,13 @@ import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import * as uuid from 'uuid/v4';
+import { dataSize } from 'src/util/util';
 
 type A<T> = { type: string, payload: T }
 
 const reader = new FileReader();
+
+const maxFileSize = 1000*500;
 
 export const todos: Reducer<Todo[], Action<any>> = handleActions({
   ADD_TODO: (todos: Todo[], action: AsyncDispatchAction<string>) => [...todos, parseTodo(action.payload as string)],
@@ -56,12 +59,17 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 
   ADD_FILE: (todos: Todo[], action: AsyncDispatchAction<any>) => {
     let file = action.payload[1] as File;
-    reader.readAsDataURL(file);
-    reader.onload = event => {
-      if (event.target && (event.target as any).result) {
-        action.asyncDispatch(addFileDone(action.payload[0], file, (event.target as any).result));
-      }
-    };
+    console.log(file.size);
+    if (file.size <= maxFileSize) {
+      reader.readAsDataURL(file);
+      reader.onload = event => {
+        if (event.target && (event.target as any).result) {
+          action.asyncDispatch(addFileDone(action.payload[0], file, (event.target as any).result));
+        }
+      };
+    } else {
+      alert(`Sorry, this file is to large (${dataSize(file.size)}). Maximum file size is ${dataSize(maxFileSize)}`)
+    }
     return todos;
   },
 
