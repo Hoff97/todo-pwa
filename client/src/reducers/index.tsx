@@ -40,6 +40,7 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
       newTodo.id = todo.id;
       newTodo.timestamp = new Date();
       newTodo.comment = todo.comment;
+      newTodo.files = todo.files;
       return newTodo;
     }
     return todo;
