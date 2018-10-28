@@ -31,7 +31,10 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         editTodo: (todo: Todo) => dispatch(actions.editTodo(todo)),
         finishEdit: (id: string, str: string) => dispatch(actions.finishEdit(id, str)),
         editChange: (str: string) => dispatch(actions.editChange(str)),
-        filterCategory: (category: string) => dispatch(actions.filterCategory(category))
+        filterCategory: (category: string) => dispatch(actions.filterCategory(category)),
+        addFile: (todoId: string, file: File) => dispatch(actions.addFile(todoId, file)),
+        deleteFile: (id: string, todoId: string) => dispatch(actions.deleteFile(id, todoId)),
+        commentChanged: (todoId: string, comment: string) => dispatch(actions.commentChanged(todoId, comment))
     }
 }
 

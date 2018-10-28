@@ -107,7 +107,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
             log.debug("Scheduling daily reminder for todo")
             val l = LocalDateTime.now()
             var r = d.toLocalDateTime.withDayOfYear(l.getDayOfYear).withYear(l.getYear)
-            diffMin = Instant.now().until(r.toInstant(ZoneOffset.ofHours(2)), ChronoUnit.MINUTES).minutes
+            diffMin = Instant.now().until(r.toInstant(ZoneOffset.ofHours(0)), ChronoUnit.MINUTES).minutes
             if(diffMin + serverTimeOffset.minutes < 0.minutes) {
               r = r.plus(1, ChronoUnit.DAYS);
               diffMin = Instant.now().until(r.toInstant(ZoneOffset.UTC), ChronoUnit.MINUTES).minutes

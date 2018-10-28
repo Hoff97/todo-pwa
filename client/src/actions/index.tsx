@@ -1,7 +1,7 @@
 import { createAction } from 'redux-actions';
 import { Todo } from 'src/types';
 import { loginRequest, signUpRequest } from 'src/rest/auth';
-import { todoPut, deleteTodoRequest } from 'src/rest/todo';
+import { todoPut, deleteTodoRequest, deleteFileRequest } from 'src/rest/todo';
 
 export const ADD_TODO = 'ADD_TODO';
 export const addTodo = createAction(ADD_TODO, (x: string) => x);
@@ -66,3 +66,25 @@ export const filterCategory = createAction(FILTER_CATEGORY, (category: string) =
 
 export const CLEAR_FILTER = 'CLEAR_FILTER';
 export const clearFilter = createAction(CLEAR_FILTER, () => {})
+
+export const EXPAND_TODO = 'EXPAND_TODO';
+export const expandTodo = createAction(EXPAND_TODO, (id: string) => id)
+
+export const ADD_FILE = 'ADD_FILE';
+export const addFile = createAction(ADD_FILE, (todoId: string, file: File) => [todoId, file])
+
+export const ADD_FILE_DONE = 'ADD_FILE_DONE';
+export const addFileDone = createAction(ADD_FILE_DONE, (todoId: string, file: File, content: string) => [todoId, file, content])
+
+export const DELETE_FILE = 'DELETE_FILE';
+export function deleteFile(id: string, todoId: string) {
+    return {
+        type: DELETE_FILE,
+        payload: deleteFileRequest(id, todoId).then(response => {
+            return [id, todoId];
+        })
+    }
+}
+
+export const COMMENT_CHANGED = 'COMMENT_CHANGED';
+export const commentChanged = createAction(COMMENT_CHANGED, (todoId: string, comment: string) => [todoId, comment])

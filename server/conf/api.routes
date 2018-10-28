@@ -35,6 +35,21 @@ GET    /todo                     controllers.TodoController.getTodos
 DELETE    /todo/:id                     controllers.TodoController.deleteTodo(id: String)
 
 ###
+#  summary: Delete a todo
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+DELETE    /todo/:todoId/file/:id                     controllers.TodoController.deleteFile(id: String, todoId: String)
+
+###
 #  summary: Update todos
 #  parameters:
 #  - in: header

@@ -23,11 +23,11 @@ object Util extends Results {
 
   def diff(a: Rep[Timestamp], b: Rep[Timestamp]) = SimpleBinaryOperator[Timestamp]("-")
 
-  def insertAndReturn[T, U <: HasID[T, Int]](a: TableQuery[U], b: U#TableElementType) = {
+  def insertAndReturn[T <: HasCopy[T, Int], U <: HasID[T, Int]](a: TableQuery[U], b: U#TableElementType) = {
     (a returning a.map(x => x.id) into ((event,i) => event.cpy(Some(i))) += b)
   }
 
-  def insertAndReturnS[T, U <: HasID[T, String]](a: TableQuery[U], b: U#TableElementType) = {
+  def insertAndReturnS[T <: HasCopy[T, String], U <: HasID[T, String]](a: TableQuery[U], b: U#TableElementType) = {
     (a returning a.map(x => x.id) into ((event,i) => event.cpy(Some(i))) += b)
   }
 
