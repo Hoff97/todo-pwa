@@ -10,12 +10,12 @@
     {
       "src": "favicon-large.png",
       "sizes": "512x512 256x256",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
       "src": "favicon-middle.png",
       "sizes": "192x192",
-      "type": "image/x-icon"
+      "type": "image/png"
     }
   ],
   "start_url": "./index.html",
