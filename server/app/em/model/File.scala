@@ -8,7 +8,7 @@ import em.util.DateTime._
 case class File(id: String,
                 name: String,
                 todoFk: String,
-                data: Array[Byte],
+                data: String,
                 timestamp: Timestamp,
                 serverTimestamp: Option[Timestamp])
   extends CopyTime[File, String] {

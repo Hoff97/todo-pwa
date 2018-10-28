@@ -4,7 +4,7 @@ CREATE TABLE file (
     id VARCHAR PRIMARY KEY,
     todo_fk VARCHAR NOT NULL REFERENCES todo (id) ON DELETE CASCADE,
     name VARCHAR NOT NULL,
-    data bytea NOT NULL,
+    data VARCHAR NOT NULL,
     server_timestamp TIMESTAMP DEFAULT null,
     timestamp TIMESTAMP NOT NULL DEFAULT current_timestamp
 );

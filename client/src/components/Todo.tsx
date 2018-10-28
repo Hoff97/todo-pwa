@@ -24,7 +24,10 @@ export interface Props {
   filterCategory: (category: string) => void;
   categories: CategoryInfo[];
   comment?: string;
-  files: TFile[]
+  files: TFile[];
+  addFile: (file: File) => void;
+  deleteFile: (id: string) => void;
+  commentChanged: (comment: string) => void;
 }
 
 function wrapInput(input: JSX.Element) {
@@ -41,8 +44,8 @@ function wrapInput(input: JSX.Element) {
 
 const letterWidth = 30;
 function cutOffName(name: string) {
-  let slice = name.slice(0, (window.innerWidth-letterWidth*3)/letterWidth);
-  if(slice.length < name.length) {
+  let slice = name.slice(0, (window.innerWidth - letterWidth * 3) / letterWidth);
+  if (slice.length < name.length) {
     return slice + '...';
   } else {
     return slice;
@@ -50,8 +53,9 @@ function cutOffName(name: string) {
 }
 
 function Todo({ name, done, toggle, remove, priority, category,
-  date, categoryColor, edit, editing, doneEditing, editChange, 
-  editValue, filterCategory, categories, comment, files }: Props) {
+  date, categoryColor, edit, editing, doneEditing, editChange,
+  editValue, filterCategory, categories, comment, files, addFile, 
+  deleteFile, commentChanged }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
@@ -97,21 +101,32 @@ function Todo({ name, done, toggle, remove, priority, category,
         <td colSpan={5}>
           <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
             <EnhancedSuggest value={editValue} change={editChange} categories={categories}
-              wrapInput={wrapInput} /><br/>
+              wrapInput={wrapInput} /><br />
             <div className="form-group">
               <label htmlFor="exampleFormControlTextarea1">Kommentar</label>
               <textarea className="form-control" id="exampleFormControlTextarea1" rows={3}
-                value={comment}></textarea>
+                value={comment} onChange={ev => commentChanged(ev.target.value)}></textarea>
             </div>
             <ul className="list-group">
               {files.map(file => (
-                <li className="list-group-item">
-                  {file.name}
-                  <button onClick={() => console.log('Remove file')} className="mr-2 float-right btn btn-danger btn-sm">
+                <li className="list-group-item" key={file.id}>
+                  <a href={file.data}>{file.name}</a>
+                  <button onClick={e => {e.preventDefault();deleteFile(file.id)}} className="mr-2 float-right btn btn-danger btn-sm">
                     <FontAwesomeIcon icon="trash" />
                   </button>
                 </li>
               ))}
+              <li className="list-group-item">
+                <div className="form-group">
+                  <label htmlFor="exampleFormControlFile1">Add file</label>
+                  <input type="file" className="form-control-file" id="exampleFormControlFile1"
+                    onChange={ev => {
+                      if(ev.target.files) {
+                        addFile(ev.target.files[0])
+                      }
+                     }}/>
+                </div>
+              </li>
             </ul>
           </form>
         </td>

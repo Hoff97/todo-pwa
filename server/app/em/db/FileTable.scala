@@ -12,13 +12,15 @@ class FileTable(tag: Tag) extends Table[File](tag, "file") with TimeId[File, Str
 
   def todoFk = column[String]("todo_fk")
 
-  def bytea = column[Array[Byte]]("data")
+  def bytea = column[String]("data")
 
   def timestamp = column[Timestamp]("timestamp")
 
   def serverTimestamp = column[Option[Timestamp]]("server_timestamp")
 
   def * = (id, name, todoFk, bytea, timestamp, serverTimestamp) <> (File.tupled, File.unapply)
+
+  def todo = foreignKey("todo",todoFk,TodoTable.todo)(_.id)
 }
 
 object FileTable {
