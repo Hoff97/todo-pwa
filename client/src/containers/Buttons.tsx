@@ -11,7 +11,8 @@ export function mapStateToProps(state: StoreState) {
     return {
         value: state.ui.inputValue,
         categories: catInfoFromTodos(state.todos.state),
-        loggedIn: state.ui.accessToken !== undefined && state.ui.accessToken !== null
+        loggedIn: state.ui.accessToken !== undefined && state.ui.accessToken !== null,
+        showInstall: state.ui.showInstall
     }
 }
 
@@ -21,7 +22,8 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         undo: () => dispatch(undo()),
         redo: () => dispatch(redo()),
         inputChanged: (str: string) => dispatch(actions.inputChanged(str)),
-        login: () => dispatch(actions.loginShow())
+        login: () => dispatch(actions.loginShow()),
+        install: () => dispatch(actions.install())
     }
 }
 

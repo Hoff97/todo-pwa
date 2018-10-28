@@ -31,6 +31,7 @@ export type UIState = {
     loggingIn: boolean;
     accessToken?: string;
     filterCategory?: string;
+    showInstall: boolean;
 }
 
 export type StoreState = {
