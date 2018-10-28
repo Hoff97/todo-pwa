@@ -155,9 +155,10 @@ export function EnhancedSuggest({ value, change, categories, wrapperProps, wrapI
             value={value}
             onChange={(e) => change(e.target.value)}
             onSelect={(val) => change(appendACOption(value, val))}
-            menuStyle={menuStyle}
+            menuStyle={{...menuStyle, zIndex: 1000}}
             isItemSelectable={item => item.type !== 'date-sel'}
             wrapperProps={wrapperProps}
+
         />
     );
 }
