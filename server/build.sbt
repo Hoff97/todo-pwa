@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   ehcache,
   "com.iheart" %% "ficus" % "1.4.3",
   "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
-  ws
+  ws,
+  "com.typesafe.play" %% "play-mailer" % "6.0.1"
 )
 
 import com.typesafe.sbt.packager.MappingsHelper._
