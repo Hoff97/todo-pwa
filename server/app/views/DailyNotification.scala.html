@@ -1,0 +1,32 @@
+@import em.model._
+@import em.util.Util._
+
+@this(userMail: String, todos: Seq[Todo])
+
+<div style="margin: auto; width: 50%; border: 1px solid green; padding: 10px; border-radius: 10px;">
+    <p style="line-height: 1.5; font-size:25px;">
+        <p style="text-align: center;">
+            <img src="https://todo.haskai.de/favicon-middle.png" width="50px" height="50px"/> <span style="font-size: 50px; color: #4CB471; padding-top:-10px">Todo</span><br/>
+            <span style="font-size: 30px; color: #4CB471">
+                Manage your todos at
+                <a href="https://todo.haskai.de" style="color: #4CB471">todo.haskai.de</a>
+            </span>
+        </p>
+        <br/>
+        <span style="font-size:25px;">
+            Hi @{userMail},<br/>
+            here are your daily todos:
+        </span>
+        <ul style="font-size: 25px">
+            @for(todo <- todos) {
+                <li>
+                    @if(todo.priority) {
+                        <span style="color: @colorForPrio(todo.priority.get); font-weight: bold;">!@todo.priority.get</span>
+                    } else {
+                        &nbsp;&nbsp;&nbsp;
+                    } @todo.name
+                </li>
+            }
+        </ul>
+    </p>
+</div>

@@ -3,7 +3,7 @@ organization := "com.em"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala, SwaggerPlugin)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, SwaggerPlugin, SbtTwirl)
 
 swaggerDomainNameSpaces := Seq("em.model")
 
@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
   "com.iheart" %% "ficus" % "1.4.3",
   "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
   ws,
-  "com.typesafe.play" %% "play-mailer" % "6.0.1"
+  "com.typesafe.play" %% "play-mailer" % "6.0.1",
+  "com.typesafe.play" %% "play-mailer-guice" % "6.0.1"
 )
 
 import com.typesafe.sbt.packager.MappingsHelper._
