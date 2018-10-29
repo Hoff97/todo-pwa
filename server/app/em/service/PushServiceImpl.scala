@@ -20,13 +20,16 @@ import scala.concurrent.duration._
 import java.util.Calendar
 
 import em.db.{LoginTable, SubscriptionTable, TodoTable}
+import play.api.libs.mailer._
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
+import views.html._
 
 class PushServiceImpl @Inject()(protected val config: Configuration,
                                 ws: WSClient,
                                 actorSystem: ActorSystem,
-                                protected val dbConfigProvider: DatabaseConfigProvider)(implicit context: ExecutionContext)
+                                protected val dbConfigProvider: DatabaseConfigProvider,
+                                mailerClient: MailerClient)(implicit context: ExecutionContext)
   extends PushService with HasDatabaseConfigProvider[JdbcProfile] {
 
   val log = Logger("service.push")
@@ -61,6 +64,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         }
         var diffMin = Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes
         log.debug(s"Scheduling reminder for user ${login.email} in ${diffMin._1} minutes")
+
         actorSystem.scheduler.scheduleOnce(diffMin + serverTimeOffset.minutes) {
           checkAndNotifyUser(login, nextRemTime)
         }
@@ -78,15 +82,28 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         time.add(Calendar.DAY_OF_MONTH, 1)
         db.run(TodoTable.todo.filter(x => x.loginFk === login.id.get && !x.done).result).foreach{ todoDb =>
           val todosToday = todoDb.filter(todo => todo.date.isEmpty || isBeforeOrAtDay(todo.date.get, time))
-          if(todosToday.length > 0)
+          if(todosToday.length > 0) {
             sendToUser(dailyNotification(login, todosToday), login.id.get)
+            sendDailyMail(login.email, todosToday)
+          }
         }
 
-        actorSystem.scheduler.scheduleOnce(2.minutes) {
+        actorSystem.scheduler.scheduleOnce(10.minutes) {
           notifyUser(loginDb)
         }
       }
     }
+  }
+
+  private def sendDailyMail(userMail: String, todos: Seq[Todo]): Unit = {
+    val sortedTodos = todos.sortBy(todo => (-todo.priority.getOrElse(0), todo.name))
+    val email = Email(
+      "Here are your daily todos",
+      config.get[String]("server.emailSender"),
+      Seq(userMail),
+      bodyHtml = Some(new DailyNotification(userMail, sortedTodos).render().toString())
+    )
+    mailerClient.send(email)
   }
 
   private def isBeforeOrAtDay(date: Timestamp, day: Calendar): Boolean =
