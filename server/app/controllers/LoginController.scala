@@ -144,7 +144,8 @@ class LoginController@Inject() (
 
   def changeSettings = silhouette.SecuredAction.async(parse.json[UserSettings])  { implicit request =>
     log.debug(s"Request to update user settings")
-    val up = request.identity.copy(dailyReminder = request.body.notificationTime, mail = request.body.mail)
+    val up = request.identity.copy(dailyReminder = request.body.notificationTime, mail = request.body.mail,
+      timestamp = new Timestamp(new Date().getTime))
     pushService.notifyUser(up)
     db.run(LoginTable.login.filter(_.id === request.identity.id).update(up))
       .flatMap(x =>
