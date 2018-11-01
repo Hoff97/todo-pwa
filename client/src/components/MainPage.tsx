@@ -2,10 +2,12 @@ import * as React from 'react';
 import ButtonsV from '../containers/Buttons'
 import VisibleTodoList from 'src/containers/TodoList';
 import Login from 'src/containers/Login';
+import Settings from 'src/containers/Settings';
 
 const MainPage = () => (
   <div className="container mt-2">
     <ButtonsV />
+    <Settings />
     <Login />
     <VisibleTodoList />
     {

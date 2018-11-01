@@ -38,7 +38,7 @@ object DateTime {
   val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
   implicit object timeFormat extends Format[Time] {
-    override def writes(o: Time): JsValue = JsString(timeFormatter.format(o.toInstant))
+    override def writes(o: Time): JsValue = JsString(timeFormatter.format(o.toLocalTime))
 
     override def reads(json: JsValue): JsResult[Time] = {
       val str = json.as[String]

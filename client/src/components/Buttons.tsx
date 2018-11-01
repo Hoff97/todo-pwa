@@ -15,9 +15,11 @@ export interface Props {
     inputChanged: (str: string) => void;
     showInstall: boolean;
     install: () => void;
+    settings: () => void;
 }
 
-function wrapInput(input: JSX.Element, undo: () => void, redo: () => void, login: () => void, loggedIn: boolean, showInstall: boolean, install: () => void) {
+function wrapInput(input: JSX.Element, undo: () => void, redo: () => void, login: () => void, loggedIn: boolean, 
+    showInstall: boolean, install: () => void, settings: () => void) {
     return (
         <div className="input-group">
             {input}
@@ -29,6 +31,9 @@ function wrapInput(input: JSX.Element, undo: () => void, redo: () => void, login
                 {!loggedIn &&
                     <button onClick={e => login()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="user" /></button>
                 }
+                {loggedIn &&
+                    <button onClick={e => settings()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="cog"/></button>
+                }
                 {showInstall &&
                     <button onClick={e => install()} className="btn btn-primary" type="button"><FontAwesomeIcon icon="download" /></button>
                 }
@@ -37,12 +42,12 @@ function wrapInput(input: JSX.Element, undo: () => void, redo: () => void, login
     );
 }
 
-export function Buttons({ value, addTodo, undo, redo, inputChanged, categories, loggedIn, login, showInstall, install }: Props) {
+export function Buttons({ value, addTodo, undo, redo, inputChanged, categories, loggedIn, login, showInstall, install, settings }: Props) {
     return (
         <div className="mb-2">
             <form onSubmit={e => { e.preventDefault(); addTodo(value); }}>
                 <EnhancedSuggest value={value} change={inputChanged} categories={categories}
-                    wrapInput={input => wrapInput(input, undo, redo, login, loggedIn, showInstall, install)} />
+                    wrapInput={input => wrapInput(input, undo, redo, login, loggedIn, showInstall, install, settings)} />
             </form>
         </div>
     );

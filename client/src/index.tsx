@@ -13,13 +13,13 @@ import promiseMiddleware from 'redux-promise-middleware'
 import ReduxThunk from 'redux-thunk';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload, faCog, faSave } from '@fortawesome/free-solid-svg-icons'
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NotFound from './containers/NotFound';
-import { putTodos, toggleShowInstall } from './actions';
+import { putTodos, toggleShowInstall, getUserSettings as gUSA } from './actions';
 
 library.add(faTrash)
 library.add(faUndo)
@@ -33,6 +33,9 @@ library.add(faUserPlus)
 library.add(faBell)
 library.add(faTimes)
 library.add(faDownload)
+library.add(faCog)
+library.add(faSave)
+library.add(faTimes)
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware(), ReduxThunk, asyncDispatchMiddleware));
 
@@ -70,6 +73,10 @@ export function promptInstall() {
       }
       deferredPrompt = undefined;
     });
+}
+
+export function getUserSettings() {
+    store.dispatch(gUSA())
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {

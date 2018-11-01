@@ -1,7 +1,8 @@
 import { createAction } from 'redux-actions';
 import { Todo } from 'src/types';
-import { loginRequest, signUpRequest } from 'src/rest/auth';
+import { loginRequest, signUpRequest, updateUserSettings, getUserSettings as gUS } from 'src/rest/auth';
 import { todoPut, deleteTodoRequest, deleteFileRequest } from 'src/rest/todo';
+import * as moment from 'moment';
 
 export const ADD_TODO = 'ADD_TODO';
 export const addTodo = createAction(ADD_TODO, (x: string) => x);
@@ -94,3 +95,22 @@ export const toggleShowInstall = createAction(TOGGLE_SHOW_INSTALL, () => {})
 
 export const INSTALL = 'INSTALL';
 export const install = createAction(INSTALL, () => {})
+
+export const SETTINGS = 'SETTINGS';
+export const settings = createAction(SETTINGS, () => {})
+
+export const CHANGE_USER_SETTINGS = 'CHANGE_USER_SETTINGS';
+export function changeUserSettings(time: moment.Moment, mail: boolean) {
+    return {
+        type: CHANGE_USER_SETTINGS,
+        payload: updateUserSettings(mail, time)
+    }
+}
+
+export const GET_USER_SETTINGS = 'GET_USER_SETTINGS';
+export function getUserSettings() {
+    return {
+        type: GET_USER_SETTINGS,
+        payload: gUS()
+    }
+}

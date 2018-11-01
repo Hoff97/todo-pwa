@@ -1,4 +1,5 @@
 import { HistoryState } from 'src/reducers/enhancers/history';
+import * as moment from 'moment';
 
 export interface Timestamped {
     timestamp: Date;
@@ -24,6 +25,11 @@ export interface TFile extends Timestamped {
     todoFk: string;
 }
 
+export type UserSettings = {
+    mail: boolean;
+    notificationTime: moment.Moment;
+}
+
 export type UIState = {
     inputValue: string;
     editingTodo?: string;
@@ -32,6 +38,8 @@ export type UIState = {
     accessToken?: string;
     filterCategory?: string;
     showInstall: boolean;
+    showSettings: boolean;
+    userSettings: UserSettings;
 }
 
 export type StoreState = {

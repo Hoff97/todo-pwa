@@ -69,7 +69,7 @@ class LoginController@Inject() (
           case None =>
             val authInfo = passwordHasher.hash(data.password)
             val login = Login(None, data.email, None, None, None, loginInfo.providerID, loginInfo.providerKey,
-              new Timestamp(new Date().getTime), Some(new Time(10,0,0)))
+              new Timestamp(new Date().getTime), Some(new Time(10,0,0)), true)
             for {
               login <- loginService.save(login)
               authInfo <- authInfoRepository.add(loginInfo, authInfo)
@@ -140,5 +140,20 @@ class LoginController@Inject() (
       timestamp = new Timestamp(new Date().getTime))
     pushService.notifyUser(update)
     db.run(LoginTable.login.insertOrUpdate(update)).map(x => Ok)
+  }
+
+  def changeSettings = silhouette.SecuredAction.async(parse.json[UserSettings])  { implicit request =>
+    log.debug(s"Request to update user settings")
+    val up = request.identity.copy(dailyReminder = request.body.notificationTime, mail = request.body.mail)
+    pushService.notifyUser(up)
+    db.run(LoginTable.login.filter(_.id === request.identity.id).update(up))
+      .flatMap(x =>
+        db.run(LoginTable.login.filter(_.id === request.identity.id).result)
+          .map(x => Ok(Json.toJson(x(0).toUserSettings))))
+  }
+
+  def getSettings = silhouette.SecuredAction  { implicit request =>
+    log.debug(s"Request to get user settings")
+    Ok(Json.toJson(request.identity.toUserSettings))
   }
 }

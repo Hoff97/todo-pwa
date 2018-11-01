@@ -1,5 +1,6 @@
 import { axios } from 'src/rest/config';
 import { registerPush } from 'src/registerServiceWorker';
+import { getUserSettings } from 'src';
 
 const accessTokenLS = 'at';
 
@@ -23,6 +24,8 @@ export function setupAccessToken() {
     const token = getAccessToken();
     if(token !== null && token !== undefined && token !== '') {
         registerPush();
+
+        setTimeout(getUserSettings, 1000);
     }
     return token;
 }

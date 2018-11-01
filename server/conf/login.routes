@@ -76,3 +76,31 @@ POST   /signIn                   controllers.LoginController.login
 #      description: Access forbidden
 ###
 PUT   /dailyReminder                   controllers.LoginController.updateDailyReminder
+
+###
+#  summary: Update the user settings
+#  description: >
+#      Updates notification time and email notifications.
+#  parameters:
+#    - name: body
+#      schema:
+#        $ref: '#/definitions/em.model.UserSettings'
+#  responses:
+#    200:
+#      description: Success. A login/confirmation is required after this.
+#    400:
+#      description: User already exists
+###
+POST   /settings                   controllers.LoginController.changeSettings
+
+###
+#  summary: Get the user settings
+#  description: >
+#      Updates notification time and email notifications.
+#  responses:
+#    200:
+#      description: Success. A login/confirmation is required after this.
+#    400:
+#      description: User already exists
+###
+GET   /settings                   controllers.LoginController.getSettings

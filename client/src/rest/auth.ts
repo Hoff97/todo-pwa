@@ -1,4 +1,7 @@
 import { axios } from './config';
+import * as moment from 'moment';
+
+const timeFormat = 'HH:mm'
 
 export function loginRequest(mail: string, pw: string) {
     return axios.post('/api/v1/login/signIn', {
@@ -17,5 +20,44 @@ export function signUpRequest(mail: string, pw: string) {
         repeatedPassword: pw
     }).then(response => {
         return response.data.token;
+    })
+}
+
+const tExpr = /(\d{1,2}):(\d{2,2})/
+
+export function updateUserSettings(mail: boolean, time?: moment.Moment) {
+    return axios.post('/api/v1/login/settings', {
+        notificationTime: time ? time.format(timeFormat) : undefined,
+        mail
+    }).then(response => {
+        var tParse = undefined;
+        if(response.data.notificationTime) {
+            let match = (response.data.notificationTime as string).match(tExpr);
+            console.log(match);
+            if(match !== null) {
+                tParse = moment().hour(+match[1]).minute(+match[2]).second(0);
+            }
+        }
+        return {
+            mail: response.data.mail as boolean,
+            time: tParse
+        }
+    })
+}
+
+export function getUserSettings() {
+    return axios.get('/api/v1/login/settings').then(response => {
+        var tParse = undefined;
+        if(response.data.notificationTime) {
+            let match = (response.data.notificationTime as string).match(tExpr);
+            console.log(match);
+            if(match !== null) {
+                tParse = moment().hour(+match[1]).minute(+match[2]).second(0);
+            }
+        }
+        return {
+            mail: response.data.mail as boolean,
+            time: tParse
+        }
     })
 }
