@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
-import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone } from 'src/actions';
+import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import * as uuid from 'uuid/v4';
@@ -144,12 +144,14 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   LOGIN_SHOW: (ui: UIState, action: A<any>) => {
     return { ...ui, loggingIn: true };
   },
-  LOGIN_FULFILLED: (ui: UIState, action: A<any>) => {
+  LOGIN_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
     setAccessToken(action.payload);
+    action.asyncDispatch(getUserSettings());
     return { ...ui, accessToken: action.payload, loggingIn: false };
   },
-  SIGN_UP_FULFILLED: (ui: UIState, action: A<any>) => {
+  SIGN_UP_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
     setAccessToken(action.payload);
+    action.asyncDispatch(getUserSettings());
     return { ...ui, accessToken: action.payload, loggingIn: false };
   },
   FILTER_CATEGORY: (ui: UIState, action: A<any>) => {
@@ -186,8 +188,46 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
       ...ui,
       showInstall: false
     };
+  },
+
+  SETTINGS: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      showSettings: !ui.showSettings
+    };
+  },
+
+  CHANGE_USER_SETTINGS_FULFILLED: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      userSettings: {
+        notificationTime: action.payload.time,
+        mail: action.payload.mail
+      }
+    };
+  },
+
+  GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      userSettings: {
+        notificationTime: action.payload.time,
+        mail: action.payload.mail
+      }
+    };
   }
-}, { inputValue: '', editValue: '', loggingIn: false, accessToken: setupAccessToken(), showInstall: false });
+}, { 
+  inputValue: '', 
+  editValue: '', 
+  loggingIn: false, 
+  accessToken: setupAccessToken(), 
+  showInstall: false, 
+  showSettings: false,
+  userSettings: {
+    notificationTime: moment().hour(10).minute(0).second(0),
+    mail: true
+  }
+});
 
 function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];

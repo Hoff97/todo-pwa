@@ -7,9 +7,10 @@ import DayPicker from 'react-day-picker';
 import * as moment from 'moment';
 import * as Autocomplete from 'react-autocomplete';
 import { CSSProperties, HTMLProps } from 'react';
+import TimePicker from 'rc-time-picker';
 
 interface ACOption {
-    type: 'prio' | 'category' | 'date' | 'reminder' | 'date-sel';
+    type: 'prio' | 'category' | 'date' | 'reminder' | 'date-sel' | 'time-sel';
     payload: any;
     label: string;
 }
@@ -53,6 +54,11 @@ function itemsForValue(value: string, categories: CategoryInfo[]) {
         payload: '',
         label: '@'
     }];
+    items = [...items, {
+        type: 'time-sel',
+        payload: '',
+        label: 'r:'
+    }];
     items = [...items, ...[5, 4, 3, 2, 1].map(prio)];
     items = [...items, ...categories.map(cat => category(cat.name, cat.color))];
     items = [...items,
@@ -73,7 +79,7 @@ function appendACOption(value: string, opt: string) {
 }
 
 const renderItem = (value: string, inputChanged: (str: string) => void) => (item: ACOption, isHighlighted: boolean) => {
-    if(item.type !== 'date-sel') {
+    if(item.type !== 'date-sel' && item.type !== 'time-sel') {
         return (
             <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
                 key={item.label}>
@@ -91,7 +97,7 @@ const renderItem = (value: string, inputChanged: (str: string) => void) => (item
                 }
             </div>
         );
-    } else {
+    } else if (item.type === 'date-sel') {
         return (
             <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
                     key={item.label}>
@@ -99,8 +105,30 @@ const renderItem = (value: string, inputChanged: (str: string) => void) => (item
                     onDayClick={handleCompleteDay(value, inputChanged)}/>
             </div>
         );
+    } else {
+        return (
+            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} className="autocomplete-item"
+                    key={item.label} onClick={e => e.preventDefault()}>
+                <TimePicker
+                    showSecond={false} minuteStep={10}
+                    allowEmpty={false} addon={x => timeSelAddon(x, inputChanged, value)}/>
+            </div>
+        );
     }
 };
+
+function timeSelAddon(x: TimePicker, inputChanged: (str: string) => void, value: string) {
+    return (
+        <button onClick={e => {
+            let c = (x.state as any).value as moment.Moment;
+            let append = 'r:' + c.format('HH:mm');
+            x.close();
+            inputChanged(appendACOption(value, append));
+        }}
+            className="btn btn-primary" type="button"
+            style={{width: '100%'}}>Ok</button>
+    );
+}
 
 const handleCompleteDay = (value: string, inputChanged: (str: string) => void) => (day: Date) => {
     let dayM = moment(day);
@@ -156,7 +184,7 @@ export function EnhancedSuggest({ value, change, categories, wrapperProps, wrapI
             onChange={(e) => change(e.target.value)}
             onSelect={(val) => change(appendACOption(value, val))}
             menuStyle={{...menuStyle, zIndex: 1000}}
-            isItemSelectable={item => item.type !== 'date-sel'}
+            isItemSelectable={item => item.type !== 'date-sel' && item.type !== 'time-sel'}
             wrapperProps={wrapperProps}
 
         />

@@ -22,8 +22,10 @@ class LoginTable(tag: Tag) extends Table[Login](tag, "login") with HasID[Login, 
 
   def dailyReminder = column[Option[Time]]("daily_reminder")
 
+  def mailNotifications = column[Boolean]("mail_notifications")
+
   def * = (id.?,email,pwHash.?, pwSalt.?, pwHasher.? ,providerId,
-           providerKey, timestamp, dailyReminder) <> (Login.tupled, Login.unapply)
+           providerKey, timestamp, dailyReminder, mailNotifications) <> (Login.tupled, Login.unapply)
 }
 
 object LoginTable {
