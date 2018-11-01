@@ -65,8 +65,6 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         var diffMin = Instant.now().until(nextRemTime.toInstant, ChronoUnit.MINUTES).minutes
         log.debug(s"Scheduling reminder for user ${login.email} in ${diffMin._1} minutes")
 
-        diffMin = -serverTimeOffset.minutes
-
         actorSystem.scheduler.scheduleOnce(diffMin + serverTimeOffset.minutes) {
           checkAndNotifyUser(login, nextRemTime)
         }
