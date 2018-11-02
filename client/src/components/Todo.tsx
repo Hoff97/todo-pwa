@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as moment from 'moment'
+import moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EnhancedSuggest } from './EnhancedSuggest';
 import { CategoryInfo } from 'src/util/category';

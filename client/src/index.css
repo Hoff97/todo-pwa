@@ -124,3 +124,10 @@ li.list-group-item.disabled {
   border: 0px;
   font-size: 1rem;
 }
+
+@keyframes spin { 
+  100% { 
+    -webkit-transform: rotate(360deg); 
+    transform:rotate(360deg); 
+  }
+}

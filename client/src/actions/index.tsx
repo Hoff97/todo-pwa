@@ -114,3 +114,6 @@ export function getUserSettings() {
         payload: gUS()
     }
 }
+
+export const REFRESH = 'REFRESH';
+export const refresh = createAction(REFRESH, () => {})

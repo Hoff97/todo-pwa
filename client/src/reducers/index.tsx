@@ -2,14 +2,14 @@ import { Todo, UIState } from '../types/index';
 import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
 import { parseTodo, todoStr } from 'src/util/todo';
-import * as moment from 'moment';
+import moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
-import * as uuid from 'uuid/v4';
+import uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
 import { promptInstall } from 'src';
 
@@ -46,6 +46,11 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
     }
     return todo;
   }),
+
+  REFRESH: (todos: Todo[], action: AsyncDispatchAction<string>) => {
+    action.asyncDispatch(putTodos(todos));
+    return todos;
+  },
 
   LOGIN_FULFILLED: (todos: Todo[], action: A<string>) => todos,
 
@@ -163,9 +168,15 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   PUT_TODOS_REJECTED: (ui: UIState, action: A<any>) => {
     if (action.payload.response.status === 401) {
       removeAccessToken();
-      return { ...ui, accessToken: undefined };
+      return { ...ui, accessToken: undefined, refreshing: false };
     }
     return ui;
+  },
+  PUT_TODOS_FULFILLED: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      refreshing: false
+    };
   },
   DELETE_TODO_REJECTED: (ui: UIState, action: A<any>) => {
     if (action.payload.response.status === 401) {
@@ -215,6 +226,13 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
         mail: action.payload.mail
       }
     };
+  },
+
+  REFRESH: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      refreshing: true
+    };
   }
 }, { 
   inputValue: '', 
@@ -226,7 +244,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   userSettings: {
     notificationTime: moment().hour(10).minute(0).second(0),
     mail: true
-  }
+  },
+  refreshing: false
 });
 
 function loadLocal(contents: any): Todo[] {
