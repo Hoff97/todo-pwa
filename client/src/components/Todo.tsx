@@ -62,7 +62,8 @@ function Todo({ name, done, toggle, remove, priority, category,
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
   if (!editing) {
     return (
-      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
+      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}
+          style={{width: '100%'}}>
         <td>
           {priority &&
             <span className={'prio ' + 'prio' + priority}>{priority}</span>

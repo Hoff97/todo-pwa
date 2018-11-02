@@ -4,6 +4,7 @@ import { Todo as TodoT } from '../types/index';
 import { CategoryInfo } from 'src/util/category';
 import PullToRefresh from 'rmc-pull-to-refresh';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import QueueAnim from 'rc-queue-anim';
 
 export interface Props {
     todos: TodoT[];
@@ -23,14 +24,14 @@ export interface Props {
     refresh: () => void;
 }
 
-const activatePull = <span style={{color: '#0D0', textAlign: 'center'}}><FontAwesomeIcon icon="sync"></FontAwesomeIcon> Release to sync</span>
+const activatePull = <span style={{ color: '#0D0', textAlign: 'center' }}><FontAwesomeIcon icon="sync"></FontAwesomeIcon> Release to sync</span>
 const deactivatePull = <span></span>
 const releasePull = <span><FontAwesomeIcon icon="sync" spin={true}></FontAwesomeIcon></span>
 const finishPull = <span></span>
 
-export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit, 
-        editChange, editValue, filterCategory, categoryInfo, addFile, deleteFile, commentChanged,
-        refreshing, refresh }: Props) {
+export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit,
+    editChange, editValue, filterCategory, categoryInfo, addFile, deleteFile, commentChanged,
+    refreshing, refresh }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
@@ -47,27 +48,27 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                     release: releasePull,
                     finish: finishPull
                 }}
-                style={{'textAlign': 'center'}}
+                style={{ 'textAlign': 'center' }}
                 refreshing={refreshing}>
                 <table className="table table-hover table-striped">
-                    <tbody>
-                        {todos.map((todo) => (
-                            <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo} 
-                                key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
-                                edit={() => editTodo(todo)}
-                                doneEditing={(str: string) => finishEdit(todo.id, str)}
-                                editing={editingTodo === todo.id}
-                                editValue={editValue}
-                                editChange={editChange}
-                                filterCategory={filterCategory}
-                                categories={categoryInfo}
-                                comment={todo.comment}
-                                files={todo.files}
-                                addFile={(file: File) => addFile(todo.id, file)}
-                                deleteFile={(id: string) => deleteFile(id, todo.id)}
-                                commentChanged={(comment: string) => commentChanged(todo.id, comment)}/>
-                        ))}
-                    </tbody>
+                        <QueueAnim component="tbody" type="scale" duration={1000}>
+                            {todos.map((todo) => (
+                                <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo}
+                                    key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
+                                    edit={() => editTodo(todo)}
+                                    doneEditing={(str: string) => finishEdit(todo.id, str)}
+                                    editing={editingTodo === todo.id}
+                                    editValue={editValue}
+                                    editChange={editChange}
+                                    filterCategory={filterCategory}
+                                    categories={categoryInfo}
+                                    comment={todo.comment}
+                                    files={todo.files}
+                                    addFile={(file: File) => addFile(todo.id, file)}
+                                    deleteFile={(id: string) => deleteFile(id, todo.id)}
+                                    commentChanged={(comment: string) => commentChanged(todo.id, comment)} />
+                            ))}
+                        </QueueAnim>
                 </table>
             </PullToRefresh>
             <div>{todos.length === 0 ? 'No todos' : ''}</div>
