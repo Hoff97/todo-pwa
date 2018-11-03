@@ -6,6 +6,8 @@ import { CategoryInfo } from 'src/util/category';
 import { isOverdue, isToday } from 'src/util/todo';
 import { TFile } from 'src/types';
 import { dataSize } from 'src/util/util';
+import Swipeout from 'rc-swipeout';
+import 'rc-swipeout/dist/rc-swipeout.css';
 
 export interface Props {
   name: string
@@ -53,54 +55,100 @@ function cutOffName(name: string) {
   }
 }
 
+function buttonsLeft(done: boolean, toggle: () => void, edit: () => void) {
+  if(!done) {
+    return [
+      {
+        text: 'Edit',
+        onPress: () => edit(),
+        style: { backgroundColor: 'orange', color: 'white', width: '90px' }
+      }
+    ];
+  } else {
+    return [
+      {
+        text: 'Undo',
+        onPress: () => toggle(),
+        style: { backgroundColor: 'orange', color: 'white', width: '90px' }
+      }
+    ];
+  }
+}
+function buttonsRight(done: boolean, toggle: () => void, remove: () => void) {
+  if(!done) {
+    return [
+      {
+        text: 'Done',
+        onPress: () => toggle(),
+        style: { backgroundColor: 'green', color: 'white' }
+      }
+    ];
+  } else {
+    return [
+      {
+        text: 'Delete',
+        onPress: () => remove(),
+        style: { backgroundColor: 'red', color: 'white' }
+      }
+    ];
+  }
+}
+
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
-  editValue, filterCategory, categories, comment, files, addFile, 
+  editValue, filterCategory, categories, comment, files, addFile,
   deleteFile, commentChanged }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
-  let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
+  let trClass = done ? 'todo-done' : overdue ? 'todo-overdue' : today ? 'todo-today' : '';
   if (!editing) {
     return (
-      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}
-          style={{width: '100%'}}>
-        <td>
-          {priority &&
-            <span className={'prio ' + 'prio' + priority}>{priority}</span>
-          }
-        </td>
-        <td className="todo-name">
-          {cutOffName(name)}
-        </td>
-        <td>
-          {category &&
-            <span className="category" style={{ color: categoryColor }}
-              onClick={e => filterCategory(category)}>{category}</span>
-          }
-        </td>
-        {!done &&
-          <td className="todo-name">
-            {date &&
-              moment(date).format('DD.MM.')
+      <Swipeout
+        left={buttonsLeft(done, toggle, edit)}
+        right={buttonsRight(done, toggle, remove)}
+        autoClose={true}>
+        <div className={'row todo ' + trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}
+          style={{ width: '100%' }}>
+          <div className="col-1">
+            {priority &&
+              <span className={'prio ' + 'prio' + priority}>{priority}</span>
             }
-          </td>
-        }
-        <td colSpan={done ? 2 : 1}>
-          <button onClick={toggle} className="float-right btn btn-primary btn-sm">
-            <FontAwesomeIcon icon={done ? 'undo' : 'check'} />
-          </button>
-          {done &&
-            <button onClick={remove} className="mr-2 float-right btn btn-danger btn-sm">
-              <FontAwesomeIcon icon="trash" />
-            </button>
+          </div>
+          <div className="todo-name col">
+            {cutOffName(name)}
+          </div>
+          <div className="col">
+            {category &&
+              <span className="category" style={{ color: categoryColor }}
+                onClick={e => filterCategory(category)}>{category}</span>
+            }
+          </div>
+          {!done &&
+            <div className="todo-name col-2">
+              {date &&
+                moment(date).format('DD.MM.')
+              }
+            </div>
           }
-        </td>
-      </tr>
+          <div className="col hide-sm">
+            <button onClick={toggle} className="float-right btn btn-primary btn-sm">
+              <FontAwesomeIcon icon={done ? 'undo' : 'check'} />
+            </button>
+            {done &&
+              <button onClick={remove} className="mr-2 float-right btn btn-danger btn-sm">
+                <FontAwesomeIcon icon="trash" />
+              </button>
+            }
+          </div>
+        </div>
+      </Swipeout>
     );
   } else {
     return (
-      <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); doneEditing(editValue) }}>
-        <td colSpan={5}>
+      <div className={'row todo ' + trClass}
+        onDoubleClick={e => { e.preventDefault(); doneEditing(editValue) }}
+        style={{paddingTop: '10px'}}>
+        <div className="col">
           <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
             <EnhancedSuggest value={editValue} change={editChange} categories={categories}
               wrapInput={wrapInput} /><br />
@@ -113,7 +161,7 @@ function Todo({ name, done, toggle, remove, priority, category,
               {files.map(file => (
                 <li className="list-group-item" key={file.id}>
                   <a href={file.data}>{file.name}</a> <span className="text-muted">({dataSize(file.data.length)})</span>
-                  <button onClick={e => {e.preventDefault();deleteFile(file.id)}} className="mr-2 float-right btn btn-danger btn-sm">
+                  <button onClick={e => { e.preventDefault(); deleteFile(file.id) }} className="mr-2 float-right btn btn-danger btn-sm">
                     <FontAwesomeIcon icon="trash" />
                   </button>
                 </li>
@@ -123,16 +171,16 @@ function Todo({ name, done, toggle, remove, priority, category,
                   <label htmlFor="exampleFormControlFile1">Add file</label>
                   <input type="file" className="form-control-file" id="exampleFormControlFile1"
                     onChange={ev => {
-                      if(ev.target.files) {
+                      if (ev.target.files) {
                         addFile(ev.target.files[0])
                       }
-                     }}/>
+                    }} />
                 </div>
               </li>
             </ul>
           </form>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   }
 }
