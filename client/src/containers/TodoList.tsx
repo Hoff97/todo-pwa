@@ -20,7 +20,8 @@ export function mapStateToProps(state: StoreState) {
             .sort((a, b) => compare(a,b)),
         editingTodo: state.ui.editingTodo,
         editValue: state.ui.editValue,
-        categoryInfo: catInfoFromTodos(state.todos.state)
+        categoryInfo: catInfoFromTodos(state.todos.state),
+        refreshing: state.ui.refreshing
     }
 }
 
@@ -34,7 +35,8 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         filterCategory: (category: string) => dispatch(actions.filterCategory(category)),
         addFile: (todoId: string, file: File) => dispatch(actions.addFile(todoId, file)),
         deleteFile: (id: string, todoId: string) => dispatch(actions.deleteFile(id, todoId)),
-        commentChanged: (todoId: string, comment: string) => dispatch(actions.commentChanged(todoId, comment))
+        commentChanged: (todoId: string, comment: string) => dispatch(actions.commentChanged(todoId, comment)),
+        refresh: () => dispatch(actions.refresh())
     }
 }
 

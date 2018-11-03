@@ -74,6 +74,10 @@ div#root {
   .table > tr > td {
     padding: 8px;
   }
+
+  .hide-sm {
+    visibility: hidden;
+  }
 }
 
 @media only screen and (max-width: 309px) {
@@ -92,6 +96,10 @@ div#root {
 
   .table > tr > td {
     padding: 5px;
+  }
+
+  .hide-sm {
+    visibility: hidden;
   }
 }
 
@@ -123,4 +131,30 @@ li.list-group-item.disabled {
 .form-control > .rc-time-picker-input {
   border: 0px;
   font-size: 1rem;
+}
+
+@keyframes spin { 
+  100% { 
+    -webkit-transform: rotate(360deg); 
+    transform:rotate(360deg); 
+  }
+}
+
+div.todo {
+  text-align: left;
+  border-bottom: 1px solid #DDD;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.todo-done {
+  background-color: #DFD;
+}
+
+.todo-overdue {
+  background-color: #FDD;
+}
+
+.todo-today {
+  background-color: #FFA;
 }

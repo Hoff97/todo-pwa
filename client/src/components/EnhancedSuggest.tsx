@@ -4,8 +4,8 @@ import * as React from 'react';
 import { longestPreSuffix } from 'src/util/string';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DayPicker from 'react-day-picker';
-import * as moment from 'moment';
-import * as Autocomplete from 'react-autocomplete';
+import moment from 'moment';
+import Autocomplete from 'react-autocomplete';
 import { CSSProperties, HTMLProps } from 'react';
 import TimePicker from 'rc-time-picker';
 

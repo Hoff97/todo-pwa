@@ -16,6 +16,8 @@
     "i": "^0.3.6",
     "moment": "^2.22.2",
     "npm": "^6.4.1",
+    "rc-queue-anim": "^1.6.7",
+    "rc-swipeout": "^2.0.11",
     "rc-time-picker": "^3.4.0",
     "react": "^16.5.2",
     "react-autocomplete": "^1.8.1",
@@ -28,6 +30,7 @@
     "redux-actions": "^2.6.1",
     "redux-promise-middleware": "^5.1.1",
     "redux-thunk": "^2.3.0",
+    "rmc-pull-to-refresh": "^1.0.11",
     "sw-precache": "^5.2.1",
     "uuid": "^3.3.2"
   },

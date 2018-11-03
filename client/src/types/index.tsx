@@ -40,6 +40,7 @@ export type UIState = {
     showInstall: boolean;
     showSettings: boolean;
     userSettings: UserSettings;
+    refreshing: boolean;
 }
 
 export type StoreState = {
