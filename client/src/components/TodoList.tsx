@@ -2,8 +2,6 @@ import * as React from 'react';
 import Todo from './Todo';
 import { Todo as TodoT } from '../types/index';
 import { CategoryInfo } from 'src/util/category';
-import PullToRefresh from 'rmc-pull-to-refresh';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import QueueAnim from 'rc-queue-anim';
 
 export interface Props {
@@ -24,14 +22,8 @@ export interface Props {
     refresh: () => void;
 }
 
-const activatePull = <span style={{ color: '#0D0', textAlign: 'center' }}><FontAwesomeIcon icon="sync"></FontAwesomeIcon> Release to sync</span>
-const deactivatePull = <span></span>
-const releasePull = <span><FontAwesomeIcon icon="sync" spin={true}></FontAwesomeIcon></span>
-const finishPull = <span></span>
-
 export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit,
-    editChange, editValue, filterCategory, categoryInfo, addFile, deleteFile, commentChanged,
-    refreshing, refresh }: Props) {
+    editChange, editValue, filterCategory, categoryInfo, addFile, deleteFile, commentChanged }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
