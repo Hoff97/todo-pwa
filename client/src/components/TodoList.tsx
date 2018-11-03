@@ -37,40 +37,26 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
     }
     return (
         <div className="mt-2 mb-2">
-            <PullToRefresh
-                onRefresh={() => {
-                    console.log('Refreshing');
-                    refresh();
-                }}
-                indicator={{
-                    activate: activatePull,
-                    deactivate: deactivatePull,
-                    release: releasePull,
-                    finish: finishPull
-                }}
-                style={{ 'textAlign': 'center' }}
-                refreshing={refreshing}>
-                <table className="table table-hover table-striped">
-                        <QueueAnim component="tbody" type="scale" duration={1000}>
-                            {todos.map((todo) => (
-                                <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo}
-                                    key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
-                                    edit={() => editTodo(todo)}
-                                    doneEditing={(str: string) => finishEdit(todo.id, str)}
-                                    editing={editingTodo === todo.id}
-                                    editValue={editValue}
-                                    editChange={editChange}
-                                    filterCategory={filterCategory}
-                                    categories={categoryInfo}
-                                    comment={todo.comment}
-                                    files={todo.files}
-                                    addFile={(file: File) => addFile(todo.id, file)}
-                                    deleteFile={(id: string) => deleteFile(id, todo.id)}
-                                    commentChanged={(comment: string) => commentChanged(todo.id, comment)} />
-                            ))}
-                        </QueueAnim>
-                </table>
-            </PullToRefresh>
+            <table className="table table-hover table-striped">
+                <QueueAnim component="tbody" type="scale" duration={1000}>
+                    {todos.map((todo) => (
+                        <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo}
+                            key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
+                            edit={() => editTodo(todo)}
+                            doneEditing={(str: string) => finishEdit(todo.id, str)}
+                            editing={editingTodo === todo.id}
+                            editValue={editValue}
+                            editChange={editChange}
+                            filterCategory={filterCategory}
+                            categories={categoryInfo}
+                            comment={todo.comment}
+                            files={todo.files}
+                            addFile={(file: File) => addFile(todo.id, file)}
+                            deleteFile={(id: string) => deleteFile(id, todo.id)}
+                            commentChanged={(comment: string) => commentChanged(todo.id, comment)} />
+                    ))}
+                </QueueAnim>
+            </table>
             <div>{todos.length === 0 ? 'No todos' : ''}</div>
         </div>
     );
