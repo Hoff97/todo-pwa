@@ -113,4 +113,4 @@ export function getUserSettings() {
 }
 
 export const TOGGLE_MENU = 'TOGGLE_MENU';
-export const toggleMenu = createAction(TOGGLE_MENU, () => {})
+export const toggleMenu = createAction(TOGGLE_MENU, (open: boolean) => open)

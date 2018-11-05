@@ -223,7 +223,7 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   TOGGLE_MENU: (ui: UIState, action: A<any>) => {
     return {
       ...ui,
-      menuOpen: !ui.menuOpen
+      menuOpen: action.payload
     };
   },
 }, { 
