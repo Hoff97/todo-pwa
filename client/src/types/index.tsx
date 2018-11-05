@@ -40,6 +40,7 @@ export type UIState = {
     showInstall: boolean;
     showSettings: boolean;
     userSettings: UserSettings;
+    menuOpen: boolean;
 }
 
 export type StoreState = {

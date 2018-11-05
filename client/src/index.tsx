@@ -6,20 +6,22 @@ import { createStore, applyMiddleware } from 'redux';
 import { rootReducer } from './reducers/index';
 import { StoreState } from './types/index';
 import { Provider } from 'react-redux';
-import MainPage from './components/MainPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Action } from 'redux-actions';
 import promiseMiddleware from 'redux-promise-middleware'
 import ReduxThunk from 'redux-thunk';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload, faCog, faSave } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload, faCog, faSave, faBars } from '@fortawesome/free-solid-svg-icons'
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import NotFound from './containers/NotFound';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { putTodos, toggleShowInstall, getUserSettings as gUSA } from './actions';
+
+import 'rmc-drawer/assets/index.css'
+import Menu from './containers/Menu';
+//import Menu from './components/Menu';
 
 library.add(faTrash)
 library.add(faUndo)
@@ -36,6 +38,7 @@ library.add(faDownload)
 library.add(faCog)
 library.add(faSave)
 library.add(faTimes)
+library.add(faBars)
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware(), ReduxThunk, asyncDispatchMiddleware));
 
@@ -44,13 +47,7 @@ store.dispatch(putTodos(store.getState().todos.state));
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <div>
-        <Switch>
-          <Route exact path="" component={MainPage} />
-          <Route exact path="/" component={MainPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </div>
+      <Menu></Menu>
     </Router>
   </Provider>,
   document.getElementById('root') as HTMLElement
@@ -76,14 +73,14 @@ export function promptInstall() {
 }
 
 export function getUserSettings() {
-    store.dispatch(gUSA())
+  store.dispatch(gUSA())
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
   // Prevent Chrome 67 and earlier from automatically showing the prompt
   e.preventDefault();
   console.log(e);
-  
+
   store.dispatch(toggleShowInstall())
 
   deferredPrompt = e;

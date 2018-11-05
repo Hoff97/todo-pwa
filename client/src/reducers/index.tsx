@@ -215,7 +215,14 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
         mail: action.payload.mail
       }
     };
-  }
+  },
+
+  TOGGLE_MENU: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      menuOpen: !ui.menuOpen
+    };
+  },
 }, { 
   inputValue: '', 
   editValue: '', 
@@ -226,7 +233,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   userSettings: {
     notificationTime: moment().hour(10).minute(0).second(0),
     mail: true
-  }
+  },
+  menuOpen: false
 });
 
 function loadLocal(contents: any): Todo[] {

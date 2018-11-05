@@ -114,3 +114,6 @@ export function getUserSettings() {
         payload: gUS()
     }
 }
+
+export const TOGGLE_MENU = 'TOGGLE_MENU';
+export const toggleMenu = createAction(TOGGLE_MENU, () => {})

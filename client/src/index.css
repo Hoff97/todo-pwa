@@ -46,7 +46,7 @@ div#root {
   .todo-name {
     font-size: 20px;
   }
-  
+
   .category {
     font-size: 20px;
   }
@@ -61,7 +61,7 @@ div#root {
     font-size: 17px;
     padding: 5px;
   }
-  
+
   .category {
     font-size: 17px;
   }
@@ -71,7 +71,7 @@ div#root {
     margin-right: -10px;
   }
 
-  .table > tr > td {
+  .table>tr>td {
     padding: 8px;
   }
 }
@@ -80,7 +80,7 @@ div#root {
   .todo-name {
     font-size: 17px;
   }
-  
+
   .category {
     font-size: 17px;
   }
@@ -90,13 +90,13 @@ div#root {
     margin-right: -20px;
   }
 
-  .table > tr > td {
+  .table>tr>td {
     padding: 5px;
   }
 }
 
 li.list-group-item.disabled {
-  background-color:#CCC;
+  background-color: #CCC;
 }
 
 .autocomplete-item {
@@ -120,7 +120,23 @@ li.list-group-item.disabled {
   display: inline-block;
 }
 
-.form-control > .rc-time-picker-input {
+.form-control>.rc-time-picker-input {
   border: 0px;
   font-size: 1rem;
+}
+
+.rmc-drawer-sidebar {
+  padding: 16px;
+  background-color: #e4f6fe;
+}
+
+.rmc-drawer-left .rmc-drawer-sidebar,
+.rmc-drawer-right .rmc-drawer-sidebar, {
+  height: 100%;
+}
+
+.menuOpener {
+  position: fixed;
+  top: 5px;
+  left: 5px;
 }
