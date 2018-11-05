@@ -2,16 +2,18 @@ import { Todo, UIState } from '../types/index';
 import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
 import { parseTodo, todoStr } from 'src/util/todo';
-import * as moment from 'moment';
+import moment from 'moment';
 import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
-import * as uuid from 'uuid/v4';
+import uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
-import { promptInstall } from 'src';
+import { promptInstall, routerHistory } from 'src';
+import { routerReducer } from 'react-router-redux';
+import { AsyncFinishAction } from './middleware/after-finish';
 
 type A<T> = { type: string, payload: T }
 
@@ -144,9 +146,10 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   LOGIN_SHOW: (ui: UIState, action: A<any>) => {
     return { ...ui, loggingIn: true };
   },
-  LOGIN_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
+  LOGIN_FULFILLED: (ui: UIState, action: (AsyncDispatchAction<any> & AsyncFinishAction<any>)) => {
     setAccessToken(action.payload);
     action.asyncDispatch(getUserSettings());
+    action.asyncFinish(() => routerHistory.push('/'));
     return { ...ui, accessToken: action.payload, loggingIn: false };
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
@@ -207,7 +210,7 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     };
   },
 
-  GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: A<any>) => {
+  GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: AsyncFinishAction<any>) => {
     return {
       ...ui,
       userSettings: {
@@ -215,7 +218,14 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
         mail: action.payload.mail
       }
     };
-  }
+  },
+
+  TOGGLE_MENU: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      menuOpen: action.payload
+    };
+  },
 }, { 
   inputValue: '', 
   editValue: '', 
@@ -226,7 +236,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   userSettings: {
     notificationTime: moment().hour(10).minute(0).second(0),
     mail: true
-  }
+  },
+  menuOpen: false
 });
 
 function loadLocal(contents: any): Todo[] {
@@ -237,10 +248,12 @@ function loadLocal(contents: any): Todo[] {
     todos = contents.todos;
   }
   todos = todos.map(todo => {
+    const timestamp = todo.timestamp ? moment(todo.timestamp).toDate() : new Date();
     return {
       ...todo,
       date: todo.date ? moment(todo.date).toDate() : undefined,
-      timestamp: todo.timestamp ? todo.timestamp : new Date(),
+      timestamp: timestamp,
+      created: todo.created ? moment(todo.created).toDate() : timestamp,
       serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined,
       files: todo.files ? todo.files : []
     };
@@ -250,5 +263,6 @@ function loadLocal(contents: any): Todo[] {
 
 export const rootReducer = combineReducers({
   todos: historyReducer(saveReducer('data', todosDispatched, loadLocal)),
-  ui: ui
+  ui: ui,
+  routing: routerReducer
 });

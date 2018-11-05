@@ -30,8 +30,10 @@ class TodoTable(tag: Tag) extends Table[Todo](tag, "todo") with TimeId[Todo, Str
 
   def comment = column[Option[String]]("comment")
 
+  def created = column[Timestamp]("created")
+
   def * = (id, name, loginFk, date, priority, done,
-    category, timestamp, reminder, serverTimestamp, parentFk, comment) <> (Todo.tupled, Todo.unapply)
+    category, timestamp, reminder, serverTimestamp, parentFk, comment, created) <> (Todo.tupled, Todo.unapply)
 
   def files = file.filter(f => f.todoFk === id)
 }

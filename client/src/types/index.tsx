@@ -1,5 +1,6 @@
 import { HistoryState } from 'src/reducers/enhancers/history';
 import * as moment from 'moment';
+import { RouterState } from 'react-router-redux';
 
 export interface Timestamped {
     timestamp: Date;
@@ -16,6 +17,7 @@ export interface Todo extends Timestamped {
     reminder?: Date;
     files: TFile[];
     comment?: string;
+    created: Date;
 }
 
 export interface TFile extends Timestamped {
@@ -40,9 +42,11 @@ export type UIState = {
     showInstall: boolean;
     showSettings: boolean;
     userSettings: UserSettings;
+    menuOpen: boolean;
 }
 
 export type StoreState = {
     todos: HistoryState<Todo[]>;
     ui: UIState;
+    routing: RouterState;
 }

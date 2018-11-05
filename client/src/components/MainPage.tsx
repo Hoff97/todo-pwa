@@ -1,14 +1,12 @@
 import * as React from 'react';
 import ButtonsV from '../containers/Buttons'
 import VisibleTodoList from 'src/containers/TodoList';
-import Login from 'src/containers/Login';
-import Settings from 'src/containers/Settings';
+import Category from 'src/containers/CategoryFilter';
 
 const MainPage = () => (
   <div className="container mt-2">
     <ButtonsV />
-    <Settings />
-    <Login />
+    <Category/>
     <VisibleTodoList />
     {
       process.env.REACT_APP_VERSION && process.env.REACT_APP_TIME &&

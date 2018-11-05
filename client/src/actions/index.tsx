@@ -96,9 +96,6 @@ export const toggleShowInstall = createAction(TOGGLE_SHOW_INSTALL, () => {})
 export const INSTALL = 'INSTALL';
 export const install = createAction(INSTALL, () => {})
 
-export const SETTINGS = 'SETTINGS';
-export const settings = createAction(SETTINGS, () => {})
-
 export const CHANGE_USER_SETTINGS = 'CHANGE_USER_SETTINGS';
 export function changeUserSettings(time: moment.Moment, mail: boolean) {
     return {
@@ -114,3 +111,6 @@ export function getUserSettings() {
         payload: gUS()
     }
 }
+
+export const TOGGLE_MENU = 'TOGGLE_MENU';
+export const toggleMenu = createAction(TOGGLE_MENU, (open: boolean) => open)
