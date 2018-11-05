@@ -28,7 +28,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
     return (
         <div className="mt-2 mb-2">
             <table className="table table-hover table-striped">
-                <QueueAnim component='tbody' type='scale'>
+                <QueueAnim component='tbody' type='scale' interval={50}>
                     {todos.map((todo) => (
                         <Todo toggle={() => toggleTodo(todo.id)} remove={() => deleteTodo(todo.id)} {...todo}
                             key={todo.id} categoryColor={todo.category ? categoryColor(todo.category) : undefined}
