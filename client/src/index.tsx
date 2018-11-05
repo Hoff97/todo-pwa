@@ -16,12 +16,16 @@ import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPl
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
-import { BrowserRouter as Router } from 'react-router-dom';
 import { putTodos, toggleShowInstall, getUserSettings as gUSA } from './actions';
 
 import 'rmc-drawer/assets/index.css'
 import Menu from './containers/Menu';
-//import Menu from './components/Menu';
+
+import { routerMiddleware } from 'react-router-redux'
+
+import createHistory from 'history/createBrowserHistory'
+import { Router } from 'react-router';
+import { asyncFinishMiddleware } from './reducers/middleware/after-finish';
 
 library.add(faTrash)
 library.add(faUndo)
@@ -40,16 +44,27 @@ library.add(faSave)
 library.add(faTimes)
 library.add(faBars)
 
-const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, applyMiddleware(logger, promiseMiddleware(), ReduxThunk, asyncDispatchMiddleware));
+export const routerHistory = createHistory()
+
+const middleware = applyMiddleware(
+  logger, 
+  promiseMiddleware(),
+  ReduxThunk, 
+  asyncDispatchMiddleware,
+  routerMiddleware(routerHistory),
+  asyncFinishMiddleware)
+
+const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, middleware);
 
 store.dispatch(putTodos(store.getState().todos.state));
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
+    <Router history={routerHistory}>
       <Menu></Menu>
     </Router>
-  </Provider>,
+  </Provider>
+  ,
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
@@ -75,6 +90,10 @@ export function promptInstall() {
 export function getUserSettings() {
   store.dispatch(gUSA())
 }
+
+routerHistory.listen(x => {
+  console.log(x);
+})
 
 window.addEventListener('beforeinstallprompt', (e) => {
   // Prevent Chrome 67 and earlier from automatically showing the prompt

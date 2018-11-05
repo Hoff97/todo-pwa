@@ -23,8 +23,7 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         redo: () => dispatch(redo()),
         inputChanged: (str: string) => dispatch(actions.inputChanged(str)),
         login: () => dispatch(actions.loginShow()),
-        install: () => dispatch(actions.install()),
-        settings: () => dispatch(actions.settings())
+        install: () => dispatch(actions.install())
     }
 }
 

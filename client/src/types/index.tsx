@@ -1,5 +1,6 @@
 import { HistoryState } from 'src/reducers/enhancers/history';
 import * as moment from 'moment';
+import { RouterState } from 'react-router-redux';
 
 export interface Timestamped {
     timestamp: Date;
@@ -46,4 +47,5 @@ export type UIState = {
 export type StoreState = {
     todos: HistoryState<Todo[]>;
     ui: UIState;
+    routing: RouterState;
 }

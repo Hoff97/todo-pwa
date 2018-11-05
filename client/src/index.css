@@ -140,3 +140,7 @@ li.list-group-item.disabled {
   top: 5px;
   left: 5px;
 }
+
+.clickable {
+  cursor: pointer;
+}

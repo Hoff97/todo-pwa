@@ -3,38 +3,52 @@ import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { StoreState } from 'src/types';
 import Drawer from 'rmc-drawer';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import NotFound from './NotFound';
 import MainPage from 'src/components/MainPage';
 import { toggleMenu } from 'src/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Settings from './Settings';
+import Login from './Login';
 
-interface Props {
+interface Props extends RouteComponentProps {
     dispatch: Dispatch<Action<any>>;
     open: boolean;
+    loggedIn: boolean;
 }
 
-const sidebar = (<div>
-    <h3>
-        Menu
-    </h3>
-    <p>this is content!</p>
-</div>);
+function sidebar(loggedIn: boolean) {
+    return (<div>
+        <h3>
+            Menu
+        </h3>
+        <ul className="list-group">
+            <li className="list-group-item clickable"><Link to="/">Main page</Link></li>
+            {!loggedIn &&
+                <li className="list-group-item clickable"><Link to="login">Log in</Link></li>
+            }
+            {loggedIn &&
+                <li className="list-group-item clickable"><Link to="/settings">Settings</Link></li>
+            }
+        </ul>
+    </div>);
+}
 
-function MenuF({ dispatch, open }: Props) {
+function MenuF({ dispatch, open, loggedIn }: Props) {
     return (
         <div>
-            <Drawer sidebar={sidebar} open={open}
-                    docked={false} transitions={true}
-                    touch={true} enableDragHandle={true} position={'left'}
-                    dragToggleDistance={30} style={{ overflow: 'auto' }}
-                    onOpenChange={op => dispatch(toggleMenu())}>
+            <Drawer sidebar={sidebar(loggedIn)} open={open}
+                docked={false} transitions={true}
+                touch={true} enableDragHandle={true} position={'left'}
+                dragToggleDistance={30} style={{ overflow: 'auto' }}
+                onOpenChange={op => dispatch(toggleMenu())}>
                 <div className="menuOpener">
-                    <span onClick={ev => dispatch(toggleMenu())}><FontAwesomeIcon icon="bars" size="2x"/></span>
+                    <span onClick={ev => dispatch(toggleMenu())}><FontAwesomeIcon icon="bars" size="2x" /></span>
                 </div>
                 <Switch>
-                    <Route exact path="" component={MainPage} />
                     <Route exact path="/" component={MainPage} />
+                    <Route exact path="/settings" component={Settings} />
+                    <Route exact path="/login" component={Login} />
                     <Route component={NotFound} />
                 </Switch>
             </Drawer>
@@ -42,14 +56,15 @@ function MenuF({ dispatch, open }: Props) {
     );
 }
 
-let Menu = connect((state: StoreState) => {
+let Menu = withRouter(connect((state: StoreState) => {
     return {
-        open: state.ui.menuOpen
+        open: state.ui.menuOpen,
+        loggedIn: state.ui.accessToken !== undefined
     }
 }, (dispatch: Dispatch<Action<any>>) => {
     return {
         dispatch
     }
-})(MenuF);
+})(MenuF));
 
 export default Menu;

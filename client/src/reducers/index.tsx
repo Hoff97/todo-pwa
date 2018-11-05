@@ -11,7 +11,9 @@ import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import * as uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
-import { promptInstall } from 'src';
+import { promptInstall, routerHistory } from 'src';
+import { routerReducer } from 'react-router-redux';
+import { AsyncFinishAction } from './middleware/after-finish';
 
 type A<T> = { type: string, payload: T }
 
@@ -207,7 +209,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     };
   },
 
-  GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: A<any>) => {
+  GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: AsyncFinishAction<any>) => {
+    action.asyncFinish(() => routerHistory.push('/'));
     return {
       ...ui,
       userSettings: {
@@ -258,5 +261,6 @@ function loadLocal(contents: any): Todo[] {
 
 export const rootReducer = combineReducers({
   todos: historyReducer(saveReducer('data', todosDispatched, loadLocal)),
-  ui: ui
+  ui: ui,
+  routing: routerReducer
 });
