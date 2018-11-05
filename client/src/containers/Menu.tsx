@@ -49,6 +49,7 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 </div>
                 <Switch>
                     <Route exact path="/" component={MainPage} />
+                    <Route exact path="/index.html" component={MainPage} />
                     <Route exact path="/stats" component={StatsV} />
                     <Route exact path="/settings" component={Settings} />
                     <Route exact path="/login" component={Login} />
