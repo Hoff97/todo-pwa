@@ -100,7 +100,8 @@ export function parseTodo(str: string): Todo {
         date,
         reminder,
         timestamp: new Date(),
-        files: []
+        files: [],
+        created: new Date()
     };
     return todo;
 }

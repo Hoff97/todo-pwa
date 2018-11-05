@@ -18,12 +18,13 @@ case class Todo(id: String, name: String, loginFk: Int,
                 reminder: Option[Timestamp],
                 serverTimestamp: Option[Timestamp],
                 parentFk: Option[String],
-                comment: Option[String]) extends CopyTime[Todo, String] {
+                comment: Option[String],
+                created: Timestamp) extends CopyTime[Todo, String] {
   def cpy(i: Option[String]) = this.copy(id = i.getOrElse(this.id))
   def cpyT(serverTimestamp: Timestamp) = this.copy(serverTimestamp = Some(serverTimestamp))
 
   def toTodoV(files: Seq[File]) = TodoV(id, name, date, priority, done, category, timestamp,
-    reminder, serverTimestamp, parentFk, files, comment)
+    reminder, serverTimestamp, parentFk, files, comment, created)
 
   def getId = id
 }
@@ -36,10 +37,11 @@ case class TodoV(id: String, name: String,
                  serverTimestamp: Option[Timestamp],
                  parentFk: Option[String],
                  files: Seq[File],
-                 comment: Option[String]) {
+                 comment: Option[String],
+                 created: Timestamp) {
 
   def toTodo(loginFk: Int) = Todo(id, name, loginFk, date, priority, done, category, timestamp,
-    reminder, serverTimestamp, parentFk, comment)
+    reminder, serverTimestamp, parentFk, comment, created)
 }
 
 object Todo {

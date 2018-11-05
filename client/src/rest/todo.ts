@@ -14,6 +14,7 @@ export function todoPut(todos: Todo[], token?: string) {
             date: todo.date ? moment(todo.date).format(dateFormat) : undefined,
             reminder: todo.reminder ? moment(todo.reminder).format(dateFormat) : undefined,
             serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).format(dateFormat) : undefined,
+            created: moment(todo.created).format(dateFormat),
             files: todo.files.map(file => {
                 return {
                     ...file,

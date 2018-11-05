@@ -146,9 +146,10 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   LOGIN_SHOW: (ui: UIState, action: A<any>) => {
     return { ...ui, loggingIn: true };
   },
-  LOGIN_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
+  LOGIN_FULFILLED: (ui: UIState, action: (AsyncDispatchAction<any> & AsyncFinishAction<any>)) => {
     setAccessToken(action.payload);
     action.asyncDispatch(getUserSettings());
+    action.asyncFinish(() => routerHistory.push('/'));
     return { ...ui, accessToken: action.payload, loggingIn: false };
   },
   SIGN_UP_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
@@ -210,7 +211,6 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   },
 
   GET_USER_SETTINGS_FULFILLED: (ui: UIState, action: AsyncFinishAction<any>) => {
-    action.asyncFinish(() => routerHistory.push('/'));
     return {
       ...ui,
       userSettings: {
@@ -248,10 +248,12 @@ function loadLocal(contents: any): Todo[] {
     todos = contents.todos;
   }
   todos = todos.map(todo => {
+    const timestamp = todo.timestamp ? moment(todo.timestamp).toDate() : new Date();
     return {
       ...todo,
       date: todo.date ? moment(todo.date).toDate() : undefined,
-      timestamp: todo.timestamp ? todo.timestamp : new Date(),
+      timestamp: timestamp,
+      created: todo.created ? moment(todo.created).toDate() : timestamp,
       serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined,
       files: todo.files ? todo.files : []
     };

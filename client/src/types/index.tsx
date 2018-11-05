@@ -17,6 +17,7 @@ export interface Todo extends Timestamped {
     reminder?: Date;
     files: TFile[];
     comment?: string;
+    created: Date;
 }
 
 export interface TFile extends Timestamped {

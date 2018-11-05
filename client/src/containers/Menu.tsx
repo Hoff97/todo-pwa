@@ -10,6 +10,7 @@ import { toggleMenu } from 'src/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Settings from './Settings';
 import Login from './Login';
+import StatsV from './Stats';
 
 interface Props extends RouteComponentProps {
     dispatch: Dispatch<Action<any>>;
@@ -24,6 +25,7 @@ function sidebar(loggedIn: boolean) {
         </h3>
         <ul className="list-group">
             <li className="list-group-item clickable"><Link to="/">Main page</Link></li>
+            <li className="list-group-item clickable"><Link to="/stats">Statistics</Link></li>
             {!loggedIn &&
                 <li className="list-group-item clickable"><Link to="login">Log in</Link></li>
             }
@@ -47,6 +49,7 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 </div>
                 <Switch>
                     <Route exact path="/" component={MainPage} />
+                    <Route exact path="/stats" component={StatsV} />
                     <Route exact path="/settings" component={Settings} />
                     <Route exact path="/login" component={Login} />
                     <Route component={NotFound} />
