@@ -43,12 +43,16 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 docked={false} transitions={true}
                 touch={true} enableDragHandle={true} position={'left'}
                 dragToggleDistance={30} style={{ overflow: 'auto' }}
-                onOpenChange={op => dispatch(toggleMenu(op))}>
-                <div className="menuOpener">
-                    <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x" /></span>
-                </div>
+                onOpenChange={op => dispatch(toggleMenu(op))}
+                dragHandleStyle={{ width: '10px' }}>
+                { window.innerWidth > 590 &&
+                    <div className="menuOpener">
+                        <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x"/></span>
+                    </div>
+                }
                 <Switch>
                     <Route exact path="/" component={MainPage} />
+                    <Route exact path="/index.html" component={MainPage} />
                     <Route exact path="/stats" component={StatsV} />
                     <Route exact path="/settings" component={Settings} />
                     <Route exact path="/login" component={Login} />
