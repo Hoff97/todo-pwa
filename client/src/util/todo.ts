@@ -1,6 +1,6 @@
-import * as uuid from 'uuid/v4';
+import uuid from 'uuid/v4';
 import { Todo } from 'src/types';
-import * as moment from 'moment';
+import moment from 'moment';
 import { comparing, dual } from './util';
 
 function nextWeekday(wd: number) {

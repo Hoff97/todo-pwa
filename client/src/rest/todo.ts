@@ -1,6 +1,6 @@
 import { Todo } from 'src/types';
 import { axios } from './config';
-import * as moment from 'moment';
+import moment from 'moment';
 
 const url = '/api/v1/todo'
 
