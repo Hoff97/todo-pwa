@@ -45,9 +45,11 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 dragToggleDistance={30} style={{ overflow: 'auto' }}
                 onOpenChange={op => dispatch(toggleMenu(op))}
                 dragHandleStyle={{ width: '10px' }}>
-                <div className="menuOpener">
-                    <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" /></span>
-                </div>
+                { window.innerWidth > 590 &&
+                    <div className="menuOpener">
+                        <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x"/></span>
+                    </div>
+                }
                 <Switch>
                     <Route exact path="/" component={MainPage} />
                     <Route exact path="/index.html" component={MainPage} />
