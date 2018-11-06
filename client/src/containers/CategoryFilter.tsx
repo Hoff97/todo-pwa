@@ -1,10 +1,10 @@
 import { Dispatch, Action } from "redux";
 import { CategoryInfo, catInfoFromTodos } from "src/util/category";
-import { clearFilter } from "src/actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { StoreState } from 'src/types';
+import { Link } from 'react-router-dom';
 
 interface Props {
     dispatch: Dispatch<Action<any>>;
@@ -20,8 +20,8 @@ function CategoryF({ filterCategory, categoryInfo, dispatch }: Props) {
         <div>
             {filterCategory &&
                 <div style={{'backgroundColor': categoryColor(filterCategory)}} className="categoryLabel">
-                    #{filterCategory}
-                    <a onClick={e => dispatch(clearFilter())}> <FontAwesomeIcon icon="times"/></a>
+                    #{filterCategory}&nbsp;
+                    <Link to="/" style={{ textDecoration: 'none', color: '#FFF' }}><FontAwesomeIcon icon="times"/></Link>
                 </div>
             }
         </div>
@@ -29,9 +29,9 @@ function CategoryF({ filterCategory, categoryInfo, dispatch }: Props) {
 }
 
 
-let Category = connect((state: StoreState) => {
+const Category = (category: string | null) => connect((state: StoreState) => {
     return {
-        filterCategory: state.ui.filterCategory,
+        filterCategory: category,
         categoryInfo: catInfoFromTodos(state.todos.state)
     }
 },

@@ -6,6 +6,7 @@ import { CategoryInfo } from 'src/util/category';
 import { isOverdue, isToday } from 'src/util/todo';
 import { TFile } from 'src/types';
 import { dataSize } from 'src/util/util';
+import { Link } from 'react-router-dom';
 
 export interface Props {
   name: string
@@ -21,8 +22,7 @@ export interface Props {
   date?: Date
   categoryColor?: string
   editChange: (str: string) => void
-  editValue: string
-  filterCategory: (category: string) => void;
+  editValue: string;
   categories: CategoryInfo[];
   comment?: string;
   files: TFile[];
@@ -55,7 +55,7 @@ function cutOffName(name: string) {
 
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
-  editValue, filterCategory, categories, comment, files, addFile, 
+  editValue, categories, comment, files, addFile, 
   deleteFile, commentChanged }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
@@ -73,8 +73,9 @@ function Todo({ name, done, toggle, remove, priority, category,
         </td>
         <td>
           {category &&
-            <span className="category" style={{ color: categoryColor }}
-              onClick={e => filterCategory(category)}>{category}</span>
+            <Link to={{ pathname: '/', search: `?category=${category}` }} style={{ textDecoration: 'none' }}>
+              <span className="category" style={{ color: categoryColor }}>{category}</span>
+            </Link>
           }
         </td>
         {!done &&
