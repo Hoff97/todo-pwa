@@ -7,12 +7,12 @@ import { Action } from 'redux-actions';
 import { catInfoFromTodos } from 'src/util/category';
 import { compare } from 'src/util/todo';
 
-export function mapStateToProps(state: StoreState) {
+const mapStateToProps = (category: string | null) => (state: StoreState) => {
     return {
         todos: state.todos.state
             .filter(todo => {
-                if (state.ui.filterCategory) {
-                    return todo.category === state.ui.filterCategory
+                if (category) {
+                    return todo.category === category
                 } else {
                     return true;
                 }
@@ -31,13 +31,14 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
         editTodo: (todo: Todo) => dispatch(actions.editTodo(todo)),
         finishEdit: (id: string, str: string) => dispatch(actions.finishEdit(id, str)),
         editChange: (str: string) => dispatch(actions.editChange(str)),
-        filterCategory: (category: string) => dispatch(actions.filterCategory(category)),
         addFile: (todoId: string, file: File) => dispatch(actions.addFile(todoId, file)),
         deleteFile: (id: string, todoId: string) => dispatch(actions.deleteFile(id, todoId)),
         commentChanged: (todoId: string, comment: string) => dispatch(actions.commentChanged(todoId, comment))
     }
 }
 
-const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList);
+export 
+
+const VisibleTodoList = (category: string | null) => connect(mapStateToProps(category), mapDispatchToProps)(TodoList);
 
 export default VisibleTodoList;

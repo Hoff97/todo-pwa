@@ -15,13 +15,12 @@ export interface Props {
     addFile: (todoId: string, file: File) => void;
     deleteFile: (id: string, todoId: string) => void;
     editChange: (str: string) => void;
-    filterCategory: (category: string) => void;
     categoryInfo: CategoryInfo[];
     commentChanged: (todoId: string, comment: string) => void;
 }
 
 export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit,
-    editChange, editValue, filterCategory, categoryInfo, addFile, deleteFile, commentChanged }: Props) {
+    editChange, editValue, categoryInfo, addFile, deleteFile, commentChanged }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
@@ -37,7 +36,6 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             editing={editingTodo === todo.id}
                             editValue={editValue}
                             editChange={editChange}
-                            filterCategory={filterCategory}
                             categories={categoryInfo}
                             comment={todo.comment}
                             files={todo.files}
