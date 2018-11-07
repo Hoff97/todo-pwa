@@ -1,33 +1,35 @@
 import * as React from 'react';
 
-import 'chart.js';
-import { Line, Bar, Radar } from 'react-chartjs';
+import { Bar } from 'react-chartjs-2';
+import { CategoryInfo } from 'src/util/category';
 
 interface Props {
     openTodos: number;
     closedTodos: number;
     ttD: number;
+    categories: CategoryInfo[];
+    todosByCategory: number[];
 }
 
 function prettyDuration(dur: number) {
     var hours = dur;
-    var days = Math.floor(hours/24);
+    var days = Math.floor(hours / 24);
     console.log(days);
-    const weeks = Math.floor(days/7);
-    days = days-weeks*7;
-    hours = hours-days*24-weeks*7*24;
+    const weeks = Math.floor(days / 7);
+    days = days - weeks * 7;
+    hours = hours - days * 24 - weeks * 7 * 24;
     var ret = '';
-    if(weeks > 1) {
+    if (weeks > 1) {
         ret += weeks + ' weeks ';
     } else if (weeks > 0) {
         ret += weeks + ' week ';
     }
-    if(days > 1) {
+    if (days > 1) {
         ret += days + ' days ';
     } else if (days > 0) {
         ret += days + ' day ';
     }
-    if(hours > 0) {
+    if (hours > 0) {
         ret += hours + ' hours';
     } else if (hours > 0) {
         ret += hours + ' hour';
@@ -35,44 +37,32 @@ function prettyDuration(dur: number) {
     return ret.trim();
 }
 
-const data = {
-	labels: ["January", "February", "March", "April", "May", "June", "July"],
-	datasets: [
-		{
-			label: "My First dataset",
-			fillColor: "rgba(220,220,220,0.2)",
-			strokeColor: "rgba(220,220,220,1)",
-			pointColor: "rgba(220,220,220,1)",
-			pointStrokeColor: "#fff",
-			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(220,220,220,1)",
-			data: [65, 59, 80, 81, 56, 55, 40]
-		},
-		{
-			label: "My Second dataset",
-			fillColor: "rgba(151,187,205,0.2)",
-			strokeColor: "rgba(151,187,205,1)",
-			pointColor: "rgba(151,187,205,1)",
-			pointStrokeColor: "#fff",
-			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(151,187,205,1)",
-			data: [28, 48, 40, 19, 86, 27, 90]
-		}
-	]
-};
-
-function Stats({ openTodos, closedTodos, ttD }: Props) {
+function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory }: Props) {
+    const data = {
+        labels: categories.map(x => x.name),
+        datasets: [
+            {
+                label: 'Issues by category',
+                backgroundColor: categories.map(x => x.color),
+                borderColor: '#000',
+                borderWidth: 1,
+                hoverBackgroundColor: categories.map(x => x.color),
+                hoverBorderColor: '#000',
+                data: todosByCategory
+            }
+        ]
+    };
     return (
         <div className="container mt-2">
             <table className="table table-striped table-bordered">
                 <tbody>
                     <tr>
                         <th>Open todos</th>
-                        <td>{ openTodos }</td>
+                        <td>{openTodos}</td>
                     </tr>
                     <tr>
                         <th>Closed todos</th>
-                        <td>{ closedTodos }</td>
+                        <td>{closedTodos}</td>
                     </tr>
                     <tr>
                         <th>Average time till done</th>
@@ -80,9 +70,21 @@ function Stats({ openTodos, closedTodos, ttD }: Props) {
                     </tr>
                 </tbody>
             </table>
-            <Line data={data}/>
-            <Bar data={data}/>
-            <Radar data={data}/>
+            <Bar
+                data={data}
+                width={100}
+                height={50}
+                options={{
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }}
+            />
         </div>
     );
 }
