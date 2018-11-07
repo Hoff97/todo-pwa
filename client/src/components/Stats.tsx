@@ -12,7 +12,8 @@ interface Props {
     todosByCategory: number[];
     todosByDate: {
         day: string;
-        todos: number;
+        done: number;
+        created: number;
     }[];
 }
 
@@ -55,6 +56,22 @@ const scaleOptions: ChartScales = {
     }]
 };
 
+const lineDataOpts = {
+    fill: false,
+    lineTension: 0.1,
+    borderCapStyle: 'butt',
+    borderDash: [],
+    borderDashOffset: 0.0,
+    borderJoinStyle: 'miter',
+    pointBackgroundColor: '#fff',
+    pointBorderWidth: 1,
+    pointHoverRadius: 5,
+    pointHoverBorderWidth: 2,
+    pointHoverBorderColor: 'rgba(220,220,220,1)',
+    pointRadius: 1,
+    pointHitRadius: 10
+}
+
 function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todosByDate }: Props) {
     const barData = {
         labels: categories.map(x => x.name),
@@ -78,24 +95,21 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
         datasets: [
             {
                 label: 'Todos done by date',
-                fill: false,
-                lineTension: 0.1,
+                data: todosByDate.map(x => x.done),
                 backgroundColor: 'rgba(75,192,192,0.4)',
                 borderColor: 'rgba(75,192,192,1)',
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: 'rgba(75,192,192,1)',
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
                 pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                pointHoverBorderColor: 'rgba(220,220,220,1)',
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: todosByDate.map(x => x.todos)
+                pointBorderColor: 'rgba(75,192,192,1)',
+                ...lineDataOpts
+            },
+            {
+                label: 'Todos created by date',
+                data: todosByDate.map(x => x.created),
+                backgroundColor: 'rgba(192,75,192,0.4)',
+                borderColor: 'rgba(192,75,192,1)',
+                pointHoverBackgroundColor: 'rgba(192,75,192,1)',
+                pointBorderColor: 'rgba(192,75,192,1)',
+                ...lineDataOpts
             }
         ]
     };
