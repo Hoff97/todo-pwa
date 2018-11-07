@@ -34,7 +34,7 @@ const Category = connect((state: StoreState) => {
   const category = params.get('category')
     return {
         filterCategory: category,
-        categoryInfo: catInfoFromTodos(state.todos.state)
+        categoryInfo: catInfoFromTodos(state.todos)
     }
 },
 (dispatch: Dispatch<Action<any>>) => {

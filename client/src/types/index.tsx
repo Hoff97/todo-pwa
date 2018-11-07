@@ -1,4 +1,3 @@
-import { HistoryState } from 'src/reducers/enhancers/history';
 import * as moment from 'moment';
 import { Location } from 'history';
 
@@ -46,7 +45,7 @@ export type UIState = {
 }
 
 export type StoreState = {
-    todos: HistoryState<Todo[]>;
+    todos: Todo[];
     ui: UIState;
     routing: Location;
 }

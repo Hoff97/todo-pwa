@@ -6,16 +6,16 @@ import Stats from 'src/components/Stats';
 import moment from 'moment';
 
 export function mapStateToProps(state: StoreState) {
-    const open = state.todos.state.filter(x => !x.done).length;
+    const open = state.todos.filter(x => !x.done).length;
 
-    const ttD = state.todos.state.length > 0 ? Math.round(state.todos.state
+    const ttD = state.todos.length > 0 ? Math.round(state.todos
         .filter(todo => todo.done)
         .map(todo => moment(todo.timestamp).diff(moment(todo.created), 'hours'))
-        .reduce((a,b) => a+b, 0)/state.todos.state.filter(todo => todo.done).length) : 0;
+        .reduce((a,b) => a+b, 0)/state.todos.filter(todo => todo.done).length) : 0;
 
     return {
         openTodos: open,
-        closedTodos: state.todos.state.length - open,
+        closedTodos: state.todos.length - open,
         ttD
     }
 }

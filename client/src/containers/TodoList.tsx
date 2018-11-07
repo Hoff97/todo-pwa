@@ -11,7 +11,7 @@ const mapStateToProps = (state: StoreState) => {
     let params = new URLSearchParams(state.routing.search);
     const category = params.get('category')
     return {
-        todos: state.todos.state
+        todos: state.todos
             .filter(todo => {
                 if (category) {
                     return todo.category === category
@@ -22,7 +22,7 @@ const mapStateToProps = (state: StoreState) => {
             .sort((a, b) => compare(a,b)),
         editingTodo: state.ui.editingTodo,
         editValue: state.ui.editValue,
-        categoryInfo: catInfoFromTodos(state.todos.state)
+        categoryInfo: catInfoFromTodos(state.todos)
     }
 }
 

@@ -3,7 +3,6 @@ import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
 import { parseTodo, todoStr } from 'src/util/todo';
 import moment from 'moment';
-import { historyReducer } from './enhancers/history';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings } from 'src/actions';
@@ -278,7 +277,7 @@ export const routerReducer = handleActions({
 })
 
 export const rootReducer = combineReducers({
-  todos: historyReducer(saveReducer('data', todosDispatched, loadLocal)),
+  todos: saveReducer('data', todosDispatched, loadLocal),
   ui: ui,
   routing: routerReducer
 });

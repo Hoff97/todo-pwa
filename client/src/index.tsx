@@ -56,7 +56,7 @@ const middleware = applyMiddleware(
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, middleware);
 
-store.dispatch(putTodos(store.getState().todos.state));
+store.dispatch(putTodos(store.getState().todos));
 
 ReactDOM.render(
   <Provider store={store}>
