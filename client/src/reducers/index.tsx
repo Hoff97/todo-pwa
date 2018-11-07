@@ -12,8 +12,8 @@ import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/au
 import uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
 import { promptInstall, routerHistory } from 'src';
-import { routerReducer } from 'react-router-redux';
 import { AsyncFinishAction } from './middleware/after-finish';
+import { Location } from 'history';
 
 type A<T> = { type: string, payload: T }
 
@@ -226,6 +226,13 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
       menuOpen: action.payload
     };
   },
+
+  LOCATION_CHANGE: (ui: UIState, action: A<any>) => {
+    return {
+      ...ui,
+      menuOpen: false
+    };
+  }
 }, { 
   inputValue: '', 
   editValue: '', 
@@ -260,6 +267,15 @@ function loadLocal(contents: any): Todo[] {
   });
   return todos;
 }
+
+export const routerReducer = handleActions({
+  LOCATION_CHANGE: (location: Location, action: A<Location>) => action.payload
+}, {
+  pathname: '',
+  search: '',
+  state: undefined,
+  hash: ''
+})
 
 export const rootReducer = combineReducers({
   todos: historyReducer(saveReducer('data', todosDispatched, loadLocal)),

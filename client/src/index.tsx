@@ -16,7 +16,7 @@ import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPl
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
-import { putTodos, toggleShowInstall, getUserSettings as gUSA, toggleMenu } from './actions';
+import { putTodos, toggleShowInstall, getUserSettings as gUSA, locationChange } from './actions';
 
 import 'rmc-drawer/assets/index.css'
 import Menu from './containers/Menu';
@@ -92,7 +92,7 @@ export function getUserSettings() {
 }
 
 routerHistory.listen(x => {
-  store.dispatch(toggleMenu(false));
+  store.dispatch(locationChange(x));
 })
 
 window.addEventListener('beforeinstallprompt', (e) => {

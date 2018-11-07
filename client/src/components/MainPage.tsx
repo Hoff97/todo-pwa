@@ -4,15 +4,11 @@ import VisibleTodoList from 'src/containers/TodoList';
 import Category from 'src/containers/CategoryFilter';
 
 function MainPage(history: any) {
-  let params = new URLSearchParams(history.location.search);
-  const category = params.get('category')
-  const TodoList = VisibleTodoList(category);
-  const Cat = Category(category)
   return (
     <div className="container mt-2">
       <ButtonsV />
-      <Cat/>
-      <TodoList/>
+      <Category/>
+      <VisibleTodoList/>
       {
         process.env.REACT_APP_VERSION && process.env.REACT_APP_TIME &&
         <span className="text-muted small">

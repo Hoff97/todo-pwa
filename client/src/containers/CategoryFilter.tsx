@@ -29,7 +29,9 @@ function CategoryF({ filterCategory, categoryInfo, dispatch }: Props) {
 }
 
 
-const Category = (category: string | null) => connect((state: StoreState) => {
+const Category = connect((state: StoreState) => {
+  let params = new URLSearchParams(state.routing.search);
+  const category = params.get('category')
     return {
         filterCategory: category,
         categoryInfo: catInfoFromTodos(state.todos.state)

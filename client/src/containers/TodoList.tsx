@@ -7,7 +7,9 @@ import { Action } from 'redux-actions';
 import { catInfoFromTodos } from 'src/util/category';
 import { compare } from 'src/util/todo';
 
-const mapStateToProps = (category: string | null) => (state: StoreState) => {
+const mapStateToProps = (state: StoreState) => {
+    let params = new URLSearchParams(state.routing.search);
+    const category = params.get('category')
     return {
         todos: state.todos.state
             .filter(todo => {
@@ -37,8 +39,6 @@ export function mapDispatchToProps(dispatch: Dispatch<Action<any>>) {
     }
 }
 
-export 
-
-const VisibleTodoList = (category: string | null) => connect(mapStateToProps(category), mapDispatchToProps)(TodoList);
+const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList);
 
 export default VisibleTodoList;
