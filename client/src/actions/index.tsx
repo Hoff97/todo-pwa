@@ -3,6 +3,7 @@ import { Todo } from 'src/types';
 import { loginRequest, signUpRequest, updateUserSettings, getUserSettings as gUS } from 'src/rest/auth';
 import { todoPut, deleteTodoRequest, deleteFileRequest } from 'src/rest/todo';
 import * as moment from 'moment';
+import { Location } from 'history';
 
 export const ADD_TODO = 'ADD_TODO';
 export const addTodo = createAction(ADD_TODO, (x: string) => x);
@@ -29,9 +30,6 @@ export const finishEdit = createAction(FINISH_EDIT, (id: string, str: string) =>
 
 export const EDIT_CHANGE = 'EDIT_CHANGE';
 export const editChange = createAction(EDIT_CHANGE, (str: string) => str)
-
-export const LOGIN_SHOW = 'LOGIN_SHOW';
-export const loginShow = createAction(LOGIN_SHOW, () => {})
 
 export const LOGIN = 'LOGIN';
 export const LOGIN_FULFILLED = 'LOGIN_FULFILLED';
@@ -108,3 +106,6 @@ export function getUserSettings() {
 
 export const TOGGLE_MENU = 'TOGGLE_MENU';
 export const toggleMenu = createAction(TOGGLE_MENU, (open: boolean) => open)
+
+export const LOCATION_CHANGE = 'LOCATION_CHANGE'
+export const locationChange = createAction(LOCATION_CHANGE, (location: Location) => location)

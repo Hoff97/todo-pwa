@@ -83,8 +83,9 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
         db.run(TodoTable.todo.filter(x => x.loginFk === login.id.get && !x.done).result).foreach{ todoDb =>
           val todosToday = todoDb.filter(todo => todo.date.isEmpty || isBeforeOrAtDay(todo.date.get, time))
           if(todosToday.length > 0) {
-            sendToUser(dailyNotification(login, todosToday), login.id.get)
-            sendDailyMail(login.email, todosToday)
+            val sortedTodos = todosToday.sortBy(todo => (-todo.priority.getOrElse(0), todo.name))
+            sendToUser(dailyNotification(login, sortedTodos), login.id.get)
+            sendDailyMail(login.email, sortedTodos)
           }
         }
 
@@ -96,12 +97,11 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   private def sendDailyMail(userMail: String, todos: Seq[Todo]): Unit = {
-    val sortedTodos = todos.sortBy(todo => (-todo.priority.getOrElse(0), todo.name))
     val email = Email(
       "Here are your daily todos",
       config.get[String]("server.emailSender"),
       Seq(userMail),
-      bodyHtml = Some(new DailyNotification(userMail, sortedTodos).render().toString())
+      bodyHtml = Some(new DailyNotification(userMail, todos).render().toString())
     )
     mailerClient.send(email)
   }
