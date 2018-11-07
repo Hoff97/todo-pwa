@@ -10,7 +10,7 @@ import { toggleMenu } from 'src/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Settings from './Settings';
 import Login from './Login';
-import StatsV from './Stats';
+import Loadable from 'react-loadable';
 
 interface Props extends RouteComponentProps {
     dispatch: Dispatch<Action<any>>;
@@ -36,6 +36,22 @@ function sidebar(loggedIn: boolean) {
     </div>);
 }
 
+
+const Loading = () => {
+    return <div>Loading...</div>
+}
+
+const Stats = Loadable({
+    loader: () => {
+        return import('./Stats').then((x: any) => {
+            return (new Promise(resolve => {
+                x((y: any) => resolve(y))
+            })) as any;
+        });
+    },
+    loading: Loading,
+});
+
 function MenuF({ dispatch, open, loggedIn }: Props) {
     return (
         <div>
@@ -45,15 +61,15 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 dragToggleDistance={30} style={{ overflow: 'auto' }}
                 onOpenChange={op => dispatch(toggleMenu(op))}
                 dragHandleStyle={{ width: '10px' }}>
-                { window.innerWidth > 590 &&
+                {window.innerWidth > 590 &&
                     <div className="menuOpener">
-                        <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x"/></span>
+                        <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x" /></span>
                     </div>
                 }
                 <Switch>
                     <Route exact path="/" component={MainPage} />
                     <Route exact path="/index.html" component={MainPage} />
-                    <Route exact path="/stats" component={StatsV} />
+                    <Route exact path="/stats" component={Stats} />
                     <Route exact path="/settings" component={Settings} />
                     <Route exact path="/login" component={Login} />
                     <Route component={NotFound} />
