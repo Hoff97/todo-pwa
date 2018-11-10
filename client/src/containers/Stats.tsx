@@ -29,7 +29,8 @@ export function mapStateToProps(state: StoreState) {
         .map(day => {
             return {
                 day,
-                todos: state.todos.filter(x => x.done && moment(x.timestamp).format(dayFormat) === day).length
+                done: state.todos.filter(x => x.done && moment(x.timestamp).format(dayFormat) === day).length,
+                created: state.todos.filter(x => moment(x.created).format(dayFormat) === day).length
             };
         });
 

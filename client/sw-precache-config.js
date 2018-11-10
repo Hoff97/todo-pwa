@@ -5,5 +5,11 @@ module.exports = {
     swFilePath: './build/service-worker.js',
     stripPrefix: 'build/',
     importScripts: (['./service-worker-custom.js']),
-    handleFetch: true
+    handleFetch: true,
+    runtimeCaching: [
+        {
+            urlPattern: /^https:\/\/todo\.haskai.de\/static\/js/,
+            handler: 'networkFirst'
+        }
+    ]
 }

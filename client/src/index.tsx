@@ -12,7 +12,7 @@ import promiseMiddleware from 'redux-promise-middleware'
 import ReduxThunk from 'redux-thunk';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTrash, faCheck, faUndo, faPlus, faRedo, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload, faCog, faSave, faBars } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheck, faPlus, faUser, faSignInAlt, faUserPlus, faBell, faTimes, faDownload, faCog, faSave, faBars } from '@fortawesome/free-solid-svg-icons'
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
@@ -27,22 +27,8 @@ import createHistory from 'history/createBrowserHistory'
 import { Router } from 'react-router';
 import { asyncFinishMiddleware } from './reducers/middleware/after-finish';
 
-library.add(faTrash)
-library.add(faUndo)
-library.add(faCheck)
-library.add(faPlus)
-library.add(faUndo)
-library.add(faRedo)
-library.add(faUser)
-library.add(faSignInAlt)
-library.add(faUserPlus)
-library.add(faBell)
-library.add(faTimes)
-library.add(faDownload)
-library.add(faCog)
-library.add(faSave)
-library.add(faTimes)
-library.add(faBars)
+library.add(faTrash, faCheck, faPlus, faUser, faSignInAlt, 
+  faUserPlus, faBell, faTimes, faDownload, faCog, faBars, faSave)
 
 export const routerHistory = createHistory()
 
