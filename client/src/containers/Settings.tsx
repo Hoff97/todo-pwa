@@ -2,10 +2,16 @@ import * as React from 'react';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { StoreState } from 'src/types';
-import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import { changeUserSettings } from 'src/actions';
 import * as moment from 'moment';
+import { defaultLoad } from 'src/util/util';
+
+const Loading = () => {
+    return <div>Loading...</div>
+}
+
+const TimePicker: any = defaultLoad(() => import('../components/proxy/TimePicker'), Loading)
 
 interface Props {
     showSettings: boolean;
@@ -21,7 +27,7 @@ function SettingsF({ dispatch, notificationTime, mail }: Props) {
                 <div className="input-group-prepend">
                     <div className="input-group-text">Daily reminder at</div>
                 </div>
-                <TimePicker onChange={x => dispatch(changeUserSettings(x, mail))}
+                <TimePicker onChange={(x: any) => dispatch(changeUserSettings(x, mail))}
                     showSecond={false} minuteStep={10} className="form-control"
                     value={notificationTime} />
                 <div className="custom-control custom-checkbox my-1 mr-sm-2"

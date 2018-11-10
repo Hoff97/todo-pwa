@@ -141,8 +141,12 @@ module.exports = {
             },
           },
           {
-            test: /Stats.tsx$/,
-            loader: ['bundle-loader?lazy&name=test', 'babel-loader', 'ts-loader']
+            test: /containers\/Stats.tsx$/,
+            loader: ['bundle-loader?lazy&name=stats', 'babel-loader', 'ts-loader']
+          },
+          {
+            test: /TimePicker.tsx$/,
+            loader: ['bundle-loader?lazy&name=timepicker', 'babel-loader', 'ts-loader']
           },
           {
             test: /\.(js|jsx|mjs)$/,

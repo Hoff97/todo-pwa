@@ -1,3 +1,7 @@
+
+import Loadable from 'react-loadable';
+import * as React from 'react';
+
 export type CompareFunction<A> =
     ((a: A) => number)
     | { tpe: 'dual', fun: (a: A, b: A) => number }
@@ -37,4 +41,17 @@ export function dataSize(size: number) {
 
 export function prec(n: number, prec: number) {
     return Math.round(n * (10 ** prec)) / (10 ** prec);
+}
+
+export function defaultLoad(f: () => Promise<any>, loading: React.ComponentType<any>) {
+    return Loadable({
+        loader: () => {
+            return f().then((x: any) => {
+                return (new Promise(resolve => {
+                    x((y: any) => resolve(y))
+                })) as any;
+            });
+        },
+        loading: loading,
+    });
 }
