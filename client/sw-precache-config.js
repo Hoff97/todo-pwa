@@ -9,7 +9,7 @@ module.exports = {
     runtimeCaching: [
         {
             urlPattern: /^https:\/\/todo\.haskai.de\/static\/js/,
-            handler: 'networkFirst'
+            handler: 'cacheFirst'
         }
     ]
 }

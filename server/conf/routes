@@ -12,4 +12,10 @@ GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/l
 ->     /api/v1                   api.Routes
 
 ### NoDocs ###
+GET     /stats                           controllers.HomeController.index
+
+### NoDocs ###
+GET     /settings                           controllers.HomeController.index
+
+### NoDocs ###
 GET     /*file               controllers.Assets.versioned(path="/public", file: Asset)

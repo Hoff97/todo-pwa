@@ -7,7 +7,14 @@ import DayPicker from 'react-day-picker';
 import moment from 'moment';
 import Autocomplete from 'react-autocomplete';
 import { CSSProperties, HTMLProps } from 'react';
-import TimePicker from 'rc-time-picker';
+import { defaultLoad } from 'src/util/util';
+
+
+const Loading = () => {
+    return <div>Loading...</div>
+}
+
+const TimePicker: any = defaultLoad(() => import('./proxy/TimePicker'), Loading)
 
 interface ACOption {
     type: 'prio' | 'category' | 'date' | 'reminder' | 'date-sel' | 'time-sel';
@@ -111,13 +118,13 @@ const renderItem = (value: string, inputChanged: (str: string) => void) => (item
                     key={item.label} onClick={e => e.preventDefault()}>
                 <TimePicker
                     showSecond={false} minuteStep={10}
-                    allowEmpty={false} addon={x => timeSelAddon(x, inputChanged, value)}/>
+                    allowEmpty={false} addon={(x: any) => timeSelAddon(x, inputChanged, value)}/>
             </div>
         );
     }
 };
 
-function timeSelAddon(x: TimePicker, inputChanged: (str: string) => void, value: string) {
+function timeSelAddon(x: any, inputChanged: (str: string) => void, value: string) {
     return (
         <button onClick={e => {
             let c = (x.state as any).value as moment.Moment;

@@ -59,7 +59,6 @@ export function parseTodo(str: string): Todo {
             case 'sat': date = nextWeekday(6).toDate(); break;
             case 'sun': date = nextWeekday(0).toDate(); break;
             default:
-                console.log(dateMatch);
                 if(dateMatch.length === 7 && dateMatch[5] !== undefined && dateMatch[6] !== undefined) {
                     var dateM = moment().month(+dateMatch[6]-1).date(+dateMatch[5]);
                     if(!dateM.isAfter(moment())) {
@@ -103,6 +102,10 @@ export function parseTodo(str: string): Todo {
         files: [],
         created: new Date()
     };
+    if(todo.reminder !== undefined) {
+        Notification.requestPermission().then(function (result) {
+        });
+    }
     return todo;
 }
 

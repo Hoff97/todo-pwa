@@ -153,6 +153,10 @@ module.exports = {
             loader: ['bundle-loader?lazy&name=stats', 'ts-loader']
           },
           {
+            test: /TimePicker.tsx$/,
+            loader: ['bundle-loader?lazy&name=timepicker', 'babel-loader', 'ts-loader']
+          },
+          {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
