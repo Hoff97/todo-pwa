@@ -20,7 +20,6 @@ interface Props {
 function prettyDuration(dur: number) {
     var hours = dur;
     var days = Math.floor(hours / 24);
-    console.log(days);
     const weeks = Math.floor(days / 7);
     days = days - weeks * 7;
     hours = hours - days * 24 - weeks * 7 * 24;
