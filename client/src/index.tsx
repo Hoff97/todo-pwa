@@ -43,7 +43,9 @@ const middleware = applyMiddleware(
 
 const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, middleware);
 
-store.dispatch(putTodos(store.getState().todos));
+if(store.getState().ui.accessToken !== undefined) {
+  store.dispatch(putTodos(store.getState().todos));
+}
 
 ReactDOM.render(
   <Provider store={store}>
@@ -55,9 +57,6 @@ ReactDOM.render(
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
-
-Notification.requestPermission().then(function (result) {
-});
 
 let deferredPrompt: Event | undefined;
 
