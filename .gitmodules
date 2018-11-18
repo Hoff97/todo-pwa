@@ -1,0 +1,9 @@
+[submodule "cli/libs/json"]
+	path = cli/libs/json
+	url = git@github.com:nlohmann/json.git
+[submodule "cli/json"]
+	path = cli/json
+	url = git@github.com:nlohmann/json.git
+[submodule "cli/curlpp"]
+	path = cli/curlpp
+	url = git@github.com:jpbarrette/curlpp.git
