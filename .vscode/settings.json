@@ -53,6 +53,7 @@
         "cinttypes": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "typeindex": "cpp"
     }
 }

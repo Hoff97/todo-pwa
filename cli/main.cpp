@@ -12,6 +12,10 @@
 #include <curlpp/Easy.hpp>
 #include <boost/program_options.hpp>
 #include <sstream>
+#include <regex>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 using json = nlohmann::json;
 using namespace curlpp::options;
@@ -131,6 +135,53 @@ string prettyTodo(json todo) {
     return ss.str();
 }
 
+regex prioRegex("[!+]([1-5])", regex_constants::ECMAScript);
+regex categoryRegex("#([A-Za-z0-9]+)", regex_constants::ECMAScript);
+
+string currentTime() {
+    auto now = chrono::system_clock::now();
+    auto in_time_t = chrono::system_clock::to_time_t(now);
+
+    std::stringstream ss;
+    ss << put_time(localtime(&in_time_t), "%Y-%m-%d %X");
+    return ss.str();
+}
+
+json parseTodo(string input) {
+    json todo;
+
+    uuid_t uuid;
+    uuid_generate_random(uuid);
+    char str[36];
+    uuid_unparse(uuid, str);
+    todo["id"] = string(str);
+
+    std::stringstream name;
+    regex_replace(ostreambuf_iterator<char>(name), input.begin(), input.end(), prioRegex, "");
+    string input2 = name.str();
+    std::stringstream name2;
+    regex_replace(ostreambuf_iterator<char>(name2), input2.begin(), input2.end(), categoryRegex, "");
+
+    smatch match;
+    regex_search(input, match, prioRegex);
+    if(match.size() > 0) {
+        todo["priority"] = stoi(match[0]);
+    }
+    regex_search(input, match, categoryRegex);
+    if(match.size() > 0) {
+        todo["category"] = match[1];
+    }
+
+    todo["timestamp"] = currentTime();
+    todo["created"] = currentTime();
+    todo["files"] = json::array();
+
+    todo["name"] = name2.str();
+    todo["done"] = false;
+
+    return todo;
+}
+
 int main(int ac, char *av[])
 {
     printPretty("yay", new int[2]{31, 40}, 2);
@@ -186,7 +237,9 @@ int main(int ac, char *av[])
     }
     if (vm.count("todos"))
     {
-        cout << "Todos:" << vm["todos"].as<vector<string>>().size() << "\n";
+        for(string const input : vm["todos"].as<vector<string>>()) {
+            cout << parseTodo(input);
+        }
     }
 
     for (json const i : todos)
