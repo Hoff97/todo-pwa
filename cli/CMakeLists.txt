@@ -10,6 +10,6 @@ find_package (Boost 1.55.0 REQUIRED COMPONENTS program_options)
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 
-add_executable(hallowelt main.cpp)
+add_executable(todo main.cpp)
 
-target_link_libraries(hallowelt uuid nlohmann_json::nlohmann_json curlpp ${Boost_LIBRARIES})
+target_link_libraries(todo uuid nlohmann_json::nlohmann_json curlpp ${Boost_LIBRARIES})
