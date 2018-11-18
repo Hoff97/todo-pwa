@@ -90,11 +90,14 @@ void from_json(const json &j, todo &t)
     j.at("id").get_to(t.id);
 }
 
-string printPretty(string message, int options[], int oL) {
+string printPretty(string message, int options[], int oL)
+{
     std::stringstream ss;
     ss << "\033[";
-    for(int i = 0; i<oL; i++) {
-        if(i > 0) {
+    for (int i = 0; i < oL; i++)
+    {
+        if (i > 0)
+        {
             ss << ";";
         }
         ss << options[i];
@@ -103,34 +106,52 @@ string printPretty(string message, int options[], int oL) {
     return ss.str();
 }
 
-string printPretty(string message, int option) {
+string printPretty(string message, int option)
+{
     return printPretty(message, new int[1]{option}, 1);
 }
 
-string printPretty(string message, int option1, int option2) {
-    return printPretty(message, new int[2]{option1,option2}, 2);
+string printPretty(string message, int option1, int option2)
+{
+    return printPretty(message, new int[2]{option1, option2}, 2);
 }
 
-string prettyPrio(int prio) {
-    switch(prio) {
-        case 5: return printPretty("!5", FG_WHITE, BG_RED);
-        case 4: return printPretty("!4", FG_WHITE, BG_MAGENTA);
-        case 3: return printPretty("!3", FG_BLACK, BG_YELLOW);
-        case 2: return printPretty("!2", FG_WHITE, BG_BLUE);
-        case 1: return printPretty("!1", FG_WHITE, BG_GREEN);
-        default: return "  ";
+string prettyPrio(int prio)
+{
+    switch (prio)
+    {
+    case 5:
+        return printPretty("!5", FG_WHITE, BG_RED);
+    case 4:
+        return printPretty("!4", FG_WHITE, BG_MAGENTA);
+    case 3:
+        return printPretty("!3", FG_BLACK, BG_YELLOW);
+    case 2:
+        return printPretty("!2", FG_WHITE, BG_BLUE);
+    case 1:
+        return printPretty("!1", FG_WHITE, BG_GREEN);
+    default:
+        return "  ";
     }
 }
 
-string prettyTodo(json todo) {
+string prettyTodo(json todo)
+{
     std::stringstream ss;
-    if(todo["priority"] != nullptr) {
+    if (todo["priority"] != nullptr)
+    {
         ss << prettyPrio(todo["priority"].get<int>());
-    } else {
+    }
+    else
+    {
         ss << "  ";
     }
 
-    ss << "  " << todo["name"].get<string>();
+    if(todo["done"].get<bool>()) {
+        ss << "  " << printPretty(todo["name"].get<string>(), UNDERLINE, FG_CYAN);
+    } else {
+        ss << "  " << todo["name"].get<string>();
+    }
 
     return ss.str();
 }
@@ -138,7 +159,8 @@ string prettyTodo(json todo) {
 regex prioRegex("[!+]([1-5])", regex_constants::ECMAScript);
 regex categoryRegex("#([A-Za-z0-9]+)", regex_constants::ECMAScript);
 
-string currentTime() {
+string currentTime()
+{
     auto now = chrono::system_clock::now();
     auto in_time_t = chrono::system_clock::to_time_t(now);
 
@@ -147,7 +169,8 @@ string currentTime() {
     return ss.str();
 }
 
-json parseTodo(string input) {
+json parseTodo(string input)
+{
     json todo;
 
     uuid_t uuid;
@@ -164,11 +187,13 @@ json parseTodo(string input) {
 
     smatch match;
     regex_search(input, match, prioRegex);
-    if(match.size() > 0) {
+    if (match.size() > 0)
+    {
         todo["priority"] = stoi(match[0]);
     }
     regex_search(input, match, categoryRegex);
-    if(match.size() > 0) {
+    if (match.size() > 0)
+    {
         todo["category"] = match[1];
     }
 
@@ -182,24 +207,38 @@ json parseTodo(string input) {
     return todo;
 }
 
+bool compare_todo(const json first, const json second)
+{
+    if(first["done"].get<bool>() != second["done"].get<bool>()) {
+        return first["done"].get<bool>() < second["done"].get<bool>();
+    }
+
+    int prio1 = 0;
+    if(first.find("priority") != first.end()) {
+        prio1 = first["priority"].get<int>();
+    }
+    int prio2 = 0;
+    if(second.find("priority") != second.end()) {
+        prio2 = second["priority"].get<int>();
+    }
+    if(prio1 != prio2) {
+        return prio1 > prio2;
+    }
+    return true;
+}
+
 int main(int ac, char *av[])
 {
     printPretty("yay", new int[2]{31, 40}, 2);
     po::options_description desc("Allowed options");
-    desc.add_options()("help", "Produce help message")
-        ("login", "Login to todo website")
-        ("sync", "Syncronize todos")
-        ("todos", po::value<vector<string>>(), "Add todos")
-        ("baseUrl", po::value<string>(), "Change the baseUrl");
+    desc.add_options()("help", "Produce help message")("login", "Login to todo website")("sync", "Syncronize todos")("todos", po::value<vector<string>>(), "Add todos")("baseUrl", po::value<string>(), "Change the baseUrl");
 
     po::positional_options_description p;
     p.add("todos", -1);
 
     po::variables_map vm;
-    po::store(po::command_line_parser(ac, av).
-          options(desc).positional(p).run(), vm);
+    po::store(po::command_line_parser(ac, av).options(desc).positional(p).run(), vm);
     po::notify(vm);
-
 
     ifstream i("config.json");
     i >> config;
@@ -229,7 +268,8 @@ int main(int ac, char *av[])
     }
     if (vm.count("sync"))
     {
-        if(config["token"] == nullptr) {
+        if (config["token"] == nullptr)
+        {
             cout << "Please log in with --login before syncing your todos\n";
             return -1;
         }
@@ -237,12 +277,19 @@ int main(int ac, char *av[])
     }
     if (vm.count("todos"))
     {
-        for(string const input : vm["todos"].as<vector<string>>()) {
+        for (string const input : vm["todos"].as<vector<string>>())
+        {
             json todo = parseTodo(input);
             todos.push_back(todo);
         }
     }
+    list<json> todosList;
     for (json const i : todos)
+    {
+        todosList.push_back(i);
+    }
+    todosList.sort(compare_todo);
+    for (json const i : todosList)
     {
         cout << prettyTodo(i) << "\n";
     }
@@ -252,14 +299,14 @@ int main(int ac, char *av[])
     }
 }
 
-string login(string email, string pw) {
+string login(string email, string pw)
+{
     try
     {
         json content = {
             {"email", email},
             {"password", pw},
-            {"rememberMe", true}
-        };
+            {"rememberMe", true}};
 
         string body = content.dump();
 
@@ -267,7 +314,7 @@ string login(string email, string pw) {
         ss << config["baseUrl"].get<string>() << "/api/v1/login/signIn";
         curlpp::Cleanup myCleanup;
         curlpp::Easy myRequest;
-        
+
         myRequest.setOpt<Url>(ss.str());
         std::list<std::string> header;
         header.push_back("Content-Type: application/json");
@@ -293,7 +340,8 @@ string login(string email, string pw) {
     throw logic_error("Error!");
 }
 
-void sync() {
+void sync()
+{
     try
     {
         string body = todos.dump();
@@ -302,7 +350,7 @@ void sync() {
         ss << config["baseUrl"].get<string>() << "/api/v1/todo";
         curlpp::Cleanup myCleanup;
         curlpp::Easy myRequest;
-        
+
         myRequest.setOpt<Url>(ss.str());
         std::list<std::string> header;
         header.push_back("Content-Type: application/json");
