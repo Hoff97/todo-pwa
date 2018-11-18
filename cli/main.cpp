@@ -238,13 +238,17 @@ int main(int ac, char *av[])
     if (vm.count("todos"))
     {
         for(string const input : vm["todos"].as<vector<string>>()) {
-            cout << parseTodo(input);
+            json todo = parseTodo(input);
+            todos.push_back(todo);
         }
     }
-
     for (json const i : todos)
     {
         cout << prettyTodo(i) << "\n";
+    }
+    if (vm.count("sync"))
+    {
+        sync();
     }
 }
 
