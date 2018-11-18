@@ -18,9 +18,32 @@ using namespace curlpp::options;
 using namespace std;
 namespace po = boost::program_options;
 
-const string baseUrl = "localhost:9000";
+json config;
+
+json todos;
 
 string login(string email, string password);
+void sync();
+
+const int FG_BLACK = 30;
+const int FG_RED = 31;
+const int FG_GREEN = 32;
+const int FG_YELLOW = 33;
+const int FG_BLUE = 34;
+const int FG_MAGENTA = 35;
+const int FG_CYAN = 36;
+const int FG_WHITE = 37;
+const int BG_BLACK = 40;
+const int BG_RED = 41;
+const int BG_GREEN = 42;
+const int BG_YELLOW = 43;
+const int BG_BLUE = 44;
+const int BG_MAGENTA = 45;
+const int BG_CYAN = 46;
+const int BG_WHITE = 47;
+const int BOLD = 1;
+const int UNDERLINE = 4;
+const int INVERSE = 7;
 
 struct todo
 {
@@ -63,13 +86,60 @@ void from_json(const json &j, todo &t)
     j.at("id").get_to(t.id);
 }
 
+string printPretty(string message, int options[], int oL) {
+    std::stringstream ss;
+    ss << "\033[";
+    for(int i = 0; i<oL; i++) {
+        if(i > 0) {
+            ss << ";";
+        }
+        ss << options[i];
+    }
+    ss << "m" << message << "\033[0m";
+    return ss.str();
+}
+
+string printPretty(string message, int option) {
+    return printPretty(message, new int[1]{option}, 1);
+}
+
+string printPretty(string message, int option1, int option2) {
+    return printPretty(message, new int[2]{option1,option2}, 2);
+}
+
+string prettyPrio(int prio) {
+    switch(prio) {
+        case 5: return printPretty("!5", FG_WHITE, BG_RED);
+        case 4: return printPretty("!4", FG_WHITE, BG_MAGENTA);
+        case 3: return printPretty("!3", FG_BLACK, BG_YELLOW);
+        case 2: return printPretty("!2", FG_WHITE, BG_BLUE);
+        case 1: return printPretty("!1", FG_WHITE, BG_GREEN);
+        default: return "  ";
+    }
+}
+
+string prettyTodo(json todo) {
+    std::stringstream ss;
+    if(todo["priority"] != nullptr) {
+        ss << prettyPrio(todo["priority"].get<int>());
+    } else {
+        ss << "  ";
+    }
+
+    ss << "  " << todo["name"].get<string>();
+
+    return ss.str();
+}
+
 int main(int ac, char *av[])
 {
+    printPretty("yay", new int[2]{31, 40}, 2);
     po::options_description desc("Allowed options");
     desc.add_options()("help", "Produce help message")
         ("login", "Login to todo website")
         ("sync", "Syncronize todos")
-        ("todos", po::value<std::vector<std::string>>(), "Add todos");
+        ("todos", po::value<vector<string>>(), "Add todos")
+        ("baseUrl", po::value<string>(), "Change the baseUrl");
 
     po::positional_options_description p;
     p.add("todos", -1);
@@ -80,10 +150,11 @@ int main(int ac, char *av[])
     po::notify(vm);
 
 
-    json config;
     ifstream i("config.json");
     i >> config;
 
+    ifstream todoFile(config["jsonFile"].get<string>());
+    todoFile >> todos;
 
     if (vm.count("help"))
     {
@@ -103,37 +174,25 @@ int main(int ac, char *av[])
         string token = login(email, password);
         config["token"] = token;
         ofstream o("config.json");
-        o << config;
+        o << config.dump(4);
+    }
+    if (vm.count("sync"))
+    {
+        if(config["token"] == nullptr) {
+            cout << "Please log in with --login before syncing your todos\n";
+            return -1;
+        }
+        sync();
     }
     if (vm.count("todos"))
     {
         cout << "Todos:" << vm["todos"].as<vector<string>>().size() << "\n";
     }
 
-    json j{
-        {"name", "test2"},
-        {"id", "123456"}};
-
-    struct todo todo1 = createTodo("test");
-    struct todo todo2 = j;
-
-    list<struct todo> todos;
-    todos.push_back(todo1);
-    todos.push_back(j);
-    for (struct todo const i : todos)
+    for (json const i : todos)
     {
-        cout << i.id << ":" << i.name << "\n";
+        cout << prettyTodo(i) << "\n";
     }
-
-    json j2 = {
-        {"pi", 3.141},
-        {"happy", true},
-        {"name", "Niels"},
-        {"nothing", nullptr},
-        {"answer", {{"everything", 42}}},
-        {"list", {1, 0, 2}},
-        {"object", {{"currency", "USD"}, {"value", 42.99}}}};
-    std::cout << j2["pi"] << "\n";
 }
 
 string login(string email, string pw) {
@@ -148,7 +207,7 @@ string login(string email, string pw) {
         string body = content.dump();
 
         std::stringstream ss;
-        ss << baseUrl << "/api/v1/login/signIn";
+        ss << config["baseUrl"].get<string>() << "/api/v1/login/signIn";
         curlpp::Cleanup myCleanup;
         curlpp::Easy myRequest;
         
@@ -177,29 +236,42 @@ string login(string email, string pw) {
     throw logic_error("Error!");
 }
 
-void doRequest() {
+void sync() {
     try
     {
-        // That's all that is needed to do cleanup of used resources (RAII style).
+        string body = todos.dump();
+
+        std::stringstream ss;
+        ss << config["baseUrl"].get<string>() << "/api/v1/todo";
         curlpp::Cleanup myCleanup;
-
-        // Our request to be sent.
         curlpp::Easy myRequest;
+        
+        myRequest.setOpt<Url>(ss.str());
+        std::list<std::string> header;
+        header.push_back("Content-Type: application/json");
+        std::stringstream auth;
+        auth << "x-auth-token: " << config["token"].get<string>();
+        header.push_back(auth.str());
 
-        // Set the URL.
-        myRequest.setOpt<Url>("http://example.com");
+        myRequest.setOpt(new HttpHeader(header));
+        myRequest.setOpt(new CustomRequest("PUT"));
+        myRequest.setOpt(new PostFields(body));
+        myRequest.setOpt(new PostFieldSize(body.size()));
 
-        // Send request and get a result.
-        // By default the result goes to standard output.
-        myRequest.perform();
+        ostringstream os;
+        os << myRequest;
+        todos = json::parse(os.str());
+        ofstream o(config["jsonFile"].get<string>());
+        o << todos.dump(4);
     }
     catch (curlpp::RuntimeError &e)
     {
         std::cout << e.what() << std::endl;
+        throw logic_error("Error!");
     }
-
     catch (curlpp::LogicError &e)
     {
         std::cout << e.what() << std::endl;
+        throw logic_error("Error!");
     }
 }
