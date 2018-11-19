@@ -16,6 +16,9 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <algorithm> 
+#include <cctype>
+#include <locale>
 
 using json = nlohmann::json;
 using namespace curlpp::options;
@@ -25,6 +28,8 @@ namespace po = boost::program_options;
 json config;
 
 json todos;
+
+string configFile = "/home/hoff/.todo/config.json";
 
 string login(string email, string password);
 void sync();
@@ -153,11 +158,16 @@ string prettyTodo(json todo)
         ss << "  " << todo["name"].get<string>();
     }
 
+    if (todo["category"] != nullptr)
+    {
+        ss << "#" << todo["category"].get<string>();
+    }
+
     return ss.str();
 }
 
 regex prioRegex("[!+]([1-5])", regex_constants::ECMAScript);
-regex categoryRegex("#([A-Za-z0-9]+)", regex_constants::ECMAScript);
+regex categoryRegex("[#:]([A-Za-z0-9]+)", regex_constants::ECMAScript);
 
 string currentTime()
 {
@@ -167,6 +177,26 @@ string currentTime()
     std::stringstream ss;
     ss << put_time(localtime(&in_time_t), "%Y-%m-%d %X");
     return ss.str();
+}
+
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+}
+
+// trim from both ends (in place)
+static void trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
 }
 
 json parseTodo(string input)
@@ -191,17 +221,20 @@ json parseTodo(string input)
     {
         todo["priority"] = stoi(match[0]);
     }
-    regex_search(input, match, categoryRegex);
-    if (match.size() > 0)
+    smatch match2;
+    regex_search(input, match2, categoryRegex);
+    if (match2.size() > 0)
     {
-        todo["category"] = match[1];
+        todo["category"] = match2[1];
     }
 
     todo["timestamp"] = currentTime();
     todo["created"] = currentTime();
     todo["files"] = json::array();
 
-    todo["name"] = name2.str();
+    string todoName = name2.str();
+    trim(todoName);
+    todo["name"] = todoName;
     todo["done"] = false;
 
     return todo;
@@ -240,7 +273,7 @@ int main(int ac, char *av[])
     po::store(po::command_line_parser(ac, av).options(desc).positional(p).run(), vm);
     po::notify(vm);
 
-    ifstream i("config.json");
+    ifstream i(configFile);
     i >> config;
 
     ifstream todoFile(config["jsonFile"].get<string>());
@@ -263,7 +296,7 @@ int main(int ac, char *av[])
         cin >> password;
         string token = login(email, password);
         config["token"] = token;
-        ofstream o("config.json");
+        ofstream o(configFile);
         o << config.dump(4);
     }
     if (vm.count("sync"))
@@ -277,11 +310,15 @@ int main(int ac, char *av[])
     }
     if (vm.count("todos"))
     {
+        std::stringstream ss;
         for (string const input : vm["todos"].as<vector<string>>())
         {
-            json todo = parseTodo(input);
-            todos.push_back(todo);
+            ss << input << " ";
         }
+        json todo = parseTodo(ss.str());
+        todos.push_back(todo);
+        ofstream o(config["jsonFile"].get<string>());
+        o << todos.dump(4);
     }
     list<json> todosList;
     for (json const i : todos)
