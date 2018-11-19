@@ -17,7 +17,7 @@ function CategoryF({ filterCategory, categoryInfo, dispatch }: Props) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
     return (
-        <div>
+        <div style={{paddingTop: 50}}>
             {filterCategory &&
                 <div style={{'backgroundColor': categoryColor(filterCategory)}} className="categoryLabel">
                     #{filterCategory}&nbsp;

@@ -30,7 +30,7 @@ function wrapInput(input: JSX.Element, showInstall: boolean, install: () => void
 
 export function Buttons({ value, addTodo, inputChanged, categories, showInstall, install }: Props) {
     return (
-        <div className="mb-2">
+        <div className="mb-2 todo-input-bar">
             <form onSubmit={e => { e.preventDefault(); addTodo(value); }}>
                 <EnhancedSuggest value={value} change={inputChanged} categories={categories}
                     wrapInput={input => wrapInput(input, showInstall, install)} />

@@ -144,3 +144,12 @@ li.list-group-item.disabled {
 .clickable {
   cursor: pointer;
 }
+
+.todo-input-bar {
+  position: fixed;
+  background: #FFF;
+  z-index: 5;
+  width: inherit;
+  max-width: inherit;
+  padding-right: 30px;
+}
