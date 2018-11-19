@@ -264,7 +264,12 @@ int main(int ac, char *av[])
 {
     printPretty("yay", new int[2]{31, 40}, 2);
     po::options_description desc("Allowed options");
-    desc.add_options()("help", "Produce help message")("login", "Login to todo website")("sync", "Syncronize todos")("todos", po::value<vector<string>>(), "Add todos")("baseUrl", po::value<string>(), "Change the baseUrl");
+    desc.add_options()("help", "Produce help message")
+        ("login", "Login to todo website")
+        ("sync", "Syncronize todos")
+        ("todos", po::value<vector<string>>(), "Add todos")
+        ("baseUrl", po::value<string>(), "Change the baseUrl")
+        ("toggle", po::value<string>(), "Toggle a todo");
 
     po::positional_options_description p;
     p.add("todos", -1);
@@ -319,6 +324,16 @@ int main(int ac, char *av[])
         todos.push_back(todo);
         ofstream o(config["jsonFile"].get<string>());
         o << todos.dump(4);
+    }
+    if (vm.count("toggle")) {
+        string toggled = vm["toggle"].as<string>();
+        for (int i = 0; i < todos.size(); i++)
+        {
+            json todo = todos.at(i);
+            if(todo["name"].get<string>().find(toggled) != string::npos) {
+                todos.at(i)["done"] = !(todos.at(i)["done"].get<bool>());
+            }
+        }       
     }
     list<json> todosList;
     for (json const i : todos)
