@@ -29,6 +29,8 @@ json config;
 
 json todos;
 
+json deleted;
+
 string configFile = "/home/hoff/.todo/config.json";
 
 string login(string email, string password);
@@ -265,11 +267,12 @@ int main(int ac, char *av[])
     printPretty("yay", new int[2]{31, 40}, 2);
     po::options_description desc("Allowed options");
     desc.add_options()("help", "Produce help message")
-        ("login", "Login to todo website")
-        ("sync", "Syncronize todos")
+        ("login,l", "Login to todo website")
+        ("sync,s", "Syncronize todos")
         ("todos", po::value<vector<string>>(), "Add todos")
         ("baseUrl", po::value<string>(), "Change the baseUrl")
-        ("toggle", po::value<string>(), "Toggle a todo");
+        ("toggle,t", po::value<string>(), "Toggle a todo")
+        ("delete,d", po::value<string>(), "Delete a todo");
 
     po::positional_options_description p;
     p.add("todos", -1);
@@ -284,10 +287,17 @@ int main(int ac, char *av[])
     ifstream todoFile(config["jsonFile"].get<string>());
     todoFile >> todos;
 
+    ifstream deleteFile(config["deleteFile"].get<string>());
+    deleteFile >> deleted;
+
     if (vm.count("help"))
     {
         std::cout << desc << "\n";
         return 1;
+    }
+    if (vm.count("baseUrl")) {
+        config["baseUrl"] = vm["baseUrl"].as<string>();
+
     }
     if (vm.count("login"))
     {
@@ -301,8 +311,6 @@ int main(int ac, char *av[])
         cin >> password;
         string token = login(email, password);
         config["token"] = token;
-        ofstream o(configFile);
-        o << config.dump(4);
     }
     if (vm.count("sync"))
     {
@@ -322,8 +330,6 @@ int main(int ac, char *av[])
         }
         json todo = parseTodo(ss.str());
         todos.push_back(todo);
-        ofstream o(config["jsonFile"].get<string>());
-        o << todos.dump(4);
     }
     if (vm.count("toggle")) {
         string toggled = vm["toggle"].as<string>();
@@ -332,8 +338,25 @@ int main(int ac, char *av[])
             json todo = todos.at(i);
             if(todo["name"].get<string>().find(toggled) != string::npos) {
                 todos.at(i)["done"] = !(todos.at(i)["done"].get<bool>());
+                todos.at(i)["timestamp"] = currentTime();
             }
-        }       
+        }
+    }
+    if (vm.count("delete")) {
+        string toDelete = vm["delete"].as<string>();
+        json newTodos = json::array();
+        for (int i = 0; i < todos.size(); i++)
+        {
+            json todo = todos.at(i);
+            if(todo["name"].get<string>().find(toDelete) != string::npos) {
+                if(todo["serverTimestamp"] != nullptr) {
+                    deleted.push_back(todo["id"]);
+                }
+            } else {
+                newTodos.push_back(todo);
+            }
+        }
+        todos = newTodos;
     }
     list<json> todosList;
     for (json const i : todos)
@@ -349,6 +372,15 @@ int main(int ac, char *av[])
     {
         sync();
     }
+
+    ofstream o(config["jsonFile"].get<string>());
+    o << todos.dump(4);
+
+    ofstream d(config["deleteFile"].get<string>());
+    d << deleted.dump(4);
+
+    ofstream c(configFile);
+    c << config.dump(4);
 }
 
 string login(string email, string pw)
@@ -396,13 +428,34 @@ void sync()
 {
     try
     {
+        curlpp::Cleanup myCleanup;
+
+        for(json del : deleted) {
+            std::stringstream deleteUrl;
+            deleteUrl << config["baseUrl"].get<string>() << "/api/v1/todo/" << del.get<string>();
+
+            curlpp::Easy deleteReq;
+            deleteReq.setOpt<Url>(deleteUrl.str());
+            std::list<std::string> header;
+            header.push_back("Content-Type: application/json");
+            std::stringstream auth;
+            auth << "x-auth-token: " << config["token"].get<string>();
+            header.push_back(auth.str());
+
+            deleteReq.setOpt(new HttpHeader(header));
+            deleteReq.setOpt(new CustomRequest("DELETE"));
+
+            ostringstream os;
+            os << deleteReq;
+        }
+        deleted = json::array();
+
         string body = todos.dump();
 
         std::stringstream ss;
         ss << config["baseUrl"].get<string>() << "/api/v1/todo";
-        curlpp::Cleanup myCleanup;
-        curlpp::Easy myRequest;
 
+        curlpp::Easy myRequest;
         myRequest.setOpt<Url>(ss.str());
         std::list<std::string> header;
         header.push_back("Content-Type: application/json");
@@ -418,8 +471,6 @@ void sync()
         ostringstream os;
         os << myRequest;
         todos = json::parse(os.str());
-        ofstream o(config["jsonFile"].get<string>());
-        o << todos.dump(4);
     }
     catch (curlpp::RuntimeError &e)
     {
