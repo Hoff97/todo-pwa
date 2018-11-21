@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Scatter } from 'react-chartjs-2';
 import { CategoryInfo } from 'src/util/category';
 import { ChartScales } from 'chart.js';
 
@@ -16,6 +16,11 @@ interface Props {
         created: number;
     }[];
     todosByPriority: number[];
+    daysPrio: {
+        daysLeft: number;
+        prio: number;
+        name: string;
+    }[];
 }
 
 function prettyDuration(dur: number) {
@@ -56,6 +61,38 @@ const scaleOptions: ChartScales = {
     }]
 };
 
+const scatterOpts: ChartScales = {
+    yAxes: [{
+        ticks: {
+            beginAtZero: true,
+            callback: function (value, index, values) {
+                if (Math.floor(value) === value) {
+                    return value;
+                }
+            },
+            reverse: true
+        },
+        scaleLabel: {
+            labelString: 'Priority',
+            display: true
+        }
+    }],
+    xAxes: [{
+        ticks: {
+            beginAtZero: true,
+            callback: function (value, index, values) {
+                if (Math.floor(value) === value) {
+                    return value;
+                }
+            }
+        },
+        scaleLabel: {
+            labelString: 'Days left',
+            display: true
+        }
+    }]
+};
+
 const lineDataOpts = {
     fill: false,
     lineTension: 0.1,
@@ -72,7 +109,12 @@ const lineDataOpts = {
     pointHitRadius: 10
 }
 
-function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todosByDate, todosByPriority }: Props) {
+const prioColors = ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'];
+function prioColor(prio: number | undefined) {
+    return prioColors[5 - (prio ? prio : 0)];
+}
+
+function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todosByDate, todosByPriority, daysPrio }: Props) {
     const barData = {
         labels: categories.map(x => x.name),
         datasets: [
@@ -115,7 +157,7 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
     };
 
     const todoCat = {
-        labels: ['5','4','3','2','1','none'],
+        labels: ['5', '4', '3', '2', '1', 'none'],
         datasets: [
             {
                 label: 'Todos by priority',
@@ -125,6 +167,27 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
                 hoverBackgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'],
                 hoverBorderColor: '#000',
                 data: todosByPriority
+            }
+        ]
+    };
+
+    const scatterData = {
+        labels: ['Scatter'],
+        datasets: [
+            {
+                label: 'Days left x Priority',
+                fill: false,
+                backgroundColor: 'rgba(75,192,192,0.4)',
+                pointBorderColor: daysPrio.map(x => prioColor(x.prio)),
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 10,
+                pointHoverBackgroundColor: daysPrio.map(x => prioColor(x.prio)),
+                pointHoverBorderColor: 'rgba(220,220,220,1)',
+                pointHoverBorderWidth: 2,
+                pointRadius: 8,
+                pointHitRadius: 10,
+                data: daysPrio.map(x => { return { x: x.daysLeft, y: x.prio } })
             }
         ]
     };
@@ -172,7 +235,21 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
                         }}
                     />
                 </div>
-                <div className="col"></div>
+                <div className="col">
+                    <Scatter data={scatterData}
+                        options={{
+                            scales: scatterOpts,
+                            tooltips: {
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        const ix = tooltipItem.index ? tooltipItem.index : 0;
+                                        return [daysPrio[ix].name,`${tooltipItem.xLabel} days left`,`Priority: ${tooltipItem.yLabel}`];
+                                    }
+                                },
+                                displayColors: false
+                            },
+                        }} />
+                </div>
             </div>
         </div>
     );
