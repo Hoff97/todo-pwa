@@ -15,6 +15,7 @@ interface Props {
         done: number;
         created: number;
     }[];
+    todosByPriority: number[];
 }
 
 function prettyDuration(dur: number) {
@@ -71,12 +72,12 @@ const lineDataOpts = {
     pointHitRadius: 10
 }
 
-function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todosByDate }: Props) {
+function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todosByDate, todosByPriority }: Props) {
     const barData = {
         labels: categories.map(x => x.name),
         datasets: [
             {
-                label: 'Issues by category',
+                label: 'Todos by category',
                 backgroundColor: categories.map(x => x.color),
                 borderColor: '#000',
                 borderWidth: 1,
@@ -109,6 +110,21 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
                 pointHoverBackgroundColor: 'rgba(192,75,192,1)',
                 pointBorderColor: 'rgba(192,75,192,1)',
                 ...lineDataOpts
+            }
+        ]
+    };
+
+    const todoCat = {
+        labels: ['5','4','3','2','1','none'],
+        datasets: [
+            {
+                label: 'Todos by priority',
+                backgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'],
+                borderColor: '#000',
+                borderWidth: 1,
+                hoverBackgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'],
+                hoverBorderColor: '#000',
+                data: todosByPriority
             }
         ]
     };
@@ -146,6 +162,17 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
                             scales: scaleOptions
                         }} />
                 </div>
+            </div>
+            <div className="row">
+                <div className="col">
+                    <Bar
+                        data={todoCat}
+                        options={{
+                            scales: scaleOptions
+                        }}
+                    />
+                </div>
+                <div className="col"></div>
             </div>
         </div>
     );

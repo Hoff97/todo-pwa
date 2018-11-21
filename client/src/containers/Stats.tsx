@@ -34,13 +34,16 @@ export function mapStateToProps(state: StoreState) {
             };
         });
 
+    const todosByPriority = [5,4,3,2,1,0].map(prio => state.todos.filter(todo => (todo.priority ? todo.priority : 0) === prio).length)
+
     return {
         openTodos: open,
         closedTodos: state.todos.length - open,
         ttD,
         categories: todosByCategory.map(x => x[1]),
         todosByCategory: todosByCategory.map(x => x[0]),
-        todosByDate: days
+        todosByDate: days,
+        todosByPriority
     }
 }
 
