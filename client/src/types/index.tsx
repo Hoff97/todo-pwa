@@ -31,6 +31,12 @@ export type UserSettings = {
     notificationTime: moment.Moment;
 }
 
+export interface Sub {
+    id: string;
+    endpoint: string;
+    deviceDescription: string;
+}
+
 export type UIState = {
     inputValue: string;
     editingTodo?: string;
@@ -42,6 +48,7 @@ export type UIState = {
     showSettings: boolean;
     userSettings: UserSettings;
     menuOpen: boolean;
+    subscriptions: Sub[];
 }
 
 export type StoreState = {

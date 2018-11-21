@@ -16,7 +16,7 @@ import { faTrash, faCheck, faPlus, faUser, faSignInAlt, faUserPlus, faBell, faTi
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
-import { putTodos, toggleShowInstall, getUserSettings as gUSA, locationChange } from './actions';
+import { putTodos, toggleShowInstall, getUserSettings as gUSA, locationChange, getDevices } from './actions';
 
 import 'rmc-drawer/assets/index.css'
 import Menu from './containers/Menu';
@@ -75,6 +75,7 @@ export function promptInstall() {
 
 export function getUserSettings() {
   store.dispatch(gUSA())
+  store.dispatch(getDevices())
 }
 
 routerHistory.listen(x => {

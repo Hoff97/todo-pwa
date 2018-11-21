@@ -1,6 +1,8 @@
 import { getVapidKey, registerSubscription } from './rest/push';
 import { urlBase64ToUint8Array } from './util/string';
 
+import UaParser from 'ua-parser-js';
+
 // tslint:disable:no-console
 // In production, we register a service worker to serve assets from local cache.
 
@@ -115,7 +117,12 @@ export function registerPush() {
     }).then(function (subscription) {
       console.log('Got subscription');
       console.log(subscription);
-      registerSubscription(subscription);
+      const userAgent = new UaParser();
+      const browser = userAgent.getBrowser().name || '';;
+      const model = userAgent.getDevice().model || '';
+      const os = userAgent.getOS().name || '';
+      const deviceDescription = `${browser} ${model} ${os}`.replace(/[ ]+/g, ' ');
+      registerSubscription(subscription, deviceDescription);
     });
   });
 }

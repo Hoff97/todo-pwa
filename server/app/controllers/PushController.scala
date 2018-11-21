@@ -46,14 +46,34 @@ class PushController @Inject()(
   def registerSubscription= silhouette.SecuredAction.async(parse.json[SubscriptionForm]) { implicit request =>
     log.debug("Registering Push Subscription")
 
-    db.run(SubscriptionTable.subscriptions.filter(_.endpoint === request.body.subscription.endpoint).result).flatMap { case subs =>
-      if (subs.length > 0) {
-        Future.successful(Created)
-      } else {
-        val toInsert = request.body.subscription.toUserSubscription(request.identity.id.get)
-        db.run(SubscriptionTable.subscriptions.insertOrUpdate(toInsert)).map(x => Created)
-      }
+    val toInsert = request.body.subscription.toUserSubscription(request.identity.id.get, request.body.deviceDescription)
+    val query = SubscriptionTable.subscriptions
+      .filter(x => x.endpoint === request.body.subscription.endpoint && x.userFk === request.identity.id.get)
+
+    db.run(query.result).flatMap{ nUpdated =>
+      if(nUpdated.length > 0)
+        db.run(query.update(toInsert.copy(id = nUpdated(0).id))).map(_ => Created)
+      else
+        db.run(SubscriptionTable.subscriptions.insertOrUpdate(toInsert)).map(_ => Created)
     }
+  }
+
+  def getSubscriptions= silhouette.SecuredAction.async { implicit request =>
+    log.debug("Getting user subscriptions")
+
+    val query = SubscriptionTable.subscriptions
+      .filter(x => x.userFk === request.identity.id.get)
+
+    db.run(query.result).map(subs => Ok(Json.toJson(subs)))
+  }
+
+  def deleteSubscription(id: Int) = silhouette.SecuredAction.async { implicit request =>
+    log.debug("Deleting subscription")
+
+    val query = SubscriptionTable.subscriptions
+      .filter(x => x.userFk === request.identity.id.get && x.id === id)
+
+    db.run(query.delete).map(x => Ok)
   }
 
 }

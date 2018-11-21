@@ -16,7 +16,9 @@ class SubscriptionTable(tag: Tag) extends Table[SubscriptionUser](tag, "subscrip
 
   def userFk = column[Int]("user_fk")
 
-  def * = (id.?, endpoint, keyAuth, keyp256dh, userFk) <> (SubscriptionUser.tupled, SubscriptionUser.unapply)
+  def deviceDescription = column[String]("device_description")
+
+  def * = (id.?, endpoint, keyAuth, keyp256dh, userFk, deviceDescription) <> (SubscriptionUser.tupled, SubscriptionUser.unapply)
 }
 
 object SubscriptionTable {

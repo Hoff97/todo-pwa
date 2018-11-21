@@ -1,5 +1,6 @@
 import { axios } from './config';
 import moment from 'moment';
+import { Sub } from 'src/types';
 
 const timeFormat = 'HH:mm'
 
@@ -60,4 +61,12 @@ export function getUserSettings() {
             time: tParse
         }
     })
+}
+
+export function getDevicesR() {
+    return axios.get<Sub[]>('/api/v1/push/register').then(x => x.data);
+}
+
+export function deleteSubscriptionR(id: string) {
+    return axios.delete(`/api/v1/push/register/${id}`);
 }
