@@ -125,9 +125,10 @@ li.list-group-item.disabled {
   font-size: 1rem;
 }
 
-.rmc-drawer-sidebar {
+div.rmc-drawer-sidebar {
   padding: 16px;
   background-color: #e4f6fe;
+  z-index: 7;
 }
 
 .rmc-drawer-left .rmc-drawer-sidebar,
@@ -152,4 +153,8 @@ li.list-group-item.disabled {
   width: inherit;
   max-width: inherit;
   padding-right: 30px;
+}
+
+div.rmc-drawer-overlay {
+  z-index: 6;
 }
