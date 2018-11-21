@@ -4,10 +4,11 @@ import em.model.SubscriptionUser
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class SubscriptionForm(subscription: Subscription)
+case class SubscriptionForm(subscription: Subscription, deviceDescription: String)
 
 case class Subscription(endpoint: String, keys: Keys) {
-  def toUserSubscription(userFk: Int) = SubscriptionUser(None, endpoint, keys.auth, keys.p256dh, userFk)
+  def toUserSubscription(userFk: Int, deviceDescription: String)
+    = SubscriptionUser(None, endpoint, keys.auth, keys.p256dh, userFk, deviceDescription)
 }
 
 case class Keys(auth: String, p256dh: String)

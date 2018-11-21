@@ -1,11 +1,11 @@
-import { Todo, UIState } from '../types/index';
+import { Todo, UIState, Sub } from '../types/index';
 import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
 import { parseTodo, todoStr } from 'src/util/todo';
 import moment from 'moment';
 import { saveReducer } from './enhancers/storage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
-import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings } from 'src/actions';
+import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings, getDevices } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import uuid from 'uuid/v4';
@@ -231,6 +231,18 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
       ...ui,
       menuOpen: false
     };
+  },
+
+  GET_DEVICES_FULFILLED: (ui: UIState, action: A<Sub[]>) => {
+    return {
+      ...ui,
+      subscriptions: action.payload
+    };
+  },
+
+  REMOVE_DEVICE_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
+    action.asyncDispatch(getDevices());
+    return ui;
   }
 }, { 
   inputValue: '', 
@@ -243,7 +255,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     notificationTime: moment().hour(10).minute(0).second(0),
     mail: true
   },
-  menuOpen: false
+  menuOpen: false,
+  subscriptions: []
 });
 
 function loadLocal(contents: any): Todo[] {

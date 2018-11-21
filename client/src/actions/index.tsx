@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { Todo } from 'src/types';
-import { loginRequest, signUpRequest, updateUserSettings, getUserSettings as gUS } from 'src/rest/auth';
+import { loginRequest, signUpRequest, updateUserSettings, getUserSettings as gUS, getDevicesR, deleteSubscriptionR } from 'src/rest/auth';
 import { todoPut, deleteTodoRequest, deleteFileRequest } from 'src/rest/todo';
 import * as moment from 'moment';
 import { Location } from 'history';
@@ -109,3 +109,19 @@ export const toggleMenu = createAction(TOGGLE_MENU, (open: boolean) => open)
 
 export const LOCATION_CHANGE = 'LOCATION_CHANGE'
 export const locationChange = createAction(LOCATION_CHANGE, (location: Location) => location)
+
+export const GET_DEVICES = 'GET_DEVICES';
+export function getDevices() {
+    return {
+        type: GET_DEVICES,
+        payload: getDevicesR()
+    }
+}
+
+export const REMOVE_DEVICE = 'REMOVE_DEVICE';
+export function removeDevice(id: string) {
+    return {
+        type: REMOVE_DEVICE,
+        payload: deleteSubscriptionR(id)
+    }
+}

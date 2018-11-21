@@ -93,3 +93,33 @@ GET /push/vapid                     controllers.PushController.getVapidKey
 #        type: string
 ###
 POST /push/register                 controllers.PushController.registerSubscription
+
+###
+#  summary: Get subscriptions with device infos
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+GET /push/register                 controllers.PushController.getSubscriptions
+
+###
+#  summary: Get subscriptions with device infos
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+DELETE /push/register/:id                 controllers.PushController.deleteSubscription(id: Int)
