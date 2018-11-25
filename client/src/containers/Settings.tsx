@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { StoreState, Sub } from 'src/types';
 import 'rc-time-picker/assets/index.css';
 import { changeUserSettings, removeDevice } from 'src/actions';
-import * as moment from 'moment';
+import moment from 'moment';
 import { defaultLoad } from 'src/util/util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -32,6 +32,10 @@ function cutOffUrl(url: string) {
     }
 }
 
+function formatTs(ts: string) {
+    return moment(ts).format('HH:mm DD.MM.')
+}
+
 function SettingsF({ dispatch, notificationTime, mail, subs }: Props) {
     return (
         <div className="container mt-2">
@@ -56,6 +60,7 @@ function SettingsF({ dispatch, notificationTime, mail, subs }: Props) {
                     <thead>
                         <tr>
                             <th scope="col">Description</th>
+                            <th scope="col">Last login</th>
                             <th scope="col">Endpoint</th>
                             <th scope="col"></th>
                         </tr>
@@ -65,6 +70,7 @@ function SettingsF({ dispatch, notificationTime, mail, subs }: Props) {
                             subs.map(sub => (
                                 <tr key={sub.endpoint}>
                                     <td>{sub.deviceDescription}</td>
+                                    <td>{formatTs(sub.timestamp)}</td>
                                     <td>{cutOffUrl(sub.endpoint)}</td>
                                     <td>
                                         <button onClick={() => dispatch(removeDevice(sub.id))} className="mr-2 float-right btn btn-danger btn-sm">
