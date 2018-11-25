@@ -41,7 +41,9 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             files={todo.files}
                             addFile={(file: File) => addFile(todo.id, file)}
                             deleteFile={(id: string) => deleteFile(id, todo.id)}
-                            commentChanged={(comment: string) => commentChanged(todo.id, comment)} />
+                            commentChanged={(comment: string) => commentChanged(todo.id, comment)}
+                            timestamp={todo.timestamp}
+                            serverTimestamp={todo.serverTimestamp} />
                     ))}
                 </QueueAnim>
             </table>

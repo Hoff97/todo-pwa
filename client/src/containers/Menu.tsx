@@ -60,7 +60,7 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
                 touch={true} enableDragHandle={true} position={'left'}
                 dragToggleDistance={30} style={{ overflow: 'auto' }}
                 onOpenChange={op => dispatch(toggleMenu(op))}
-                dragHandleStyle={{ width: '10px' }}>
+                dragHandleStyle={{ width: '15px' }}>
                 {window.innerWidth > 590 &&
                     <div className="menuOpener">
                         <span onClick={ev => dispatch(toggleMenu(true))}><FontAwesomeIcon icon="bars" size="2x" /></span>

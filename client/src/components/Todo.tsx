@@ -29,6 +29,8 @@ export interface Props {
   addFile: (file: File) => void;
   deleteFile: (id: string) => void;
   commentChanged: (comment: string) => void;
+  timestamp: Date;
+  serverTimestamp: Date | undefined;
 }
 
 function wrapInput(input: JSX.Element) {
@@ -53,10 +55,15 @@ function cutOffName(name: string) {
   }
 }
 
+function isUnsynched(timestamp: Date, serverTimestamp: Date | undefined) {
+  return serverTimestamp === undefined || 
+    moment(timestamp).isAfter(moment(serverTimestamp));
+}
+
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
   editValue, categories, comment, files, addFile, 
-  deleteFile, commentChanged }: Props) {
+  deleteFile, commentChanged, timestamp, serverTimestamp }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
@@ -93,6 +100,9 @@ function Todo({ name, done, toggle, remove, priority, category,
             <button onClick={remove} className="mr-2 float-right btn btn-danger btn-sm">
               <FontAwesomeIcon icon="trash" />
             </button>
+          }
+          {isUnsynched(timestamp, serverTimestamp) &&
+            <FontAwesomeIcon icon="upload" className="unsynched float-right"/>
           }
         </td>
       </tr>
