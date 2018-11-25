@@ -35,6 +35,7 @@ export interface Sub {
     id: string;
     endpoint: string;
     deviceDescription: string;
+    timestamp: string;
 }
 
 export type UIState = {

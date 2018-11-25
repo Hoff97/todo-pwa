@@ -158,3 +158,9 @@ div.rmc-drawer-sidebar {
 div.rmc-drawer-overlay {
   z-index: 6;
 }
+
+.unsynched {
+  margin-right: 5px;
+  color: #F00;
+  margin-top: 7px;
+}
