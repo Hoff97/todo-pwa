@@ -159,8 +159,15 @@ div.rmc-drawer-overlay {
   z-index: 6;
 }
 
-.unsynched {
-  margin-right: 5px;
-  color: #F00;
-  margin-top: 7px;
+td.indicator {
+  width: 8px;
+  padding: 0px !important;
+}
+
+td.indicator.unsynched {
+  background-color: #F80;
+}
+
+td.indicator.created {
+  background-color: #0A0;
 }

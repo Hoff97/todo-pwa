@@ -30,6 +30,7 @@ export interface Props {
   deleteFile: (id: string) => void;
   commentChanged: (comment: string) => void;
   timestamp: Date;
+  lastSynch: Date;
   serverTimestamp: Date | undefined;
 }
 
@@ -55,21 +56,24 @@ function cutOffName(name: string) {
   }
 }
 
-function isUnsynched(timestamp: Date, serverTimestamp: Date | undefined) {
-  return serverTimestamp === undefined || 
-    moment(timestamp).isAfter(moment(serverTimestamp));
+function isUnsynched(ts: Date, lastSynch: Date) {
+  return moment(ts).isAfter(moment(lastSynch));
 }
 
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
   editValue, categories, comment, files, addFile, 
-  deleteFile, commentChanged, timestamp, serverTimestamp }: Props) {
+  deleteFile, commentChanged, timestamp, lastSynch, serverTimestamp }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
+  let indicator = serverTimestamp === undefined ? 'created' :
+    isUnsynched(timestamp,lastSynch) ? 'unsynched' : '';
   if (!editing) {
     return (
       <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
+        <td className={"indicator " + indicator}>
+        </td>
         <td>
           {priority &&
             <span className={'prio ' + 'prio' + priority}>{priority}</span>
@@ -101,16 +105,13 @@ function Todo({ name, done, toggle, remove, priority, category,
               <FontAwesomeIcon icon="trash" />
             </button>
           }
-          {isUnsynched(timestamp, serverTimestamp) &&
-            <FontAwesomeIcon icon="upload" className="unsynched float-right"/>
-          }
         </td>
       </tr>
     );
   } else {
     return (
       <tr className={done ? 'table-info' : ''} onDoubleClick={e => { e.preventDefault(); doneEditing(editValue) }}>
-        <td colSpan={5}>
+        <td colSpan={6}>
           <form onSubmit={e => { e.preventDefault(); doneEditing(editValue) }}>
             <EnhancedSuggest value={editValue} change={editChange} categories={categories}
               wrapInput={wrapInput} /><br />

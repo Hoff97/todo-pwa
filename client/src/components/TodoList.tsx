@@ -17,10 +17,11 @@ export interface Props {
     editChange: (str: string) => void;
     categoryInfo: CategoryInfo[];
     commentChanged: (todoId: string, comment: string) => void;
+    lastSynch: Date;
 }
 
 export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo, finishEdit,
-    editChange, editValue, categoryInfo, addFile, deleteFile, commentChanged }: Props) {
+    editChange, editValue, categoryInfo, addFile, deleteFile, commentChanged, lastSynch }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
@@ -43,6 +44,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             deleteFile={(id: string) => deleteFile(id, todo.id)}
                             commentChanged={(comment: string) => commentChanged(todo.id, comment)}
                             timestamp={todo.timestamp}
+                            lastSynch={lastSynch}
                             serverTimestamp={todo.serverTimestamp} />
                     ))}
                 </QueueAnim>

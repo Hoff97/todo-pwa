@@ -56,4 +56,5 @@ export type StoreState = {
     todos: Todo[];
     ui: UIState;
     routing: Location;
+    lastSynch: Date;
 }
