@@ -43,6 +43,7 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
       newTodo.timestamp = new Date();
       newTodo.comment = todo.comment;
       newTodo.files = todo.files;
+      newTodo.serverTimestamp = todo.serverTimestamp;
       return newTodo;
     }
     return todo;
@@ -280,6 +281,14 @@ function loadLocal(contents: any): Todo[] {
   return todos;
 }
 
+function loadLastSynch(contents: any) {
+  if(contents === undefined) {
+    return moment().toDate();
+  } else {
+    return moment(contents).toDate();
+  }
+}
+
 export const routerReducer = handleActions({
   LOCATION_CHANGE: (location: Location, action: A<Location>) => action.payload
 }, {
@@ -289,8 +298,13 @@ export const routerReducer = handleActions({
   hash: ''
 })
 
+const lastSynchReducer = handleActions({
+  PUT_TODOS_FULFILLED: (_t, _action) => moment().toDate()
+}, loadLastSynch(localStorage.getItem('lastSynch')))
+
 export const rootReducer = combineReducers({
   todos: saveReducer('data', todosDispatched, loadLocal),
   ui: ui,
-  routing: routerReducer
+  routing: routerReducer,
+  lastSynch: saveReducer('lastSynch', lastSynchReducer, loadLastSynch)
 });

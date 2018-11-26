@@ -22,7 +22,8 @@ const mapStateToProps = (state: StoreState) => {
             .sort((a, b) => compare(a,b)),
         editingTodo: state.ui.editingTodo,
         editValue: state.ui.editValue,
-        categoryInfo: catInfoFromTodos(state.todos)
+        categoryInfo: catInfoFromTodos(state.todos),
+        lastSynch: state.lastSynch
     }
 }
 
