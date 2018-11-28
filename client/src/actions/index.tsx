@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { Todo } from 'src/types';
+import { Todo, DoneFilter } from 'src/types';
 import { loginRequest, signUpRequest, updateUserSettings, getUserSettings as gUS, getDevicesR, deleteSubscriptionR } from 'src/rest/auth';
 import { todoPut, deleteTodoRequest, deleteFileRequest } from 'src/rest/todo';
 import * as moment from 'moment';
@@ -125,3 +125,6 @@ export function removeDevice(id: string) {
         payload: deleteSubscriptionR(id)
     }
 }
+
+export const DONE_FILTER = 'DONE_FILTER';
+export const filterDone = createAction(DONE_FILTER, (doneFilter: DoneFilter) => doneFilter);

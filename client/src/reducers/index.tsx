@@ -1,4 +1,4 @@
-import { Todo, UIState, Sub } from '../types/index';
+import { Todo, UIState, Sub, DoneFilter } from '../types/index';
 import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
 import { parseTodo, todoStr } from 'src/util/todo';
@@ -244,6 +244,13 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   REMOVE_DEVICE_FULFILLED: (ui: UIState, action: AsyncDispatchAction<any>) => {
     action.asyncDispatch(getDevices());
     return ui;
+  },
+
+  DONE_FILTER: (ui: UIState, action: A<DoneFilter>) => {
+    return {
+      ...ui,
+      doneFilter: action.payload
+    }
   }
 }, { 
   inputValue: '', 
@@ -257,7 +264,8 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
     mail: true
   },
   menuOpen: false,
-  subscriptions: []
+  subscriptions: [],
+  doneFilter: 'undone'
 });
 
 function loadLocal(contents: any): Todo[] {

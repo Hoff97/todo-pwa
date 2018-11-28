@@ -38,6 +38,8 @@ export interface Sub {
     timestamp: string;
 }
 
+export type DoneFilter = 'all' | 'done' | 'undone';
+
 export type UIState = {
     inputValue: string;
     editingTodo?: string;
@@ -50,6 +52,7 @@ export type UIState = {
     userSettings: UserSettings;
     menuOpen: boolean;
     subscriptions: Sub[];
+    doneFilter: DoneFilter;
 }
 
 export type StoreState = {

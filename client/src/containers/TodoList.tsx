@@ -1,5 +1,5 @@
 import * as actions from '../actions/';
-import { StoreState, Todo } from '../types/index';
+import { StoreState, Todo, DoneFilter } from '../types/index';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TodoList } from 'src/components/TodoList';
@@ -7,16 +7,27 @@ import { Action } from 'redux-actions';
 import { catInfoFromTodos } from 'src/util/category';
 import { compare } from 'src/util/todo';
 
+function filterDone(df: DoneFilter, todo: Todo) {
+    if(df === 'all') {
+        return true;
+    } else if(df === 'done') {
+        return todo.done;
+    } else {
+        return !todo.done;
+    }
+}
+
 const mapStateToProps = (state: StoreState) => {
     let params = new URLSearchParams(state.routing.search);
     const category = params.get('category')
+    const dF = state.ui.doneFilter;
     return {
         todos: state.todos
             .filter(todo => {
                 if (category) {
-                    return todo.category === category
+                    return filterDone(dF, todo) && todo.category === category
                 } else {
-                    return true;
+                    return filterDone(dF, todo);
                 }
             })
             .sort((a, b) => compare(a,b)),
