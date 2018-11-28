@@ -1,18 +1,19 @@
 import { Todo, UIState, Sub, DoneFilter } from '../types/index';
 import { Reducer, combineReducers } from 'redux';
 import { Action, handleActions } from 'redux-actions';
-import { parseTodo, todoStr } from 'src/util/todo';
+import { parseTodo, todoStr, compareTodo } from 'src/util/todo';
 import moment from 'moment';
-import { saveReducer } from './enhancers/storage';
+import { idbReducer } from './enhancers/idbStorage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
 import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings, getDevices } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import uuid from 'uuid/v4';
 import { dataSize } from 'src/util/util';
-import { promptInstall, routerHistory } from 'src';
+import { promptInstall, routerHistory, store } from 'src';
 import { AsyncFinishAction } from './middleware/after-finish';
 import { Location } from 'history';
+import { saveReducer } from './enhancers/storage';
 
 type A<T> = { type: string, payload: T }
 
@@ -268,7 +269,7 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   doneFilter: 'undone'
 });
 
-function loadLocal(contents: any): Todo[] {
+/*function loadLocal(contents: any): Todo[] {
   var todos: Todo[] = [];
   if (Array.isArray(contents)) {
     todos = contents;
@@ -287,7 +288,7 @@ function loadLocal(contents: any): Todo[] {
     };
   });
   return todos;
-}
+}*/
 
 function loadLastSynch(contents: any) {
   if(contents === undefined) {
@@ -311,7 +312,9 @@ const lastSynchReducer = handleActions({
 }, loadLastSynch(localStorage.getItem('lastSynch')))
 
 export const rootReducer = combineReducers({
-  todos: saveReducer('data', todosDispatched, loadLocal),
+  todos: idbReducer('data', 'todo', 'id', todosDispatched, compareTodo, (todos) => {
+    store.dispatch(putTodos(todos));
+  }),
   ui: ui,
   routing: routerReducer,
   lastSynch: saveReducer('lastSynch', lastSynchReducer, loadLastSynch)

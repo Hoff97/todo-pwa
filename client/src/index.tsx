@@ -16,7 +16,7 @@ import { faTrash, faCheck, faPlus, faUser, faSignInAlt, faUserPlus, faBell, faTi
 import { logger } from './reducers/middleware/logger';
 import { asyncDispatchMiddleware } from './reducers/middleware/async-dispatch';
 
-import { putTodos, toggleShowInstall, getUserSettings as gUSA, locationChange, getDevices } from './actions';
+import { toggleShowInstall, getUserSettings as gUSA, locationChange, getDevices } from './actions';
 
 import 'rmc-drawer/assets/index.css'
 import Menu from './containers/Menu';
@@ -41,11 +41,11 @@ const middleware = applyMiddleware(
   routerMiddleware(routerHistory),
   asyncFinishMiddleware)
 
-const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, middleware);
+export const store = createStore<StoreState, Action<any>, {}, {}>(rootReducer, middleware);
 
-if(store.getState().ui.accessToken !== undefined) {
+/*if(store.getState().ui.accessToken !== undefined) {
   store.dispatch(putTodos(store.getState().todos));
-}
+}*/
 
 ReactDOM.render(
   <Provider store={store}>
