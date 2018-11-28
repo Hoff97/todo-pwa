@@ -34,7 +34,6 @@ export function updateUserSettings(mail: boolean, time?: moment.Moment) {
         var tParse = undefined;
         if(response.data.notificationTime) {
             let match = (response.data.notificationTime as string).match(tExpr);
-            console.log(match);
             if(match !== null) {
                 tParse = moment().hour(+match[1]).minute(+match[2]).second(0);
             }
@@ -51,7 +50,6 @@ export function getUserSettings() {
         var tParse = undefined;
         if(response.data.notificationTime) {
             let match = (response.data.notificationTime as string).match(tExpr);
-            console.log(match);
             if(match !== null) {
                 tParse = moment().hour(+match[1]).minute(+match[2]).second(0);
             }

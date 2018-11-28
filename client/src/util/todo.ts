@@ -146,3 +146,7 @@ export const compare = comparing<Todo>(
     a => a.date ? -moment(a.date).startOf('day').toDate().getTime() : -200000000,
     dual((a,b) => a.name.localeCompare(b.name))
 );
+
+export function compareTodo(a: Todo, b: Todo) {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
