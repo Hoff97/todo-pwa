@@ -14,7 +14,7 @@ interface Props {
     doneFilter: 'all' | 'done' | 'undone';
 }
 
-function CategoryF({ filterCategory, categoryInfo, dispatch, doneFilter }: Props) {
+function FilterF({ filterCategory, categoryInfo, dispatch, doneFilter }: Props) {
     function categoryColor(name: string) {
         return categoryInfo.filter(x => x.name === name)[0].color;
     }
@@ -36,7 +36,7 @@ function CategoryF({ filterCategory, categoryInfo, dispatch, doneFilter }: Props
 }
 
 
-const Category = connect((state: StoreState) => {
+const Filter = connect((state: StoreState) => {
   let params = new URLSearchParams(state.routing.search);
   const category = params.get('category')
     return {
@@ -49,6 +49,6 @@ const Category = connect((state: StoreState) => {
     return {
         dispatch
     }
-})(CategoryF);
+})(FilterF);
 
-export default Category;
+export default Filter;
