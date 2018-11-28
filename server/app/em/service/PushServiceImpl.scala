@@ -112,7 +112,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def dailyNotification(login: Login, todos: Seq[Todo]): PushPayload = {
     var content = "Hi " + login.email + ", here are your todos:\n"
     content += todos.map(_.name).fold("")((a,b) => a + "\n" + b)
-    PushPayload("Here are your daily todos", content, List())
+    PushPayload("Here are your daily todos", content, List(), "")
   }
 
   override def notifyTodo(todo: Todo): Unit = {
@@ -131,6 +131,8 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
             }
           }
           diffMin += serverTimeOffset.minutes
+
+          diffMin = 0.minutes
           if(diffMin._1 >= 0 && diffMin <= maxMinutesSchedule.minutes) {
             log.debug(s"Scheduling reminder for todo ${todo.id} in ${diffMin._1} minutes")
             actorSystem.scheduler.scheduleOnce(diffMin) {
@@ -162,7 +164,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     }
   }
 
-  private def todoNotification(todo: Todo): PushPayload = PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List())
+  private def todoNotification(todo: Todo): PushPayload = PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done"), todo.id)
 
   override def initialize: Unit = {
     log.debug("Initializing push service")
