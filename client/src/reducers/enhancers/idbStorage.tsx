@@ -62,14 +62,24 @@ export function idbReducer<I>(dbName: string, table: string, key: keyof I, reduc
             }
         }
 
-        const deleteQuery = db.transaction(table, 'readwrite').objectStore(table).delete(deleteKeys);
-        deleteQuery.onsuccess = _ev => {
+        deleteAll(db, table, deleteKeys, () => {
             addAll(db, table, key, newItems, () => {
                 putAll(db, table, key, update, () => {console.log('Done updating')});
             });
-        }
+        });
 
         return newState;
+    }
+}
+
+function deleteAll<I>(db: IDBDatabase,  table: string, keys: any[], resolve: () => void) {
+    if(keys.length > 0) {
+        const query = db.transaction(table, 'readwrite').objectStore(table).delete(keys[0]);
+        query.onsuccess = _ev => {
+            deleteAll(db, table, keys.slice(1), resolve);
+        };
+    } else {
+        resolve();
     }
 }
 
