@@ -9,7 +9,6 @@ function actionTitle(action) {
 
 self.addEventListener('push', function (event) {
     const payload = event.data.json();
-    console.log(payload);
     const actions = [];
     for (let action of payload.actions) {
         actions.push({
@@ -29,7 +28,6 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     var messageId = event.notification.data;
     event.notification.close();
-    console.log(event);
     if (event.action === 'done') {
         markDone(event.notification.data);
     }
