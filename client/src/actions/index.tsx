@@ -128,3 +128,6 @@ export function removeDevice(id: string) {
 
 export const DONE_FILTER = 'DONE_FILTER';
 export const filterDone = createAction(DONE_FILTER, (doneFilter: DoneFilter) => doneFilter);
+
+export const UPDATE_TODOS = 'UPDATE_TODOS';
+export const updateTodos = createAction(UPDATE_TODOS, (todos: Todo[]) => todos);
