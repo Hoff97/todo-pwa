@@ -3,6 +3,8 @@ console.log('Hello');
 function actionTitle(action) {
     if (action === 'done') {
         return 'Done';
+    } else if (action === 'remind+1h') {
+        return 'Remind in 1 hour';
     }
     return '';
 }
@@ -31,6 +33,8 @@ self.addEventListener('notificationclick', function (event) {
     event.notification.close();
     if (event.action === 'done') {
         markDone(event.notification.data.id, event.notification.data.token);
+    } else if (event.action === 'remind+1h') {
+        remindAgain(event.notification.data.id, event.notification.data.token, 1);
     }
 }, false);
 
@@ -64,6 +68,27 @@ function markDone(id, token) {
     };
 }
 
+function remindAgain(id, token, hours) {
+    fetch('/api/v1/todo/remindAgain', {
+        body: JSON.stringify({
+            id,
+            hours,
+            timestamp: dateToStr(new Date())
+        }),
+        method: 'PUT',
+        headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+        }
+    });
+}
+
+function dateToStr(date) {
+    var day = `${nAry(date.getFullYear(), 4)}-${nAry(date.getMonth()+1, 2)}-${nAry(date.getDate(),2)}`;
+    var time = `${nAry(date.getHours(), 2)}:${nAry(date.getMinutes(), 2)}:${nAry(date.getSeconds(), 2)}`;
+    return day + ' ' + time;
+}
+
 function nAry(n, l) {
     var s = n + "";
     while(s.length < l) {
@@ -73,8 +98,6 @@ function nAry(n, l) {
 }
 
 function todoToJson(todo) {
-    var day = `${nAry(todo.timestamp.getFullYear(), 4)}-${nAry(todo.timestamp.getMonth()+1, 2)}-${nAry(todo.timestamp.getDate(),2)}`;
-    var time = `${nAry(todo.timestamp.getHours(), 2)}:${nAry(todo.timestamp.getMinutes(), 2)}:${nAry(todo.timestamp.getSeconds(), 2)}`;
-    todo.timestamp = day + " " + time;
+    todo.timestamp = dateToStr(todo.timestamp);
     return JSON.stringify([todo]);
 }

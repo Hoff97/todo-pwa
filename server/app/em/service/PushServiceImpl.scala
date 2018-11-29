@@ -169,7 +169,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   private def todoNotification(todo: Todo, token: Option[String]): PushPayload =
-    PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done"), todo.id, token)
+    PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done", "remind+1h"), todo.id, token)
 
   override def initialize: Unit = {
     log.debug("Initializing push service")
