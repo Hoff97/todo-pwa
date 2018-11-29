@@ -4,8 +4,9 @@ import java.sql.{Time, Timestamp}
 import java.util.Date
 
 import scala.concurrent.{ExecutionContext, Future}
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
+import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
+import com.mohiva.play.silhouette.impl.providers.{CommonSocialProfile, CredentialsProvider}
+import em.auth.AuthEnv
 import javax.inject._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -14,6 +15,7 @@ import em.db._
 import em.db.LoginTable._
 import em.db.Util._
 import em.model._
+import play.mvc.Http.RequestHeader
 
 class LoginServiceImpl @Inject()(
   protected val dbConfigProvider: DatabaseConfigProvider)(implicit context: ExecutionContext)

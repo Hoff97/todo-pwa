@@ -15,10 +15,14 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import java.util.Calendar
 
+import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import em.auth.AuthEnv
+import em.db.LoginTable.login
 import em.db.{LoginTable, SubscriptionTable, TodoTable}
 import play.api.libs.mailer._
 import slick.jdbc.JdbcProfile
@@ -29,7 +33,8 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
                                 ws: WSClient,
                                 actorSystem: ActorSystem,
                                 protected val dbConfigProvider: DatabaseConfigProvider,
-                                mailerClient: MailerClient)(implicit context: ExecutionContext)
+                                mailerClient: MailerClient,
+                                val silhouette: Silhouette[AuthEnv])(implicit context: ExecutionContext)
   extends PushService with HasDatabaseConfigProvider[JdbcProfile] {
 
   val log = Logger("service.push")
@@ -112,7 +117,7 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def dailyNotification(login: Login, todos: Seq[Todo]): PushPayload = {
     var content = "Hi " + login.email + ", here are your todos:\n"
     content += todos.map(_.name).fold("")((a,b) => a + "\n" + b)
-    PushPayload("Here are your daily todos", content, List(), "")
+    PushPayload("Here are your daily todos", content, List(), "", None)
   }
 
   override def notifyTodo(todo: Todo): Unit = {
@@ -145,10 +150,10 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   }
 
   private def checkAndNotifyTodo(todo: Todo): Unit = {
-    db.run(TodoTable.todo.filter(_.id === todo.id).result).foreach{ todoDb =>
+    db.run(TodoTable.todo.filter(_.id === todo.id).result).zip(getToken(todo.loginFk)).foreach{ case (todoDb,token) =>
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
         log.debug(s"Sending notification for todo ${todo.id}")
-        sendToUser(todoNotification(todo), todo.loginFk)
+        sendToUser(todoNotification(todo, Some(token)), todo.loginFk)
 
         actorSystem.scheduler.scheduleOnce(2.minutes) {
           notifyTodo(todoDb(0))
@@ -163,7 +168,8 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     }
   }
 
-  private def todoNotification(todo: Todo): PushPayload = PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done"), todo.id)
+  private def todoNotification(todo: Todo, token: Option[String]): PushPayload =
+    PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done", "remind+1h"), todo.id, token)
 
   override def initialize: Unit = {
     log.debug("Initializing push service")
@@ -174,5 +180,14 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     db.run(LoginTable.login.result).foreach { logins =>
       logins.foreach(login => notifyUser(login))
     }
+  }
+
+  def getToken(id: Int): Future[String] = {
+    for {
+      login <- db.run(login.filter(_.id === id).result)
+      val loginInfo = LoginInfo(CredentialsProvider.ID, login(0).email)
+      authenticator <- silhouette.env.authenticatorService.create(loginInfo)(null)
+      token <- silhouette.env.authenticatorService.init(authenticator)(null)
+    } yield token
   }
 }

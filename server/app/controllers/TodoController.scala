@@ -17,6 +17,7 @@ import scala.concurrent._
 import em.db.Util._
 import em.model.{Todo, TodoV}
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import em.model.forms.RemindAgain
 import em.service.{FileService, PushService, TodoService}
 import play.api.Logger
 
@@ -76,5 +77,24 @@ class TodoController @Inject()(
     db.run(FileTable.file.filter(x => x.todo.filter(x => x.loginFk === request.identity.id.get).exists
         && x.id === id && x.todoFk === todoId).delete)
       .map(x => Ok(id))
+  }
+
+  def remindAgain = silhouette.SecuredAction.async(parse.json[RemindAgain]) { implicit request: SecuredRequest[AuthEnv, RemindAgain] =>
+    log.debug(s"Request to reschedule reminder")
+    val q = TodoTable.todo.filter(x => x.id === request.body.id && x.loginFk === request.identity.id.get)
+    db.run(q.result).map { todosDb =>
+      if(todosDb.length > 0) {
+        val todo = todosDb(0)
+        val reminder = todo.reminder.get
+        val hours = request.body.hours
+        reminder.setTime(reminder.getTime + hours*60*60*1000)
+        val updated = todo.copy(reminder = Some(reminder), timestamp = request.body.timestamp)
+        db.run(q.update(updated))
+        pushService.notifyTodo(updated)
+        Ok
+      } else {
+        BadRequest
+      }
+    }
   }
 }

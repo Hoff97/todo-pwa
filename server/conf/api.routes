@@ -123,3 +123,16 @@ GET /push/register                 controllers.PushController.getSubscriptions
 #        type: string
 ###
 DELETE /push/register/:id                 controllers.PushController.deleteSubscription(id: Int)
+
+###
+#  summary: Remind again
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+###
+PUT    /todo/remindAgain                     controllers.TodoController.remindAgain
