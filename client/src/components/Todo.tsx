@@ -56,6 +56,15 @@ function cutOffName(name: string) {
   }
 }
 
+function cutOffCategory(category: string) {
+  let slice = category.slice(0, (window.innerWidth/3 - letterWidth * 3) / letterWidth);
+  if (slice.length < category.length) {
+    return slice + '..';
+  } else {
+    return slice;
+  }
+}
+
 function isUnsynched(ts: Date, lastSynch: Date) {
   return moment(ts).isAfter(moment(lastSynch));
 }
@@ -85,7 +94,7 @@ function Todo({ name, done, toggle, remove, priority, category,
         <td>
           {category &&
             <Link to={{ pathname: '/', search: `?category=${category}` }} style={{ textDecoration: 'none' }}>
-              <span className="category" style={{ color: categoryColor }}>{category}</span>
+              <span className="category" style={{ color: categoryColor }}>{cutOffCategory(category)}</span>
             </Link>
           }
         </td>
