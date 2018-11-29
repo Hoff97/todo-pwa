@@ -5,7 +5,7 @@ import { parseTodo, todoStr, compareTodo } from 'src/util/todo';
 import moment from 'moment';
 import { idbReducer } from './enhancers/idbStorage';
 import { AsyncDispatchAction } from './middleware/async-dispatch';
-import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings, getDevices } from 'src/actions';
+import { putTodos, ADD_TODO, TODO_TOGGLED, FINISH_EDIT, LOGIN_FULFILLED, SIGN_UP_FULFILLED, addFileDone, getUserSettings, getDevices, updateTodos } from 'src/actions';
 import { withNewState } from './enhancers/asyncDispatchOn';
 import { setAccessToken, setupAccessToken, removeAccessToken } from 'src/util/auth';
 import uuid from 'uuid/v4';
@@ -64,7 +64,6 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
 
   ADD_FILE: (todos: Todo[], action: AsyncDispatchAction<any>) => {
     let file = action.payload[1] as File;
-    console.log(file.size);
     if (file.size <= maxFileSize) {
       reader.readAsDataURL(file);
       reader.onload = event => {
@@ -117,7 +116,12 @@ export const todos: Reducer<Todo[], Action<any>> = handleActions({
       }
     }
     return todo;
-  })
+  }),
+
+  UPDATE_TODOS: (todos: Todo[], action: AsyncDispatchAction<Todo[]>) => {
+    action.asyncDispatch(putTodos(action.payload as Todo[]));
+    return action.payload;
+  },
 }, []);
 
 const todosDispatched = withNewState<AsyncDispatchAction<any>, Todo[]>((_, action, newState) => {
@@ -269,27 +273,6 @@ export const ui: Reducer<UIState, Action<any>> = handleActions({
   doneFilter: 'undone'
 });
 
-/*function loadLocal(contents: any): Todo[] {
-  var todos: Todo[] = [];
-  if (Array.isArray(contents)) {
-    todos = contents;
-  } else if (contents.todos) {
-    todos = contents.todos;
-  }
-  todos = todos.map(todo => {
-    const timestamp = todo.timestamp ? moment(todo.timestamp).toDate() : new Date();
-    return {
-      ...todo,
-      date: todo.date ? moment(todo.date).toDate() : undefined,
-      timestamp: timestamp,
-      created: todo.created ? moment(todo.created).toDate() : timestamp,
-      serverTimestamp: todo.serverTimestamp ? moment(todo.serverTimestamp).toDate() : undefined,
-      files: todo.files ? todo.files : []
-    };
-  });
-  return todos;
-}*/
-
 function loadLastSynch(contents: any) {
   if(contents === undefined) {
     return moment().toDate();
@@ -313,7 +296,7 @@ const lastSynchReducer = handleActions({
 
 export const rootReducer = combineReducers({
   todos: idbReducer('data', 'todo', 'id', todosDispatched, compareTodo, (todos) => {
-    store.dispatch(putTodos(todos));
+    store.dispatch(updateTodos(todos));
   }),
   ui: ui,
   routing: routerReducer,
