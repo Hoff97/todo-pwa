@@ -9,7 +9,7 @@ import em.auth._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
-import em.db.{SubscriptionTable, TodoTable}
+import em.db.{NotificationTable, SubscriptionTable, TodoTable}
 import play.api.libs.json._
 
 import scala.concurrent._
@@ -19,6 +19,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import em.model.forms.SubscriptionForm
 import em.service.PushService
 import play.api.libs.ws.WSClient
+
 import scala.concurrent.duration._
 
 /**
@@ -74,6 +75,36 @@ class PushController @Inject()(
       .filter(x => x.userFk === request.identity.id.get && x.id === id)
 
     db.run(query.delete).map(x => Ok)
+  }
+
+  def deleteNotification(id: Int) = silhouette.SecuredAction.async { implicit request =>
+    log.debug("Deleting notification")
+
+    val query = NotificationTable.notifications
+      .filter(x => x.loginFk === request.identity.id.get && x.id === id)
+
+    db.run(query.delete).map(x => {
+      if(x > 0) {
+        Ok
+      } else {
+        BadRequest
+      }
+    })
+  }
+
+  def getNotification(id: Int) = silhouette.SecuredAction.async { implicit request =>
+    log.debug("Getting notification")
+
+    val query = NotificationTable.notifications
+      .filter(x => x.loginFk === request.identity.id.get && x.id === id)
+
+    db.run(query.result).map(x => {
+      if(x.length > 0) {
+        Ok
+      } else {
+        BadRequest
+      }
+    })
   }
 
 }

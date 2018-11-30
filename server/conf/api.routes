@@ -136,3 +136,33 @@ DELETE /push/register/:id                 controllers.PushController.deleteSubsc
 #      description: success
 ###
 PUT    /todo/remindAgain                     controllers.TodoController.remindAgain
+
+###
+#  summary: See if a notification is still valid
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+GET /push/notification/:id                 controllers.PushController.getNotification(id: Int)
+
+###
+#  summary: Delete a notification
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        type: string
+###
+DELETE /push/notification/:id                 controllers.PushController.deleteNotification(id: Int)

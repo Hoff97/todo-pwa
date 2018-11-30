@@ -85,7 +85,8 @@
     "start": "REACT_APP_VERSION=dev REACT_APP_TIME=now node scripts/start.js",
     "devbuild": "REACT_APP_VERSION=dev REACT_APP_TIME=now node scripts/build.js && sw-precache --config=sw-precache-config.js && cp -r ./build/* ../server/public/",
     "build": "REACT_APP_VERSION=`git rev-parse HEAD` REACT_APP_TIME=`date` node scripts/build.js && sw-precache --config=sw-precache-config.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "testsw": "cp ./public/service-worker-custom.js ./build && cp -r ./build/* ../server/public/"
   },
   "devDependencies": {
     "@types/jest": "^23.3.5",
