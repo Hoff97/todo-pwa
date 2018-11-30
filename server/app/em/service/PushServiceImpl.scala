@@ -6,7 +6,7 @@ import java.time.temporal._
 import java.util.Date
 
 import akka.actor.ActorSystem
-import em.model.{Login, PushMessage, PushPayload, Todo}
+import em.model.{HasCopy, HasID, _}
 import em.model.forms.Subscription
 import javax.inject.Inject
 import play.api.{Configuration, Logger}
@@ -23,11 +23,12 @@ import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import em.auth.AuthEnv
 import em.db.LoginTable.login
-import em.db.{LoginTable, SubscriptionTable, TodoTable}
+import em.db.{LoginTable, NotificationTable, SubscriptionTable, TodoTable}
 import play.api.libs.mailer._
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import views.html._
+import em.db.Util._
 
 class PushServiceImpl @Inject()(protected val config: Configuration,
                                 ws: WSClient,
@@ -89,7 +90,8 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
           val todosToday = todoDb.filter(todo => todo.date.isEmpty || isBeforeOrAtDay(todo.date.get, time))
           if(todosToday.length > 0) {
             val sortedTodos = todosToday.sortBy(todo => (-todo.priority.getOrElse(0), todo.name))
-            sendToUser(dailyNotification(login, sortedTodos), login.id.get)
+
+            dailyNotification(login, sortedTodos).foreach(payload => sendToUser(payload, login.id.get))
             sendDailyMail(login.email, sortedTodos)
           }
         }
@@ -114,10 +116,15 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def isBeforeOrAtDay(date: Timestamp, day: Calendar): Boolean =
     Instant.ofEpochMilli(date.getTime).isBefore(day.toInstant)
 
-  private def dailyNotification(login: Login, todos: Seq[Todo]): PushPayload = {
+  private def dailyNotification(login: Login, todos: Seq[Todo]): Future[PushPayload] = {
     var content = "Hi " + login.email + ", here are your todos:\n"
     content += todos.map(_.name).fold("")((a,b) => a + "\n" + b)
-    PushPayload("Here are your daily todos", content, List(), "", None)
+
+    val notification = insertAndReturn[Notification, NotificationTable](NotificationTable.notifications, Notification(None, login.getId))
+
+    val payload = notification.map(notification =>
+      PushPayload(notification.getId, "Here are your daily todos", content, List(), "", None))
+    db.run(payload)
   }
 
   override def notifyTodo(todo: Todo): Unit = {
@@ -153,7 +160,10 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     db.run(TodoTable.todo.filter(_.id === todo.id).result).zip(getToken(todo.loginFk)).foreach{ case (todoDb,token) =>
       if(todoDb.length > 0 && todo.equals(todoDb(0))) {
         log.debug(s"Sending notification for todo ${todo.id}")
-        sendToUser(todoNotification(todo, Some(token)), todo.loginFk)
+        todoNotification(todo, Some(token)).foreach(payload => {
+          log.debug(payload.toString)
+          sendToUser(payload, todo.loginFk)
+        })
 
         actorSystem.scheduler.scheduleOnce(2.minutes) {
           notifyTodo(todoDb(0))
@@ -168,8 +178,16 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     }
   }
 
-  private def todoNotification(todo: Todo, token: Option[String]): PushPayload =
-    PushPayload(todo.name, "Your todo item '" + todo.name + "' is due today", List("done", "remind+1h"), todo.id, token)
+  private def todoNotification(todo: Todo, token: Option[String]): Future[PushPayload] = {
+    val notification = insertAndReturn[Notification, NotificationTable](NotificationTable.notifications, Notification(None, todo.loginFk))
+
+    val payload = notification.map(notification =>
+      PushPayload(notification.getId, todo.name,
+        "Your todo item '" + todo.name + "' is due today",
+        List("done", "remind+1h"), todo.id,
+        token))
+    db.run(payload)
+  }
 
   override def initialize: Unit = {
     log.debug("Initializing push service")

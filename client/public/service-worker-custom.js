@@ -18,24 +18,63 @@ self.addEventListener('push', function (event) {
             title: actionTitle(action)
         });
     }
-    console.log(payload);
-    event.waitUntil(
-        self.registration.showNotification(payload.title, {
+    event.waitUntil(fetch('/api/v1/push/notification/' + payload.id, {
+        method: 'GET',
+        headers: {
+            'x-auth-token': payload.token
+        }
+    }).then(response => {
+        if(response.status === 200) {
+            return self.registration.showNotification(payload.title, {
+                body: payload.content,
+                icon: '/favicon.ico',
+                actions: actions,
+                data: { id: payload.data, token: payload.token, notificationId: payload.id }
+            });
+        }
+    }).catch(error => {
+        return self.registration.showNotification(payload.title, {
             body: payload.content,
             icon: '/favicon.ico',
             actions: actions,
-            data: { id: payload.data, token: payload.token }
-        }));
+            data: { id: payload.data, token: payload.token, notificationId: payload.id }
+        });
+    }));
 });
 
 self.addEventListener('notificationclick', function (event) {
     var messageId = event.notification.data;
     event.notification.close();
+
+    const notificationId = event.notification.data.notificationId;
+    const token = event.notification.data.token;
+    
+    fetch('/api/v1/push/notification/' + notificationId, {
+        method: 'DELETE',
+        headers: {
+            'x-auth-token': token
+        }
+    });
+
     if (event.action === 'done') {
-        markDone(event.notification.data.id, event.notification.data.token);
+        markDone(event.notification.data.id, token);
     } else if (event.action === 'remind+1h') {
-        remindAgain(event.notification.data.id, event.notification.data.token, 1);
+        remindAgain(event.notification.data.id, token, 1);
     }
+}, false);
+
+self.addEventListener('notificationclose', function (event) {
+    var messageId = event.notification.data;
+
+    const notificationId = event.notification.data.notificationId;
+    const token = event.notification.data.token;
+    
+    fetch('/api/v1/push/notification/' + notificationId, {
+        method: 'DELETE',
+        headers: {
+            'x-auth-token': token
+        }
+    });
 }, false);
 
 const dbName = 'data';
