@@ -72,7 +72,7 @@ function isUnsynched(ts: Date, lastSynch: Date) {
 function Todo({ name, done, toggle, remove, priority, category,
   date, categoryColor, edit, editing, doneEditing, editChange,
   editValue, categories, comment, files, addFile, 
-  deleteFile, commentChanged, timestamp, lastSynch, serverTimestamp }: Props) {
+  deleteFile, commentChanged, timestamp, lastSynch, serverTimestamp, id }: Props) {
   let overdue = isOverdue(date);
   let today = isToday(date);
   let trClass = done ? 'table-info' : overdue ? 'table-danger' : today ? 'table-warning' : '';
@@ -80,7 +80,8 @@ function Todo({ name, done, toggle, remove, priority, category,
     isUnsynched(timestamp,lastSynch) ? 'unsynched' : '';
   if (!editing) {
     return (
-      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}>
+      <tr className={trClass} onDoubleClick={e => { e.preventDefault(); if (!done) { edit() } }}
+          id={'todo-' + id}>
         <td className={"indicator " + indicator}>
         </td>
         <td>

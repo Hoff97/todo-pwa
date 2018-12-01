@@ -175,10 +175,16 @@ export interface Props {
     change: (str: string) => void;
     wrapperProps?: HTMLProps<HTMLDivElement>;
     wrapInput?: (input: JSX.Element) => JSX.Element;
+    inputProps?: object;
 }
 
-export function EnhancedSuggest({ value, change, categories, wrapperProps, wrapInput }: Props) {
+export function EnhancedSuggest({ value, change, categories, wrapperProps, wrapInput, inputProps }: Props) {
     const acItems = itemsForValue(value, categories);
+
+    if(inputProps === undefined) {
+        inputProps = {};
+    }
+
     return (
         <Autocomplete
             getItemValue={(item) => item.label}
@@ -186,7 +192,7 @@ export function EnhancedSuggest({ value, change, categories, wrapperProps, wrapI
             open={acItems.length > 0}
             renderItem={renderItem(value, change)}
             wrapperStyle={{ width: '100%' }}
-            renderInput={props => renderInput(props, wrapInput)}
+            renderInput={props => renderInput({ ...props, ...inputProps}, wrapInput)}
             value={value}
             onChange={(e) => change(e.target.value)}
             onSelect={(val) => change(appendACOption(value, val))}
