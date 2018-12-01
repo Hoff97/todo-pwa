@@ -17,23 +17,28 @@ interface Props extends RouteComponentProps {
     dispatch: Dispatch<Action<any>>;
     open: boolean;
     loggedIn: boolean;
+    route: string;
 }
 
-function sidebar(loggedIn: boolean) {
+function sidebar(loggedIn: boolean, route: string) {
+    const links = [
+        { link: '/', text: 'Main Page' },
+        { link: '/calendar', text: 'Calendar' },
+        { link: '/stats', text: 'Statistics' },
+        loggedIn ? { link: '/login', text: 'Log in' } : { link: '/settings', text: 'Settings' },
+    ]
+    if(route === '')
+        route = '/'
     return (<div>
         <h3>
             Menu
         </h3>
         <ul className="list-group">
-            <li className="list-group-item clickable"><Link to="/">Main page</Link></li>
-            <li className="list-group-item clickable"><Link to="/calendar">Calendar</Link></li>
-            <li className="list-group-item clickable"><Link to="/stats">Statistics</Link></li>
-            {!loggedIn &&
-                <li className="list-group-item clickable"><Link to="login">Log in</Link></li>
-            }
-            {loggedIn &&
-                <li className="list-group-item clickable"><Link to="/settings">Settings</Link></li>
-            }
+            {links.map(link => (
+                <li className={'list-group-item clickable' + (link.link === route ? ' active' : '')} key={link.link}>
+                    <Link to={link.link} style={{color: link.link === route ? '#FFF' : '#55F'}}>{link.text}</Link>
+                </li>
+            ))}
         </ul>
     </div>);
 }
@@ -54,10 +59,10 @@ const Stats = Loadable({
     loading: Loading,
 });
 
-function MenuF({ dispatch, open, loggedIn }: Props) {
+function MenuF({ dispatch, open, loggedIn, route }: Props) {
     return (
         <div>
-            <Drawer sidebar={sidebar(loggedIn)} open={open}
+            <Drawer sidebar={sidebar(loggedIn, route)} open={open}
                 docked={false} transitions={true}
                 touch={true} enableDragHandle={true} position={'left'}
                 dragToggleDistance={30} style={{ overflow: 'auto' }}
@@ -85,7 +90,8 @@ function MenuF({ dispatch, open, loggedIn }: Props) {
 let Menu = withRouter(connect((state: StoreState) => {
     return {
         open: state.ui.menuOpen,
-        loggedIn: state.ui.accessToken !== undefined
+        loggedIn: state.ui.accessToken !== undefined,
+        route: state.routing.pathname
     }
 }, (dispatch: Dispatch<Action<any>>) => {
     return {
