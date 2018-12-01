@@ -30,7 +30,7 @@ export function CalendarF({ todos, dispatch }: Props) {
 
     return (
         <Route render={loc => (
-            <div className="container mt-2" style={{ height: '90%' }}>
+            <div className="container mt-2" style={{ height: '92%' }}>
                 <h3>Calendar</h3>
                 <BigCalendar
                     localizer={localizer}
