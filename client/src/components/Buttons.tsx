@@ -33,7 +33,7 @@ export function Buttons({ value, addTodo, inputChanged, categories, showInstall,
         <div className="mb-2 todo-input-bar">
             <form onSubmit={e => { e.preventDefault(); addTodo(value); }}>
                 <EnhancedSuggest value={value} change={inputChanged} categories={categories}
-                    wrapInput={input => wrapInput(input, showInstall, install)} />
+                    wrapInput={input => wrapInput(input, showInstall, install)} inputProps={{id: 'main-todo-input'}}/>
             </form>
         </div>
     );

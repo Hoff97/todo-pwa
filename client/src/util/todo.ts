@@ -19,16 +19,16 @@ const rExpr = /r:(morning|noon|afternoon|evening|(\d{1,2}):(\d{2,2}))/
 
 export function dateDescrToDate(str: string): moment.Moment {
     switch(str) {
-        case 'today': return moment();
-        case 'tomorrow': return moment().add(1, 'days');
-        case 'mon': return nextWeekday(1);
-        case 'tue': return nextWeekday(2);
-        case 'wed': return nextWeekday(3);
-        case 'thu': return nextWeekday(4);
-        case 'fri': return nextWeekday(5);
-        case 'sat': return nextWeekday(6);
-        case 'sun': return nextWeekday(0);
-        default: return moment();
+        case 'today': return moment().startOf('day');
+        case 'tomorrow': return moment().add(1, 'days').startOf('day');
+        case 'mon': return nextWeekday(1).startOf('day');
+        case 'tue': return nextWeekday(2).startOf('day');
+        case 'wed': return nextWeekday(3).startOf('day');
+        case 'thu': return nextWeekday(4).startOf('day');
+        case 'fri': return nextWeekday(5).startOf('day');
+        case 'sat': return nextWeekday(6).startOf('day');
+        case 'sun': return nextWeekday(0).startOf('day');
+        default: return moment().startOf('day');
     }
 }
 
@@ -49,24 +49,24 @@ export function parseTodo(str: string): Todo {
     var date: Date | undefined = undefined;
     if (dateMatch !== null && dateMatch[1] !== null) {
         switch (dateMatch[1]) {
-            case 'today': date = moment().toDate(); break;
-            case 'tomorrow': date = moment().add(1, 'days').toDate(); break;
-            case 'mon': date = nextWeekday(1).toDate(); break;
-            case 'tue': date = nextWeekday(2).toDate(); break;
-            case 'wed': date = nextWeekday(3).toDate(); break;
-            case 'thu': date = nextWeekday(4).toDate(); break;
-            case 'fri': date = nextWeekday(5).toDate(); break;
-            case 'sat': date = nextWeekday(6).toDate(); break;
-            case 'sun': date = nextWeekday(0).toDate(); break;
+            case 'today': date = moment().startOf('day').toDate(); break;
+            case 'tomorrow': date = moment().startOf('day').add(1, 'days').toDate(); break;
+            case 'mon': date = nextWeekday(1).startOf('day').toDate(); break;
+            case 'tue': date = nextWeekday(2).startOf('day').toDate(); break;
+            case 'wed': date = nextWeekday(3).startOf('day').toDate(); break;
+            case 'thu': date = nextWeekday(4).startOf('day').toDate(); break;
+            case 'fri': date = nextWeekday(5).startOf('day').toDate(); break;
+            case 'sat': date = nextWeekday(6).startOf('day').toDate(); break;
+            case 'sun': date = nextWeekday(0).startOf('day').toDate(); break;
             default:
                 if(dateMatch.length === 7 && dateMatch[5] !== undefined && dateMatch[6] !== undefined) {
-                    var dateM = moment().month(+dateMatch[6]-1).date(+dateMatch[5]);
-                    if(!dateM.isAfter(moment())) {
+                    var dateM = moment().month(+dateMatch[6]-1).date(+dateMatch[5]).startOf('day');
+                    if(!dateM.isAfter(moment().hour(0).minute(0))) {
                         dateM = dateM.add(1, 'years');
                     }
                     date = dateM.toDate();
                 } else if(dateMatch.length === 7 && dateMatch[2] !== undefined && dateMatch[3] !== undefined && dateMatch[4] !== undefined) {
-                    var dateM = moment().year(+dateMatch[4]).month(+dateMatch[3]-1).date(+dateMatch[2]);
+                    var dateM = moment().year(+dateMatch[4]).month(+dateMatch[3]-1).date(+dateMatch[2]).hour(0).minute(0);
                     date = dateM.toDate();
                 }
                 break;

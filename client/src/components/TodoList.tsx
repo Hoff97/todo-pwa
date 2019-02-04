@@ -45,7 +45,8 @@ export function TodoList({ todos, toggleTodo, deleteTodo, editingTodo, editTodo,
                             commentChanged={(comment: string) => commentChanged(todo.id, comment)}
                             timestamp={todo.timestamp}
                             lastSynch={lastSynch}
-                            serverTimestamp={todo.serverTimestamp} />
+                            serverTimestamp={todo.serverTimestamp}
+                            id={todo.id} />
                     ))}
                 </QueueAnim>
             </table>
