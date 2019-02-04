@@ -25,7 +25,7 @@ function sidebar(loggedIn: boolean, route: string) {
         { link: '/', text: 'Main Page' },
         { link: '/calendar', text: 'Calendar' },
         { link: '/stats', text: 'Statistics' },
-        loggedIn ? { link: '/login', text: 'Log in' } : { link: '/settings', text: 'Settings' },
+        loggedIn ? { link: '/settings', text: 'Settings' } : { link: '/login', text: 'Log in' } ,
     ]
     if(route === '')
         route = '/'
