@@ -1,10 +1,10 @@
-console.log('Hello');
-
 function actionTitle(action) {
     if (action === 'done') {
         return 'Done';
     } else if (action === 'remind+1h') {
         return 'Remind in 1 hour';
+    } else if (action === 'tomorrow') {
+        return 'Tomorrow';
     }
     return '';
 }
@@ -60,6 +60,28 @@ self.addEventListener('notificationclick', function (event) {
         markDone(event.notification.data.id, token);
     } else if (event.action === 'remind+1h') {
         remindAgain(event.notification.data.id, token, 1);
+    } else if (event.action === 'tomorrow') {
+        tomorrow(event.notification.data.id, token);
+    } else {
+        console.log('Focusing window');
+        let url = 'localhost:9000';
+        event.notification.close(); // Android needs explicit close.
+        event.waitUntil(
+            clients.matchAll({type: 'window'}).then( windowClients => {
+                // Check if there is already a window/tab open with the target URL
+                for (var i = 0; i < windowClients.length; i++) {
+                    var client = windowClients[i];
+                    // If so, just focus it.
+                    if (client.url.startsWith(url) && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // If not, then open the target URL in a new window/tab.
+                if (clients.openWindow) {
+                    return clients.openWindow(url);
+                }
+            })
+        );
     }
 }, false);
 
@@ -112,6 +134,20 @@ function remindAgain(id, token, hours) {
         body: JSON.stringify({
             id,
             hours,
+            timestamp: dateToStr(new Date())
+        }),
+        method: 'PUT',
+        headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+        }
+    });
+}
+
+function tomorrow(id, token) {
+    fetch('/api/v1/todo/tomorrow', {
+        body: JSON.stringify({
+            id,
             timestamp: dateToStr(new Date())
         }),
         method: 'PUT',

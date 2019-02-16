@@ -181,10 +181,12 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
   private def todoNotification(todo: Todo, token: Option[String]): Future[PushPayload] = {
     val notification = insertAndReturn[Notification, NotificationTable](NotificationTable.notifications, Notification(None, todo.loginFk))
 
+    val actions = List("done", "remind+1h")
+
     val payload = notification.map(notification =>
       PushPayload(notification.getId, todo.name,
         "Your todo item '" + todo.name + "' is due today",
-        List("done", "remind+1h"), todo.id,
+        actions, todo.id,
         token))
     db.run(payload)
   }

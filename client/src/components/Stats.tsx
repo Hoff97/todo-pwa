@@ -75,8 +75,7 @@ const scatterOpts: ChartScales = {
         scaleLabel: {
             labelString: 'Priority',
             display: true
-        },
-        type: 'logarithmic'
+        }
     }],
     xAxes: [{
         ticks: {
@@ -90,7 +89,8 @@ const scatterOpts: ChartScales = {
         scaleLabel: {
             labelString: 'Days left',
             display: true
-        }
+        },
+        type: 'logarithmic'
     }]
 };
 

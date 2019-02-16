@@ -1,5 +1,8 @@
 package controllers
 
+import java.sql.Timestamp
+import java.time.temporal.{ChronoUnit, TemporalUnit}
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import javax.inject._
@@ -92,6 +95,27 @@ class TodoController @Inject()(
         db.run(q.update(updated))
         pushService.notifyTodo(updated)
         Ok
+      } else {
+        BadRequest
+      }
+    }
+  }
+
+  def tomorrow = silhouette.SecuredAction.async(parse.json[RemindAgain]) { implicit request: SecuredRequest[AuthEnv, RemindAgain] =>
+    log.debug(s"Request to reschedule todo")
+    val q = TodoTable.todo.filter(x => x.id === request.body.id && x.loginFk === request.identity.id.get)
+    db.run(q.result).map { todosDb =>
+      if(todosDb.length > 0) {
+        val todo = todosDb(0)
+        val date = todo.date
+        if(date.isDefined) {
+          val updated = todo.copy(date = date.map(x => new Timestamp(x.toInstant.plus(1, ChronoUnit.DAYS).toEpochMilli)), timestamp = request.body.timestamp)
+          db.run(q.update(updated))
+          pushService.notifyTodo(updated)
+          Ok
+        } else {
+          BadRequest
+        }
       } else {
         BadRequest
       }
