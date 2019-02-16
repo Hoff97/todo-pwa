@@ -34,7 +34,7 @@ export function dateDescrToDate(str: string): moment.Moment {
 
 export function parseTodo(str: string): Todo {
     const prioMatch = str.match(pExpr);
-    var priority: number | undefined = undefined;
+    var priority: number = 1;
     if (prioMatch !== null) {
         priority = +prioMatch[1]
     }
