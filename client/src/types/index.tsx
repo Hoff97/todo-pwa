@@ -10,7 +10,7 @@ export interface Todo extends Timestamped {
     id: string;
     name: string;
     done: boolean;
-    priority?: number;
+    priority: number;
     date?: Date;
     category?: string;
     reminder?: Date;

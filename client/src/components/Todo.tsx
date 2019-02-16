@@ -17,7 +17,7 @@ export interface Props {
   doneEditing: (str: string) => void
   editing: boolean
   id: string
-  priority?: number
+  priority: number
   category?: string
   date?: Date
   categoryColor?: string

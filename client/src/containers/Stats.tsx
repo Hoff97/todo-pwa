@@ -34,7 +34,7 @@ export function mapStateToProps(state: StoreState) {
             };
         });
 
-    const todosByPriority = [5,4,3,2,1,0].map(prio => state.todos.filter(todo => (todo.priority ? todo.priority : 0) === prio).length)
+    const todosByPriority = [5,4,3,2,1].map(prio => state.todos.filter(todo => (todo.priority ? todo.priority : 1) === prio).length)
 
     const daysPrio = state.todos.filter(x => x.date && !x.done)
         .map(x => { 
