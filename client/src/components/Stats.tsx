@@ -158,14 +158,14 @@ function Stats({ openTodos, closedTodos, ttD, categories, todosByCategory, todos
     };
 
     const todoCat = {
-        labels: ['5', '4', '3', '2', '1', 'none'],
+        labels: ['5', '4', '3', '2', '1'],
         datasets: [
             {
                 label: 'Todos by priority',
-                backgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'],
+                backgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)'],
                 borderColor: '#000',
                 borderWidth: 1,
-                hoverBackgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)', '#AAA'],
+                hoverBackgroundColor: ['#F00', 'rgb(255, 123, 0)', 'rgb(192, 168, 29)', 'rgb(143, 204, 0)', 'rgb(69, 187, 0)'],
                 hoverBorderColor: '#000',
                 data: todosByPriority
             }
