@@ -64,7 +64,7 @@ self.addEventListener('notificationclick', function (event) {
         tomorrow(event.notification.data.id, token);
     } else {
         console.log('Focusing window');
-        let url = 'localhost:9000';
+        let url = 'https://todo.haskai.de';
         event.notification.close(); // Android needs explicit close.
         event.waitUntil(
             clients.matchAll({type: 'window'}).then( windowClients => {
