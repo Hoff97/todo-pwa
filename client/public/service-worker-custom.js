@@ -10,6 +10,7 @@ function actionTitle(action) {
 }
 
 self.addEventListener('push', function (event) {
+    console.log(event);
     const payload = event.data.json();
     const actions = [];
     for (let action of payload.actions) {

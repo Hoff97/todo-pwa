@@ -47,7 +47,7 @@ class PushController @Inject()(
   def registerSubscription= silhouette.SecuredAction.async(parse.json[SubscriptionForm]) { implicit request =>
     log.debug("Registering Push Subscription")
 
-    val toInsert = request.body.subscription.toUserSubscription(request.identity.id.get, request.body.deviceDescription)
+    val toInsert = request.body.subscription.toUserSubscription(request.identity.id.get, request.body.deviceDescription, request.body.version)
     val query = SubscriptionTable.subscriptions
       .filter(x => x.endpoint === request.body.subscription.endpoint && x.userFk === request.identity.id.get)
 

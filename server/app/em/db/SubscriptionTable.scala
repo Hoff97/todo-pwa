@@ -20,8 +20,10 @@ class SubscriptionTable(tag: Tag) extends Table[SubscriptionUser](tag, "subscrip
 
   def timestamp = column[Timestamp]("timestamp")
 
+  def version = column[Option[String]]("version")
+
   def * = (id.?, endpoint, keyAuth, keyp256dh,
-    userFk, deviceDescription, timestamp) <> (SubscriptionUser.tupled, SubscriptionUser.unapply)
+    userFk, deviceDescription, timestamp, version) <> (SubscriptionUser.tupled, SubscriptionUser.unapply)
 }
 
 object SubscriptionTable {

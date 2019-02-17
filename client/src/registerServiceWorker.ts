@@ -77,11 +77,9 @@ function registerValidSW(swUrl: string) {
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed') {
               if (navigator.serviceWorker.controller) {
-                // At this point, the old content will have been purged and
-                // the fresh content will have been added to the cache.
-                // It's the perfect time to display a 'New content is
-                // available; please refresh.' message in your web app.
                 console.log('New content is available; please refresh.');
+
+                alert('App has been updated in the background. Please refresh.');
               } else {
                 // At this point, everything has been precached.
                 // It's the perfect time to display a
@@ -122,7 +120,7 @@ export function registerPush() {
       const model = userAgent.getDevice().model || '';
       const os = userAgent.getOS().name || '';
       const deviceDescription = `${browser} ${model} ${os}`.replace(/[ ]+/g, ' ');
-      registerSubscription(subscription, deviceDescription);
+      registerSubscription(subscription, deviceDescription, process.env.REACT_APP_VERSION);
     });
   });
 }
