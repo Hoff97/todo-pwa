@@ -6,7 +6,7 @@ import java.time.temporal._
 import java.util.Date
 
 import akka.actor.ActorSystem
-import em.model.{HasCopy, HasID, _}
+import em.model.{HasCopy, HasID, SubscriptionUser, _}
 import em.model.forms.Subscription
 import javax.inject.Inject
 import play.api.{Configuration, Logger}
@@ -191,8 +191,27 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     db.run(payload)
   }
 
+  private def newVersionNotification(subscription: Subscription, userFk: Int): Future[PushPayload] = {
+    val notification = insertAndReturn[Notification, NotificationTable](NotificationTable.notifications, Notification(None, userFk))
+
+    db.run(notification).zip(getToken(userFk)).map { case(notification,token) =>
+      PushPayload(notification.getId, "Todo App updated",
+        "New version available. Open the app to get it.",
+        List(), "",
+        Some(token))
+    }
+  }
+
+  private def notifyNewVersion(sub: SubscriptionUser) = {
+    log.debug("Notifying user for new subscription")
+    newVersionNotification(sub.toSubscription, sub.userFk)
+      .foreach(payload => sendMessage(sub.toSubscription, payload))
+  }
+
   override def initialize: Unit = {
+    val currentVersion = config.get[String]("application.currentVersion")
     log.debug("Initializing push service")
+    log.debug(s"Current server version: ${currentVersion}")
     db.run(TodoTable.todo.result).foreach { todos =>
       todos.foreach(todo => notifyTodo(todo))
     }
@@ -200,12 +219,16 @@ class PushServiceImpl @Inject()(protected val config: Configuration,
     db.run(LoginTable.login.result).foreach { logins =>
       logins.foreach(login => notifyUser(login))
     }
+
+    db.run(SubscriptionTable.subscriptions.filter(x => x.version =!= currentVersion || x.version.isEmpty).result).foreach { subs =>
+      subs.foreach(notifyNewVersion(_))
+    }
   }
 
   def getToken(id: Int): Future[String] = {
     for {
       login <- db.run(login.filter(_.id === id).result)
-      val loginInfo = LoginInfo(CredentialsProvider.ID, login(0).email)
+      loginInfo = LoginInfo(CredentialsProvider.ID, login(0).email)
       authenticator <- silhouette.env.authenticatorService.create(loginInfo)(null)
       token <- silhouette.env.authenticatorService.init(authenticator)(null)
     } yield token

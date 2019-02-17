@@ -138,6 +138,19 @@ DELETE /push/register/:id                 controllers.PushController.deleteSubsc
 PUT    /todo/remindAgain                     controllers.TodoController.remindAgain
 
 ###
+#  summary: Reschedule todo for tomorrow
+#  parameters:
+#  - in: header
+#    name: x-auth-token
+#    schema:
+#      type: string
+#  responses:
+#    200:
+#      description: success
+###
+PUT    /todo/tomorrow                     controllers.TodoController.tomorrow
+
+###
 #  summary: See if a notification is still valid
 #  parameters:
 #  - in: header

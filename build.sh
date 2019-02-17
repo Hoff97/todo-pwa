@@ -6,6 +6,8 @@ npm run build
 mkdir ../server/public/
 \cp -r ./build/* ../server/public/
 cd ../server/
+replace="s/devVersion/$REACT_APP_VERSION/g"
+sed -i $replace conf/application.conf 
 sbt dist
 if [[ $TRAVIS_BRANCH = "master"  &&  $TRAVIS_PULL_REQUEST = false ]]
 then

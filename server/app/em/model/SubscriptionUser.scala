@@ -8,7 +8,7 @@ import em.util.DateTime._
 
 case class SubscriptionUser(id: Option[Int], endpoint: String, keyAuth: String,
                             keyp256dh: String, userFk: Int, deviceDescription: String,
-                            timestamp: Timestamp) extends HasCopy[SubscriptionUser, Int] {
+                            timestamp: Timestamp, version: Option[String]) extends HasCopy[SubscriptionUser, Int] {
   def cpy(i: Option[Int]) = this.copy(id = i)
 
   def toSubscription: Subscription = Subscription(endpoint, Keys(keyAuth, keyp256dh))

@@ -8,11 +8,12 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import em.util.DateTime._
 
-case class SubscriptionForm(subscription: Subscription, deviceDescription: String)
+case class SubscriptionForm(subscription: Subscription, deviceDescription: String, version: Option[String])
 
 case class Subscription(endpoint: String, keys: Keys) {
-  def toUserSubscription(userFk: Int, deviceDescription: String)
-    = SubscriptionUser(None, endpoint, keys.auth, keys.p256dh, userFk, deviceDescription, Timestamp.from(Instant.now()))
+  def toUserSubscription(userFk: Int, deviceDescription: String, version: Option[String])
+    = SubscriptionUser(None, endpoint, keys.auth, keys.p256dh, userFk, deviceDescription,
+        Timestamp.from(Instant.now()), version)
 }
 
 case class Keys(auth: String, p256dh: String)
