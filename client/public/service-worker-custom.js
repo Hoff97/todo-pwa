@@ -30,6 +30,7 @@ self.addEventListener('push', function (event) {
                 body: payload.content,
                 icon: '/favicon.ico',
                 actions: actions,
+                badge: '/favicon-small.png',
                 data: { id: payload.data, token: payload.token, notificationId: payload.id }
             });
         }
