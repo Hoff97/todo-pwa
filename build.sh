@@ -15,7 +15,9 @@ then
 
     cd ..
     zip -r push-service.zip . -i ./push-service/*
+    zip -r ml.zip . -i ./ml/*
     sshpass -e scp -o stricthostkeychecking=no ./push-service.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
+    sshpass -e scp -o stricthostkeychecking=no ./ml.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
     cd server
 
     sshpass -e scp -o stricthostkeychecking=no ./target/universal/em-server-1.0-SNAPSHOT.zip $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
