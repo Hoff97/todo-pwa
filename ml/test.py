@@ -1,12 +1,13 @@
-import psycopg2
-
-import torch.utils.data as data
 import re
+
+import numpy as np
+import psycopg2
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-import numpy as np
+import torch.optim as optim
+import torch.utils.data as data
+
 
 class TableDL(data.Dataset):
     def __init__(self, db, table, columns = '*', condition = '', host = 'localhost', user = 'postgres'):
@@ -68,13 +69,13 @@ class NameCatDL(data.Dataset):
         cat_enc = self.cat_enc(cat)
         word_enc = self.word_enc(words)
         return word_enc, cat_enc, item
-    
+
     def word_enc(self, words):
         word_enc = torch.zeros(self.num_words)
         for word in words:
             word_enc = word_enc + oneHot(self.num_words, self.word_ix[word])
         return word_enc
-    
+
     def cat_enc(self, cat):
         return oneHot(self.num_cats, self.cat_ix[cat])
 
@@ -115,7 +116,7 @@ criterion = nn.BCELoss()
 optimizer = optim.Adam(model.parameters())
 
 num_its = 2000
-cuda = True
+cuda = False
 
 if cuda:
     model = model.cuda()
@@ -142,6 +143,9 @@ for i in range(len(items)):
     print(item, testDL.pred_to_cat(pred[i]))
 
 for word in testDL.words:
-    predT = model(testDL.word_enc([word]).cuda())
+    i = testDL.word_enc([word])
+    if cuda:
+        i = i.cuda()
+    predT = model(i)
     cat = testDL.pred_to_cat(predT)
     print(f'{word}: {cat}')
